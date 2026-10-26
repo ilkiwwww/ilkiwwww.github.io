@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services — 4 bold layouts (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --sec:#999; --pri:#fff; --ease:cubic-bezier(.22,1,.36,1); --case:cubic-bezier(.215,.61,.355,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:auto; }
+  body { background:var(--black); color:var(--pri); font:400 16px/24px Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; text-decoration:none; }
+  .sec { color:var(--sec); }
+  .eyebrow { font:500 16px/24px Inter; text-transform:uppercase; color:var(--sec); }
+  .dense { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); letter-spacing:.02em; }
+  .display { font:500 64px/64px "Instrument Sans",sans-serif; letter-spacing:-.01em; }
+  .huge { font:500 140px/132px "Instrument Sans",sans-serif; letter-spacing:-.02em; }
+  .quote { font:500 28px/36px "Instrument Sans",sans-serif; }
+  .lead { font-size:20px; line-height:28px; }
+  .chip { display:inline-flex; align-items:center; height:36px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; white-space:nowrap; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; height:48px; padding:0 24px; border-radius:9999px; font-weight:500; background:var(--pri); color:#000; }
+  .top { position:sticky; top:0; z-index:50; background:var(--black); border-bottom:1px solid var(--line); }
+  .top .in { display:flex; align-items:center; justify-content:space-between; gap:24px; height:72px; padding:0 40px; }
+  .top nav { display:flex; gap:8px; }
+  .intro { padding:96px 40px 64px; max-width:1100px; }
+  .vhead { padding:64px 40px 40px; border-top:1px solid var(--line); display:flex; gap:24px; align-items:baseline; }
+  .vhead .note { max-width:680px; } .vhead h2 { font:500 40px/48px "Instrument Sans"; }
+  .pad { padding:0 40px; }
+  .track { position:relative; }
+  .stage { position:sticky; top:72px; height:calc(100vh - 72px); overflow:hidden; }
+
+  /* A — Hover reel rows */
+  .a-row { position:relative; height:176px; border-top:1px solid var(--line); overflow:hidden; cursor:pointer; isolation:isolate; }
+  .a-row:last-child { border-bottom:1px solid var(--line); }
+  .a-row::before { content:""; position:absolute; inset:0; background:var(--pri); transform:translateY(101%); transition:transform .6s var(--case); z-index:-1; }
+  .a-row:hover::before { transform:none; }
+  .a-name { position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 40px; transition:transform .6s var(--case), color .3s; }
+  .a-name .huge { font-size:112px; line-height:112px; }
+  .a-row:hover .a-name { transform:translateY(-100%); }
+  .a-reel { position:absolute; left:0; top:0; height:100%; display:flex; align-items:center; white-space:nowrap; transform:translateY(100%); transition:transform .6s var(--case); color:#000; }
+  .a-row:hover .a-reel { transform:none; }
+  .a-reel span { display:inline-flex; align-items:center; font:500 112px/112px "Instrument Sans"; letter-spacing:-.02em; padding-right:64px; }
+  .a-reel span::after { content:"✦"; font-size:40px; margin-left:64px; }
+  .a-run { display:flex; }
+  .a-row:hover .a-run { animation:reel 18s linear infinite; }
+  @keyframes reel { to { transform:translateX(-50%); } }
+  .a-count { font:500 12px/16px Inter; color:var(--sec); }
+  .a-row .arrow { font-size:40px; transition:transform .5s var(--case); }
+  .a-row:hover .arrow { transform:rotate(45deg); }
+
+  /* B — Curtain panels */
+  .b-layer { position:absolute; inset:0; padding:40px; display:flex; flex-direction:column; justify-content:space-between; will-change:clip-path; }
+  .b-layer.l0 { background:var(--black); } .b-layer.l1 { background:var(--fill); } .b-layer.l2 { background:var(--pri); color:#000; }
+  .b-layer.l3 { background:var(--black); } .b-layer.l4 { background:var(--fill); } .b-layer.l5 { background:var(--pri); color:#000; }
+  .b-layer.l2 .sec,.b-layer.l5 .sec,.b-layer.l2 .dense,.b-layer.l5 .dense { color:#555; }
+  .b-layer.l2 .chip,.b-layer.l5 .chip { border-color:#000; }
+  .b-top { display:flex; justify-content:space-between; }
+  .b-name { font:500 clamp(120px,22vw,320px)/.85 "Instrument Sans"; letter-spacing:-.04em; margin-left:-.04em; }
+  .b-bot { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; }
+  .b-bot p { max-width:480px; } .b-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; max-width:520px; }
+  .b-dots { position:absolute; right:40px; top:50%; transform:translateY(-50%); z-index:5; display:flex; flex-direction:column; gap:10px; mix-blend-mode:difference; }
+  .b-dots i { width:8px; height:8px; border-radius:9999px; border:1px solid #fff; transition:.3s; } .b-dots i.on { background:#fff; }
+
+  /* C — Cursor image list */
+  .c-list { position:relative; }
+  .c-row { display:grid; grid-template-columns:80px 1fr auto; align-items:baseline; gap:24px; padding:28px 0; border-top:1px solid var(--line); cursor:pointer; transition:opacity .4s; }
+  .c-row:last-child { border-bottom:1px solid var(--line); }
+  .c-row .huge { font-size:96px; line-height:96px; transition:transform .6s var(--case), letter-spacing .6s var(--case); }
+  .c-list:hover .c-row { opacity:.25; } .c-list .c-row:hover { opacity:1; }
+  .c-row:hover .huge { transform:translateX(32px); }
+  .c-subs { display:flex; flex-direction:column; align-items:flex-end; gap:4px; max-width:260px; opacity:0; transform:translateX(24px); transition:.5s var(--case); text-align:right; }
+  .c-row:hover .c-subs { opacity:1; transform:none; }
+  .c-float { position:fixed; left:0; top:0; width:260px; height:340px; pointer-events:none; z-index:40; background:var(--fill); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .3s; font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); will-change:transform; }
+  .c-float.on { opacity:1; }
+
+  /* D — Rolling word */
+  .d-stage { display:flex; flex-direction:column; justify-content:center; padding:40px; gap:48px; }
+  .d-line { display:flex; align-items:center; gap:32px; }
+  .d-line .we { font:500 128px/140px "Instrument Sans"; letter-spacing:-.02em; color:var(--sec); }
+  .d-win { height:140px; overflow:hidden; }
+  .d-col { will-change:transform; }
+  .d-col div { height:140px; font:500 128px/140px "Instrument Sans"; letter-spacing:-.02em; }
+  .d-meta { display:grid; grid-template-columns:200px 1fr 1fr; gap:40px; align-items:start; border-top:1px solid var(--line); padding-top:32px; }
+  .d-num { font:500 92px/72px "Instrument Sans"; color:var(--line); }
+  .d-swap { animation:in .7s var(--ease); }
+  @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  .d-chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .d-bar { position:absolute; left:40px; right:40px; bottom:40px; height:2px; background:var(--line); } .d-bar i { display:block; height:100%; width:0; background:var(--pri); }
+
+  @media (max-width:900px){
+    .top .in,.intro,.vhead,.pad,.d-stage { padding-left:24px; padding-right:24px; }
+    .huge,.a-name .huge,.a-reel span,.c-row .huge { font-size:56px; line-height:60px; }
+    .d-line .we,.d-col div { font-size:56px; line-height:72px; } .d-win,.d-col div { height:72px; }
+    .d-meta { grid-template-columns:1fr; } .b-bot { flex-direction:column; align-items:flex-start; } .b-dots { display:none; }
+    .a-row { height:100px; } .c-subs { display:none; } .c-row { grid-template-columns:40px 1fr; } .c-float { display:none; }
+    .display { font-size:40px; line-height:48px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="in">
+  <span class="dense">Services · bold layouts</span>
+  <nav><a class="chip" href="#a">A · Reel rows</a><a class="chip" href="#b">B · Curtains</a><a class="chip" href="#c">C · Cursor gallery</a><a class="chip" href="#d">D · Rolling word</a></nav>
+</div></header>
+
+<section class="intro">
+  <p class="eyebrow">Prototype · not part of the site</p>
+  <h1 class="display" style="margin-top:16px">Services, not as a list.</h1>
+  <p class="sec lead" style="margin-top:24px;max-width:680px">Four unusual ways to show the six categories — inspired by Metalab's calm split and The Gradient's big typographic statements, but kept in our dark, sharp, round-chip language. Hover and scroll each one.</p>
+</section>
+
+<!-- A -->
+<div class="vhead" id="a"><span class="eyebrow">A</span><div class="note"><h2>Reel rows</h2><p class="sec" style="margin-top:12px">Giant category names. On hover the row floods white from the bottom, the name slides out and a marquee of its services runs through the row. Zero chrome, all typography.</p></div></div>
+<div id="aList"></div>
+
+<!-- B -->
+<div class="vhead" id="b"><span class="eyebrow">B</span><div class="note"><h2>Curtains</h2><p class="sec" style="margin-top:12px">Pinned, full-screen. Each category is a curtain that wipes up over the previous one; the colour alternates black / grey / white. The huge word slides in slightly slower than the curtain, for depth.</p></div></div>
+<div class="track" id="bTrack" style="height:700vh"><div class="stage" id="bStage"><div class="b-dots" id="bDots"></div></div></div>
+
+<!-- C -->
+<div class="vhead" id="c"><span class="eyebrow">C</span><div class="note"><h2>Cursor gallery</h2><p class="sec" style="margin-top:12px">A calm list until you move the mouse. A picture follows the cursor with a little inertia and tilt, the hovered row nudges right and shows its services, the rest fade out.</p></div></div>
+<div class="pad" style="padding-bottom:120px"><div class="c-list" id="cList"></div></div>
+<div class="c-float" id="cFloat"></div>
+
+<!-- D -->
+<div class="vhead" id="d"><span class="eyebrow">D</span><div class="note"><h2>Rolling word</h2><p class="sec" style="margin-top:12px">One sentence — “We do …” — and the last word rolls like a slot-machine reel as you scroll. Below it the description, services and a progress bar change in step.</p></div></div>
+<div class="track" id="dTrack" style="height:600vh"><div class="stage d-stage" id="dStage">
+  <div class="d-line"><span class="we">We do</span><div class="d-win"><div class="d-col" id="dCol"></div></div></div>
+  <div class="d-meta"><div class="d-num" id="dNum">01</div><p class="sec lead" id="dLead"></p><div class="d-chips" id="dChips"></div></div>
+  <div class="d-bar"><i id="dFill"></i></div>
+</div></div>
+<div style="height:30vh"></div>
+
+<script>
+const CATS = [
+  { name:"Design", lead:"Research, flows and interfaces you can test before a line of code.", items:["UI/UX Design","Web Design","Mobile App Design","Website Redesign","UX/UI Audit"] },
+  { name:"Branding", lead:"A mark, a palette and a voice, drawn once and written down.", items:["Brand Identity","Logo Design","Brand Guidelines"] },
+  { name:"Illustration", lead:"A visual language that isn't borrowed. No stock, no lookalikes.", items:["Icon Set","Character Illustration","Editorial Illustration"] },
+  { name:"Motion", lead:"Feedback that confirms every tap, and films that explain in seconds.", items:["Micro-interactions","Product Animation","Explainer Video"] },
+  { name:"3D", lead:"Renders, icons and hero scenes with no photo shoot.", items:["Product Render","3D Icon Set","3D Illustration"] },
+  { name:"Development", lead:"Pixel-perfect front-end and a handoff dev teams can build from.", items:["Front-End Build","Design Handoff","QA & Launch Support"] },
+];
+const N = CATS.length, n2 = i => String(i+1).padStart(2,"0");
+const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+const prog = el => { const r = el.getBoundingClientRect(); return clamp(-(r.top - 72) / (r.height - (innerHeight - 72))); };
+
+// A
+document.getElementById("aList").innerHTML = CATS.map((c,i)=>{
+  const text = [c.name, ...c.items].map(t=>`<span>${t}</span>`).join("");
+  return `<div class="a-row"><div class="a-name"><div style="display:flex;align-items:baseline;gap:32px"><span class="a-count">${n2(i)}</span><span class="huge">${c.name}</span></div><span class="arrow">↗</span></div><div class="a-reel"><div class="a-run">${text}${text}</div></div></div>`;
+}).join("");
+
+// B
+const bStage = document.getElementById("bStage"), bDots = document.getElementById("bDots");
+CATS.forEach((c,i)=>{
+  bStage.insertAdjacentHTML("afterbegin",`<div class="b-layer l${i}" data-i="${i}"><div class="b-top"><span class="dense">${n2(i)} / 06</span><span class="dense">Services</span></div><div class="b-name">${c.name}</div><div class="b-bot"><p class="sec lead">${c.lead}</p><div class="b-chips">${c.items.map(t=>`<span class="chip">${t}</span>`).join("")}</div></div></div>`);
+  bDots.insertAdjacentHTML("beforeend","<i></i>");
+});
+const bLayers = [...bStage.querySelectorAll(".b-layer")].sort((a,b)=>a.dataset.i-b.dataset.i);
+bLayers.forEach((l,i)=>l.style.zIndex = i+1);
+const bTrack = document.getElementById("bTrack");
+
+// C
+const cList = document.getElementById("cList"), cFloat = document.getElementById("cFloat");
+cList.innerHTML = CATS.map((c,i)=>`<div class="c-row" data-name="${c.name}"><span class="dense">${n2(i)}</span><span class="huge">${c.name}</span><div class="c-subs">${c.items.map(t=>`<span class="sec">${t}</span>`).join("")}</div></div>`).join("");
+let mx=0,my=0,fx=0,fy=0,rot=0;
+cList.addEventListener("mousemove", e=>{ mx=e.clientX; my=e.clientY; });
+cList.addEventListener("mouseover", e=>{ const r=e.target.closest(".c-row"); if(r){ cFloat.textContent=r.dataset.name+" — picture"; cFloat.classList.add("on"); } });
+cList.addEventListener("mouseleave", ()=>cFloat.classList.remove("on"));
+(function loop(){ const dx = mx-130-fx; fx += dx*.12; fy += (my-170-fy)*.12; rot += (clamp(dx/40,-1,1)*10 - rot)*.1; cFloat.style.transform=`translate(${fx}px,${fy}px) rotate(${rot}deg)`; requestAnimationFrame(loop); })();
+
+// D
+const dCol = document.getElementById("dCol"); dCol.innerHTML = CATS.map(c=>`<div>${c.name}</div>`).join("");
+const dTrack = document.getElementById("dTrack"); let dLast=-1;
+const ss = t => t*t*(3-2*t);
+
+function tick(){
+  // B
+  const p = prog(bTrack), x = p*(N-1)*1.0001 + 0; // 0..N-1
+  bLayers.forEach((l,i)=>{
+    const f = i===0 ? 1 : clamp(x - (i-1));
+    const e = ss(f);
+    l.style.clipPath = `inset(${(1-e)*100}% 0 0 0)`;
+    l.querySelector(".b-name").style.transform = `translateY(${(1-e)*18}vh)`;
+  });
+  [...bDots.children].forEach((d,i)=>d.classList.toggle("on", i===Math.round(x)));
+  // D
+  const q = prog(dTrack), y = q*N, i = Math.min(N-1, Math.floor(y)), fr = y - Math.floor(y);
+  const pos = Math.min(N-1, i + ss(clamp((fr-.55)/.45)));
+  const h = innerWidth<=900 ? 72 : 140;
+  dCol.style.transform = `translateY(${-pos*h}px)`;
+  document.getElementById("dFill").style.width = (q*100)+"%";
+  if (i!==dLast){ dLast=i; document.getElementById("dNum").textContent=n2(i); const c=CATS[i];
+    document.getElementById("dLead").innerHTML = `<span class="d-swap" style="display:block">${c.lead}</span>`;
+    document.getElementById("dChips").innerHTML = c.items.map((t,k)=>`<span class="chip d-swap" style="animation-delay:${k*60}ms">${t}</span>`).join(""); }
+}
+addEventListener("scroll", tick, {passive:true}); addEventListener("resize", tick); tick();
+</script>
+</body>
+</html>

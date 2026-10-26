@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Ask Emote: варіанти</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --canvas:#0D0D0F; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; --reveal: cubic-bezier(.16,1,.3,1); --ease: cubic-bezier(.215,.61,.355,1); }
+  * { box-sizing: border-box; margin: 0; }
+  button { all: unset; box-sizing: border-box; cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  body { background: #070708; color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; padding: 24px 24px 80px; }
+  .top { max-width: 1280px; margin: 0 auto 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .top h1 { font-size: 20px; line-height: 28px; font-weight: 500; margin-right: 16px; }
+  .pill { height: 36px; padding: 0 20px; border: 1px solid var(--line); border-radius: 9999px; display: inline-flex; align-items: center; font-weight: 500; font-size: 14px; }
+  .pill:hover { background: var(--fill); }
+  .pill[aria-selected="true"] { background: var(--primary); color: var(--black); border-color: var(--primary); }
+  .hint { max-width: 1280px; margin: 0 auto 16px; color: var(--secondary); font-size: 12px; line-height: 16px; }
+
+  /* ---- Сцена: імітація сторінки з шапкою ------------------------------ */
+  .stage { display: none; position: relative; max-width: 1280px; height: 720px; margin: 0 auto; background: var(--black); overflow: hidden; border: 1px solid var(--line); }
+  .stage.on { display: block; }
+  .page { position: absolute; inset: 0; padding: 120px 40px 0; }
+  .page h2 { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 112px; line-height: 104px; }
+  .page .blocks { display: flex; gap: 12px; margin-top: 48px; }
+  .page .blocks i { flex: 1; height: 200px; background: var(--fill); }
+  .bar { position: absolute; z-index: 40; top: 16px; left: 0; right: 0; padding: 0 40px; height: 48px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 22px; letter-spacing: .02em; }
+  .tabs { display: flex; gap: 8px; }
+  .tab { height: 36px; padding: 0 24px; border: 1px solid var(--line); border-radius: 9999px; display: inline-flex; align-items: center; font-weight: 500; }
+  .tab.on { background: var(--primary); color: var(--black); border-color: var(--primary); }
+  .actions { display: flex; gap: 8px; }
+  .btn { height: 48px; padding: 0 24px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+  .btn.light { background: var(--primary); color: var(--black); }
+  .ask-btn { position: relative; font-weight: 400; }
+  .ask-btn::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none; background: linear-gradient(110deg, var(--line) 38%, var(--secondary) 50%, var(--line) 62%) 100% 0 / 300% 100%; animation: shimmer 5s linear infinite; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; -webkit-mask-composite: xor; }
+  .ask-btn:hover { background: var(--fill); }
+  @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+
+  /* ---- Спільні частини панелі ---------------------------------------- */
+  .panel { display: none; position: absolute; z-index: 30; }
+  .stage.open .panel { display: flex; animation: in .6s var(--reveal) both; }
+  @keyframes in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .row-q { display: flex; align-items: center; gap: 16px; width: 100%; padding: 14px 0; border-bottom: 1px solid var(--line); text-align: left; color: var(--secondary); transition: color .3s; }
+  .row-q:hover, .row-q:focus-visible { color: var(--primary); }
+  .row-q svg { width: 24px; height: 24px; flex: none; }
+  .sug { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+  .field { display: flex; align-items: center; gap: 8px; }
+  .field input { all: unset; flex: 1; min-width: 0; color: var(--primary); }
+  .field input::placeholder { color: var(--secondary); }
+  .send { width: 48px; height: 48px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .send:hover { background: var(--fill); }
+  .send svg { width: 24px; height: 24px; }
+  .close { width: 48px; height: 48px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; flex: none; color: var(--primary); }
+  .close:hover { background: var(--fill); }
+  .label { color: var(--secondary); font-weight: 500; text-transform: uppercase; }
+  .st { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+  .thread { display: none; flex-direction: column; gap: 24px; }
+  .stage.asked .empty { display: none; }
+  .stage.asked .thread { display: flex; }
+  .qtxt { color: var(--secondary); }
+  .atxt { animation: in .6s var(--reveal) both; }
+  .dots { display: flex; gap: 8px; padding: 10px 0; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); animation: dot 1.2s ease-in-out infinite; }
+  .dots i:nth-child(2) { animation-delay: .15s; } .dots i:nth-child(3) { animation-delay: .3s; }
+  @keyframes dot { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+  .deeper { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ---- A · Поповер під кнопкою --------------------------------------- */
+  .a .panel { top: 76px; right: 40px; width: 460px; max-height: 560px; flex-direction: column; gap: 20px; padding: 24px; background: var(--fill); border-radius: 28px; overflow-y: auto; }
+  .a .head { display: flex; align-items: center; justify-content: space-between; }
+  .a .field { height: 56px; padding: 0 8px 0 24px; border: 1px solid var(--line); border-radius: 9999px; font-size: 16px; }
+  .a .field:focus-within { border-color: var(--primary); }
+  .a .row-q { font-size: 16px; padding: 12px 0; }
+  .a .atxt { font-size: 20px; line-height: 28px; }
+  .a .qtxt { font-size: 16px; }
+
+  /* ---- B · Панель-док знизу ------------------------------------------ */
+  .b .panel { left: 50%; bottom: 24px; transform: translateX(-50%); width: 760px; max-height: 600px; flex-direction: column; gap: 24px; padding: 20px; background: var(--fill); border-radius: 36px; overflow-y: auto; }
+  .stage.open.b .panel { animation: in-b .6s var(--reveal) both; }
+  @keyframes in-b { from { opacity: 0; transform: translate(-50%, 24px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .b .empty { display: flex; flex-direction: column; gap: 4px; padding: 8px 12px 0; }
+  .b .sug { border-top: 0; }
+  .b .row-q { font-size: 16px; padding: 10px 0; border: 0; }
+  .b .field { height: 64px; padding: 0 8px 0 24px; background: var(--black); border-radius: 9999px; font-size: 20px; line-height: 28px; }
+  .b .thread { padding: 8px 12px 0; }
+  .b .atxt { font-size: 20px; line-height: 28px; }
+  .b .headrow { display: none; }
+
+  /* ---- C · Бічна шторка праворуч ------------------------------------- */
+  .c .panel { top: 0; right: 0; bottom: 0; width: 480px; flex-direction: column; gap: 24px; padding: 88px 24px 24px; background: var(--fill); border-radius: 32px 0 0 32px; overflow-y: auto; }
+  .stage.open.c .panel { animation: in-c .7s var(--reveal) both; }
+  @keyframes in-c { from { transform: translateX(100%); } to { transform: none; } }
+  .c .empty { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 24px; }
+  .c .st { font-size: 40px; line-height: 44px; }
+  .c .thread { flex: 1; justify-content: flex-end; }
+  .c .field { height: 56px; padding: 0 8px 0 20px; border: 1px solid var(--line); border-radius: 9999px; background: var(--black); }
+  .c .field:focus-within { border-color: var(--primary); }
+  .c .atxt { font-size: 20px; line-height: 28px; }
+  .c .row-q { padding: 12px 0; }
+  .c .shift { position: absolute; inset: 0; transition: transform .7s var(--reveal); }
+  .c.open .shift { transform: translateX(-120px); }
+  .c .closebtn { position: absolute; top: 16px; right: 16px; }
+
+  /* ---- D · Командна палітра по центру -------------------------------- */
+  .d .scrim { display: none; position: absolute; inset: 0; z-index: 25; background: rgba(0,0,0,.45); }
+  .d.open .scrim { display: block; }
+  .d .panel { top: 112px; left: 50%; transform: translateX(-50%); width: 680px; max-height: 520px; flex-direction: column; background: var(--fill); border-radius: 24px; overflow: hidden; }
+  .stage.open.d .panel { animation: in-b .5s var(--reveal) both; }
+  .d .field { height: 72px; padding: 0 16px 0 24px; border-bottom: 1px solid var(--line); font-size: 20px; line-height: 28px; }
+  .d .body { flex: 1; overflow-y: auto; padding: 8px 24px; }
+  .d .label { padding: 16px 0 4px; font-size: 12px; line-height: 16px; }
+  .d .sug { border-top: 0; }
+  .d .row-q { font-size: 16px; padding: 12px 0; border: 0; }
+  .d .row-q kbd { margin-left: auto; font: inherit; font-size: 12px; color: var(--secondary); border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; }
+  .d .foot { display: flex; gap: 24px; padding: 12px 24px; border-top: 1px solid var(--line); color: var(--secondary); font-size: 12px; line-height: 16px; }
+  .d .atxt { font-size: 20px; line-height: 28px; }
+  .d .thread { padding: 24px 0; }
+
+  /* ---- E · Редакційний: на всю сцену, величезний шрифт --------------- */
+  .e .panel { top: 80px; left: 0; right: 0; bottom: 0; background: var(--black); flex-direction: column; padding: 32px 40px 40px; gap: 32px; overflow-y: auto; }
+  .e .head { display: flex; align-items: center; justify-content: space-between; }
+  .e .st { font-size: 96px; line-height: 92px; }
+  .e .field { border-bottom: 1px solid var(--line); height: 80px; font-size: 28px; line-height: 36px; padding-right: 0; }
+  .e .field:focus-within { border-color: var(--primary); }
+  .e .sug { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; border-top: 0; counter-reset: q; }
+  .e .row-q { font-size: 20px; line-height: 28px; counter-increment: q; }
+  .e .row-q::before { content: counter(q, decimal-leading-zero); font-size: 12px; color: var(--secondary); width: 24px; }
+  .e .row-q svg { display: none; }
+  .e .atxt { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 48px; line-height: 52px; }
+  .e .qtxt { font-size: 20px; }
+
+  @media (max-width: 1000px) { .stage { height: 640px; } .page h2 { font-size: 64px; line-height: 64px; } .tabs { display: none; } .a .panel, .b .panel, .d .panel { width: calc(100% - 32px); right: 16px; } .b .panel, .d .panel { left: 16px; transform: none; } .c .panel { width: 100%; } .e .st { font-size: 48px; line-height: 52px; } .e .sug { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>Ask Emote — варіанти</h1>
+  <button class="pill" data-go="a" aria-selected="true">A · Поповер під кнопкою</button>
+  <button class="pill" data-go="b" aria-selected="false">B · Док знизу</button>
+  <button class="pill" data-go="c" aria-selected="false">C · Бічна шторка</button>
+  <button class="pill" data-go="d" aria-selected="false">D · Палітра по центру</button>
+  <button class="pill" data-go="e" aria-selected="false">E · Редакційний</button>
+</div>
+<p class="hint" id="hint"></p>
+
+<template id="tpl-bar">
+  <div class="bar">
+    <span class="logo">EMOTE</span>
+    <div class="tabs"><span class="tab">Work</span><span class="tab">Services</span><span class="tab on">About</span><span class="tab">Contact</span></div>
+    <div class="actions">
+      <button class="btn ask-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z"/></svg>Ask Emote</button>
+      <span class="btn light">Book a call</span>
+    </div>
+  </div>
+</template>
+<template id="tpl-page"><div class="page"><div class="shift"><h2>A small studio that<br>ships like a bigger one</h2><div class="blocks"><i></i><i></i><i></i></div></div></div></template>
+
+<template id="tpl-core">
+  <div class="empty">
+    <p class="label" data-label></p>
+    <h3 class="st" data-title></h3>
+    <ul class="sug" data-sug></ul>
+  </div>
+  <div class="thread"></div>
+</template>
+
+<!-- A -->
+<section class="stage a on" id="a">
+  <div class="panel" data-panel>
+    <div class="head"><span class="label">Ask Emote</span><button class="close" aria-label="Close"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div data-core data-title="What would you like to know?" data-n="4" data-small></div>
+    <form class="field"><input placeholder="Ask a question…" aria-label="Ask"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  </div>
+</section>
+
+<!-- B -->
+<section class="stage b" id="b">
+  <div class="panel" data-panel>
+    <div data-core data-title="" data-label="Try asking" data-n="3" data-nohead></div>
+    <form class="field"><input placeholder="Ask Emote anything…" aria-label="Ask"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  </div>
+</section>
+
+<!-- C -->
+<section class="stage c" id="c">
+  <div class="panel" data-panel>
+    <button class="close closebtn" aria-label="Close"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div data-core data-title="What would you like to know?" data-n="4" style="display:contents"></div>
+    <form class="field"><input placeholder="Ask a question…" aria-label="Ask"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  </div>
+</section>
+
+<!-- D -->
+<section class="stage d" id="d">
+  <div class="scrim" data-scrim></div>
+  <div class="panel" data-panel>
+    <form class="field"><input placeholder="Search or ask Emote…" aria-label="Ask"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+    <div class="body"><div data-core data-label="Suggested" data-title="" data-n="5" data-kbd></div></div>
+    <div class="foot"><span>↑ ↓ navigate</span><span>↵ ask</span><span>esc close</span></div>
+  </div>
+</section>
+
+<!-- E -->
+<section class="stage e" id="e">
+  <div class="panel" data-panel>
+    <div class="head"><span class="label">Ask Emote</span><button class="close" aria-label="Close"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div data-core data-title="Ask us<br>anything." data-n="6" style="display:contents"></div>
+    <form class="field"><input placeholder="Type your question…" aria-label="Ask"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  </div>
+</section>
+
+<script>
+  const HINTS = {
+    a: "Компактне вікно під кнопкою, не закриває сторінку. Найлегше, найменш нав'язливе. Підходить для коротких питань.",
+    b: "Док знизу по центру, як у чат-віджетах: сторінка лишається видимою, поле завжди під рукою, відповіді ростуть вгору.",
+    c: "Шторка справа на всю висоту: розмова поруч зі сторінкою, сторінка трохи зсувається. Зручно читати довгі відповіді.",
+    d: "Командна палітра (⌘K): вузьке вікно по центру, питання списком із підказками клавіш. Для тих, хто звик до клавіатури.",
+    e: "Редакційний: повноекранний, величезний шрифт, питання нумерованим списком. Найвиразніший і найближчий до нашої типографіки.",
+  };
+  const SUGG = ["What does EMOTE do?", "How does a project start?", "How long does a project take?", "How much does it cost?", "Do you work with startups?", "Can I see your work?"];
+  const ANS = {
+    "What does EMOTE do?": ["We are a product design team: interfaces, brands, illustration, motion and 3D for founders and product teams.", ["How does a project start?", "Can I see your work?"]],
+    "How does a project start?": ["With a short call. We learn your product and goals, then send a clear plan: scope, team, timeline.", ["How long does a project take?", "How much does it cost?"]],
+    "How long does a project take?": ["From a few weeks for a focused sprint to a few months for a full redesign.", ["How does a project start?", "How much does it cost?"]],
+    "How much does it cost?": ["Every project is scoped individually. Book a call and we will send a clear estimate within a few days.", ["How does a project start?", "How long does a project take?"]],
+    "Do you work with startups?": ["Yes. Founders and early product teams are a big part of our work.", ["What does EMOTE do?", "Can I see your work?"]],
+    "Can I see your work?": ["Of course. Selected case studies are on the Work page.", ["What does EMOTE do?", "How does a project start?"]],
+  };
+  const FALLBACK = ["I'm not sure about that yet. The best way to get a precise answer is to talk to the team.", ["What does EMOTE do?", "How does a project start?"]];
+  const ARR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 5v9h14M15 10l4 4-4 4"/></svg>';
+
+  const bar = document.getElementById("tpl-bar").innerHTML, page = document.getElementById("tpl-page").innerHTML, core = document.getElementById("tpl-core").innerHTML;
+  const row = (q, kbd) => `<li><button class="row-q" data-q="${q}">${ARR}<span>${q}</span>${kbd ? "<kbd>↵</kbd>" : ""}</button></li>`;
+
+  document.querySelectorAll(".stage").forEach(st => {
+    st.insertAdjacentHTML("afterbegin", page);
+    st.insertAdjacentHTML("beforeend", bar);
+    const c = st.querySelector("[data-core]");
+    c.innerHTML = core;
+    const title = c.querySelector("[data-title]"), label = c.querySelector("[data-label]");
+    if (c.dataset.title) title.innerHTML = c.dataset.title; else title.remove();
+    if (c.dataset.label) label.textContent = c.dataset.label; else label.remove();
+    c.querySelector("[data-sug]").innerHTML = SUGG.slice(0, +c.dataset.n).map(q => row(q, "kbd" in c.dataset)).join("");
+    const input = st.querySelector("input");
+
+    const reset = () => { st.classList.remove("asked"); st.querySelector(".thread").innerHTML = ""; input.value = ""; };
+    const toggle = () => { st.classList.toggle("open"); if (st.classList.contains("open")) setTimeout(() => input.focus(), 50); else reset(); };
+    st.querySelector(".ask-btn").onclick = toggle;
+    st.querySelectorAll(".close").forEach(b => b.onclick = toggle);
+    const scrim = st.querySelector("[data-scrim]"); if (scrim) scrim.onclick = toggle;
+    st.addEventListener("keydown", e => { if (e.key === "Escape" && st.classList.contains("open")) toggle(); });
+
+    function ask(q) {
+      st.classList.add("asked");
+      const th = st.querySelector(".thread");
+      th.insertAdjacentHTML("beforeend", `<div class="turn"><p class="qtxt">${q}</p><div class="dots"><i></i><i></i><i></i></div></div>`);
+      const turn = th.lastElementChild; input.value = "";
+      setTimeout(() => {
+        const [a, f] = ANS[q] || FALLBACK;
+        turn.querySelector(".dots").outerHTML = `<p class="atxt">${a}</p><div class="deeper"><p class="label">Go deeper</p><ul class="sug">${f.map(x => row(x)).join("")}</ul></div>`;
+        turn.querySelector(".atxt").parentElement.querySelectorAll(".deeper").forEach(() => {});
+        th.scrollTop = th.scrollHeight;
+      }, 900);
+    }
+    st.addEventListener("click", e => { const b = e.target.closest(".row-q"); if (b) ask(b.dataset.q); });
+    st.querySelector("form").addEventListener("submit", e => { e.preventDefault(); if (input.value.trim()) ask(input.value.trim()); });
+  });
+
+  const pills = [...document.querySelectorAll("[data-go]")];
+  function go(id) {
+    pills.forEach(p => p.setAttribute("aria-selected", p.dataset.go === id));
+    document.querySelectorAll(".stage").forEach(s => s.classList.toggle("on", s.id === id));
+    document.getElementById("hint").textContent = HINTS[id] + " Натисни «Ask Emote» на сцені.";
+  }
+  pills.forEach(p => p.onclick = () => go(p.dataset.go));
+  go("a");
+</script>
+</body>
+</html>

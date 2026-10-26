@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — 4 variants (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --canvas:#0D0D0F; --fill:#1A1A1A; --line:#333; --sec:#999; --pri:#fff; --ease:cubic-bezier(.22,1,.36,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--pri); font:400 16px/24px Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  button, input, textarea { font:inherit; color:inherit; background:none; border:0; outline:0; }
+  a { color:inherit; text-decoration:none; }
+  .sec { color:var(--sec); }
+  .eyebrow { font:500 16px/24px Inter; text-transform:uppercase; color:var(--sec); }
+  .dense { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); letter-spacing:.02em; }
+  .display { font:500 64px/64px "Instrument Sans",sans-serif; letter-spacing:-.01em; }
+  .quote { font:500 28px/36px "Instrument Sans",sans-serif; }
+  .lead { font-size:20px; line-height:28px; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; height:48px; padding:0 24px; border-radius:9999px; font-weight:500; cursor:pointer; border:1px solid var(--line); transition:border-color .2s, background .2s, color .2s; white-space:nowrap; }
+  .btn:hover { border-color:var(--pri); }
+  .btn.light { background:var(--pri); color:#000; border-color:var(--pri); }
+  .btn.light:hover { background:#e6e6e6; }
+  .chip { display:inline-flex; align-items:center; height:36px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; cursor:pointer; transition:.2s; white-space:nowrap; }
+  .chip:hover { border-color:var(--pri); }
+  .chip[aria-pressed="true"] { background:var(--pri); color:#000; border-color:var(--pri); }
+  .field { display:block; border-bottom:1px solid var(--line); padding:16px 0; width:100%; font-size:20px; line-height:28px; transition:border-color .2s; }
+  .field::placeholder { color:var(--sec); }
+  .field:focus { border-color:var(--pri); }
+  textarea.field { resize:none; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .photo { width:80px; height:80px; border-radius:9999px; background:var(--fill); display:flex; align-items:center; justify-content:center; color:var(--sec); font:500 12px/16px Inter; flex:none; }
+  .checks { list-style:none; display:flex; flex-direction:column; gap:12px; }
+  .checks li { display:flex; gap:12px; align-items:center; }
+  .checks i { width:24px; height:24px; border-radius:9999px; background:var(--pri); color:#000; font-style:normal; text-align:center; font-size:14px; line-height:24px; flex:none; }
+
+  .top { position:sticky; top:0; z-index:20; background:var(--black); border-bottom:1px solid var(--line); }
+  .top .in { display:flex; align-items:center; justify-content:space-between; gap:24px; height:72px; padding:0 40px; }
+  .top nav { display:flex; gap:8px; }
+  .intro { padding:96px 40px 48px; max-width:1100px; }
+  .variant { border-top:1px solid var(--line); padding:64px 40px 120px; }
+  .vhead { display:flex; gap:24px; margin-bottom:48px; align-items:baseline; }
+  .vhead .note { max-width:620px; }
+  .vhead .note h2 { font:500 40px/48px "Instrument Sans"; }
+  .frame { background:var(--black); max-width:1016px; margin:0 auto; }
+  .fieldlabel { margin-bottom:12px; }
+
+  /* A — Hero person + form below */
+  .a-person { display:grid; grid-template-columns:auto 1fr auto; gap:32px; align-items:center; padding:32px; border:1px solid var(--line); }
+  .a-person .checks { flex-direction:row; flex-wrap:wrap; gap:12px 32px; }
+  .a-person .btns { display:flex; gap:12px; }
+  .a-form { margin-top:12px; background:var(--fill); padding:48px 32px 32px; display:grid; grid-template-columns:1fr 1fr; gap:48px 40px; }
+  .a-form .full { grid-column:1 / -1; }
+  .a-form .actions { display:flex; justify-content:space-between; align-items:center; }
+
+  /* B — Mad-libs sentence */
+  .b { display:grid; grid-template-columns:1fr 331px; gap:12px; }
+  .b-main { background:var(--fill); padding:48px 40px; display:flex; flex-direction:column; gap:40px; }
+  .b-sentence { font:500 40px/64px "Instrument Sans"; color:var(--sec); }
+  .b-sentence .slot { display:inline-block; min-width:140px; padding:0 20px; margin:0 4px; border:1px solid var(--line); border-radius:9999px; color:var(--pri); cursor:pointer; line-height:56px; vertical-align:middle; transition:.2s; text-align:center; }
+  .b-sentence .slot:hover, .b-sentence .slot.on { border-color:var(--pri); }
+  .b-sentence .slot.filled { background:var(--pri); color:#000; border-color:var(--pri); }
+  .b-sentence input { all:unset; display:inline-block; min-width:220px; border-bottom:1px solid var(--line); color:var(--pri); margin:0 4px; line-height:56px; }
+  .b-sentence input:focus { border-color:var(--pri); }
+  .b-pop { display:none; gap:8px; flex-wrap:wrap; }
+  .b-pop.on { display:flex; }
+  .b-side { border:1px solid var(--line); padding:32px; display:flex; flex-direction:column; gap:24px; }
+
+  /* C — Conversational stepper */
+  .c { display:grid; grid-template-columns:331px 1fr; gap:12px; min-height:640px; }
+  .c-side { border:1px solid var(--line); padding:32px; display:flex; flex-direction:column; gap:24px; }
+  .c-main { background:var(--fill); padding:40px; display:flex; flex-direction:column; }
+  .c-progress { display:flex; gap:8px; margin-bottom:64px; }
+  .c-progress span { height:2px; flex:1; background:var(--line); transition:background .4s; }
+  .c-progress span.on { background:var(--pri); }
+  .c-step { display:none; flex-direction:column; gap:32px; flex:1; animation:in .6s var(--ease); }
+  .c-step.on { display:flex; }
+  @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  .c-nav { margin-top:auto; display:flex; justify-content:space-between; align-items:center; padding-top:32px; }
+
+  /* D — Two doors: write or book */
+  .d-tabs { display:flex; gap:8px; margin-bottom:12px; }
+  .d { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .d-card { background:var(--fill); padding:40px; display:flex; flex-direction:column; gap:24px; min-height:520px; transition:background .3s; }
+  .d-card.dim { background:transparent; border:1px solid var(--line); }
+  .d-card .btn { margin-top:auto; align-self:flex-start; }
+  .d-slots { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .d-days { display:flex; gap:8px; }
+  .d-day { flex:1; border:1px solid var(--line); padding:12px 0; text-align:center; cursor:pointer; transition:.2s; }
+  .d-day:hover { border-color:var(--pri); }
+  .d-day[aria-pressed="true"] { background:var(--pri); color:#000; border-color:var(--pri); }
+  .d-day b { display:block; font:500 20px/28px Inter; }
+  .row { display:flex; gap:40px; }
+  .row > * { flex:1; }
+
+  @media (max-width:900px){
+    .top .in, .intro, .variant { padding-left:24px; padding-right:24px; }
+    .display { font-size:40px; line-height:48px; }
+    .a-person, .a-form, .b, .c, .d { grid-template-columns:1fr; }
+    .a-person .btns { flex-wrap:wrap; }
+    .b-sentence { font-size:28px; line-height:48px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="in">
+  <span class="dense">Contact · variants</span>
+  <nav><a class="chip" href="#a">A · Person first</a><a class="chip" href="#b">B · Sentence</a><a class="chip" href="#c">C · Step by step</a><a class="chip" href="#d">D · Write or book</a></nav>
+</div></header>
+
+<section class="intro">
+  <p class="eyebrow">Prototype · not part of the site</p>
+  <h1 class="display" style="margin-top:16px">Four ways to say hello.</h1>
+  <p class="sec lead" style="margin-top:24px;max-width:640px">Same content and tokens as the current /contact (Alina's card, services, budget, company, email, details). Only the structure and the way you fill it in changes. All four are interactive.</p>
+</section>
+
+<!-- A -->
+<section class="variant" id="a">
+  <div class="vhead"><span class="eyebrow">A</span><div class="note"><h2>Person first</h2><p class="sec" style="margin-top:12px">Alina becomes a wide strip on top — a face and a promise before any form. The form below gets the full width and breathes in two columns. Closest to today, calmest.</p></div></div>
+  <div class="frame">
+    <div class="a-person">
+      <div class="photo">Alina</div>
+      <div>
+        <div class="quote">Alina Mashtalier</div><div class="sec">Sales Manager</div>
+        <ul class="checks" style="margin-top:20px"><li><i>✓</i>We reply within 12 hours</li><li><i>✓</i>We sign an NDA if you ask</li><li><i>✓</i>Your first call is free</li></ul>
+      </div>
+      <div class="btns" style="flex-direction:column"><a class="btn">✉ hello@emote.agency</a><a class="btn">in · Alina on LinkedIn</a></div>
+    </div>
+    <form class="a-form" onsubmit="return false">
+      <div class="full"><div class="sec fieldlabel">Services</div><div class="chips" data-multi><button class="chip" aria-pressed="false">Design</button><button class="chip" aria-pressed="false">Branding</button><button class="chip" aria-pressed="false">Illustration</button><button class="chip" aria-pressed="false">Motion</button><button class="chip" aria-pressed="false">3D</button><button class="chip" aria-pressed="false">Development</button></div></div>
+      <div class="full"><div class="sec fieldlabel">Budget in US dollars</div><div class="chips" data-single><button class="chip" aria-pressed="false">under 10K</button><button class="chip" aria-pressed="false">10K—50K</button><button class="chip" aria-pressed="false">over 50K</button></div></div>
+      <input class="field" placeholder="Company name"><input class="field" placeholder="Email">
+      <textarea class="field full" rows="2" placeholder="Project details (optional)"></textarea>
+      <div class="full actions"><span class="sec">Prefer to talk? <u>Book a call instead</u></span><button class="btn light">Send message</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- B -->
+<section class="variant" id="b">
+  <div class="vhead"><span class="eyebrow">B</span><div class="note"><h2>Sentence</h2><p class="sec" style="margin-top:12px">The form is one sentence you complete. Tap a gap to pick a service or budget, type the company and email in place. Feels like talking, not filling a form. Contact card stays on the side.</p></div></div>
+  <div class="frame" style="max-width:1100px">
+    <div class="b">
+      <div class="b-main">
+        <p class="b-sentence">
+          Hi Emote, we're <input placeholder="company" style="min-width:200px">
+          and we need <span class="slot" data-pop="svc">service</span>
+          with a budget of <span class="slot" data-pop="bud">budget</span>.
+          Write to us at <input placeholder="email@company.com">.
+        </p>
+        <div class="b-pop" id="pop-svc" data-fill="svc"><button class="chip" aria-pressed="false">Design</button><button class="chip" aria-pressed="false">Branding</button><button class="chip" aria-pressed="false">Illustration</button><button class="chip" aria-pressed="false">Motion</button><button class="chip" aria-pressed="false">3D</button><button class="chip" aria-pressed="false">Development</button></div>
+        <div class="b-pop" id="pop-bud" data-fill="bud"><button class="chip" aria-pressed="false">under 10K</button><button class="chip" aria-pressed="false">10K—50K</button><button class="chip" aria-pressed="false">over 50K</button></div>
+        <textarea class="field" rows="2" placeholder="Project details (optional)"></textarea>
+        <button class="btn light" style="align-self:flex-start">Send message</button>
+      </div>
+      <aside class="b-side">
+        <div class="photo">Alina</div>
+        <div><div class="quote">Alina Mashtalier</div><div class="sec">Sales Manager</div></div>
+        <ul class="checks"><li><i>✓</i>We reply within 12 hours</li><li><i>✓</i>We sign an NDA if you ask</li><li><i>✓</i>Your first call is free</li></ul>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><a class="btn">✉ hello@emote.agency</a><a class="btn">in · Alina on LinkedIn</a></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- C -->
+<section class="variant" id="c">
+  <div class="vhead"><span class="eyebrow">C</span><div class="note"><h2>Step by step</h2><p class="sec" style="margin-top:12px">One question per screen with a progress line. Each step is light, so more people finish. Alina stays visible so it never feels like a bot. Good on mobile.</p></div></div>
+  <div class="frame" style="max-width:1100px">
+    <div class="c">
+      <aside class="c-side">
+        <div class="photo">Alina</div>
+        <div><div class="quote">Alina Mashtalier</div><div class="sec">Sales Manager</div></div>
+        <ul class="checks"><li><i>✓</i>We reply within 12 hours</li><li><i>✓</i>We sign an NDA if you ask</li><li><i>✓</i>Your first call is free</li></ul>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px"><a class="btn">✉ hello@emote.agency</a><a class="btn">in · Alina on LinkedIn</a></div>
+      </aside>
+      <div class="c-main" id="cMain">
+        <div class="c-progress"><span class="on"></span><span></span><span></span><span></span></div>
+        <div class="c-step on"><div class="dense">01 / 04</div><div class="display" style="font-size:48px;line-height:56px">What do you need?</div><div class="chips" data-multi><button class="chip" aria-pressed="false">Design</button><button class="chip" aria-pressed="false">Branding</button><button class="chip" aria-pressed="false">Illustration</button><button class="chip" aria-pressed="false">Motion</button><button class="chip" aria-pressed="false">3D</button><button class="chip" aria-pressed="false">Development</button></div></div>
+        <div class="c-step"><div class="dense">02 / 04</div><div class="display" style="font-size:48px;line-height:56px">What's the budget?</div><div class="chips" data-single><button class="chip" aria-pressed="false">under 10K</button><button class="chip" aria-pressed="false">10K—50K</button><button class="chip" aria-pressed="false">over 50K</button></div></div>
+        <div class="c-step"><div class="dense">03 / 04</div><div class="display" style="font-size:48px;line-height:56px">Tell us about it.</div><textarea class="field" rows="3" placeholder="Project details (optional)"></textarea></div>
+        <div class="c-step"><div class="dense">04 / 04</div><div class="display" style="font-size:48px;line-height:56px">Where do we reply?</div><input class="field" placeholder="Company name"><input class="field" placeholder="Email"></div>
+        <div class="c-nav"><button class="btn" id="cBack" style="visibility:hidden">← Back</button><button class="btn light" id="cNext">Next →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- D -->
+<section class="variant" id="d">
+  <div class="vhead"><span class="eyebrow">D</span><div class="note"><h2>Write or book</h2><p class="sec" style="margin-top:12px">Two equal doors: write a message, or pick a time right here. No popup needed. Alina sits in the header of both. The unused door dims so the choice is clear.</p></div></div>
+  <div class="frame" style="max-width:1100px">
+    <div style="display:flex;gap:24px;align-items:center;margin-bottom:24px">
+      <div class="photo">Alina</div>
+      <div><div class="quote">Alina Mashtalier · Sales Manager</div><div class="sec">We reply within 12 hours · NDA on request · First call is free</div></div>
+    </div>
+    <div class="d">
+      <div class="d-card" id="dWrite">
+        <div class="eyebrow">Write to us</div>
+        <div class="chips" data-multi><button class="chip" aria-pressed="false">Design</button><button class="chip" aria-pressed="false">Branding</button><button class="chip" aria-pressed="false">Illustration</button><button class="chip" aria-pressed="false">Motion</button><button class="chip" aria-pressed="false">3D</button><button class="chip" aria-pressed="false">Development</button></div>
+        <div class="chips" data-single><button class="chip" aria-pressed="false">under 10K</button><button class="chip" aria-pressed="false">10K—50K</button><button class="chip" aria-pressed="false">over 50K</button></div>
+        <div class="row"><input class="field" placeholder="Company name"><input class="field" placeholder="Email"></div>
+        <textarea class="field" rows="2" placeholder="Project details (optional)"></textarea>
+        <button class="btn light">Send message</button>
+      </div>
+      <div class="d-card dim" id="dBook">
+        <div class="eyebrow">Or talk live</div>
+        <div class="quote">Pick a time for a free 30-minute call.</div>
+        <div class="d-days" data-single-day><div class="d-day" aria-pressed="false"><span class="dense">Mon</span><b>14</b></div><div class="d-day" aria-pressed="false"><span class="dense">Tue</span><b>15</b></div><div class="d-day" aria-pressed="false"><span class="dense">Wed</span><b>16</b></div><div class="d-day" aria-pressed="false"><span class="dense">Thu</span><b>17</b></div><div class="d-day" aria-pressed="false"><span class="dense">Fri</span><b>18</b></div></div>
+        <div class="d-slots chips" data-single style="display:grid"><button class="chip" aria-pressed="false" style="justify-content:center">11:00</button><button class="chip" aria-pressed="false" style="justify-content:center">13:00</button><button class="chip" aria-pressed="false" style="justify-content:center">13:30</button><button class="chip" aria-pressed="false" style="justify-content:center">14:00</button><button class="chip" aria-pressed="false" style="justify-content:center">15:00</button><button class="chip" aria-pressed="false" style="justify-content:center">16:30</button></div>
+        <div class="sec">Times shown in your time zone.</div>
+        <button class="btn">Book a call</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// chips: multi / single
+document.querySelectorAll("[data-multi]").forEach(g => g.addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); }));
+document.querySelectorAll("[data-single]").forEach(g => g.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const on = b.getAttribute("aria-pressed") === "true"; g.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", !on); }));
+document.querySelectorAll("[data-single-day]").forEach(g => g.addEventListener("click", e => { const b = e.target.closest(".d-day"); if (!b) return; g.querySelectorAll(".d-day").forEach(c => c.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); }));
+
+// B: sentence slots
+const slots = document.querySelectorAll(".slot");
+slots.forEach(s => s.addEventListener("click", () => {
+  document.querySelectorAll(".b-pop").forEach(p => p.classList.remove("on")); slots.forEach(x => x.classList.remove("on"));
+  s.classList.add("on"); document.getElementById("pop-" + s.dataset.pop).classList.add("on");
+}));
+document.querySelectorAll(".b-pop").forEach(p => p.addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  p.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true");
+  const slot = document.querySelector(`.slot[data-pop="${p.dataset.fill}"]`); slot.textContent = b.textContent; slot.classList.add("filled"); slot.classList.remove("on"); p.classList.remove("on");
+}));
+
+// C: stepper
+let step = 0; const steps = document.querySelectorAll(".c-step"), bars = document.querySelectorAll(".c-progress span"), next = document.getElementById("cNext"), back = document.getElementById("cBack");
+function go(i) { step = i; steps.forEach((s, k) => s.classList.toggle("on", k === i)); bars.forEach((b, k) => b.classList.toggle("on", k <= i)); back.style.visibility = i ? "visible" : "hidden"; next.textContent = i === steps.length - 1 ? "Send message" : "Next →"; }
+next.onclick = () => step < steps.length - 1 ? go(step + 1) : (next.textContent = "Sent ✓");
+back.onclick = () => go(step - 1);
+
+// D: dim the unused door
+const dW = document.getElementById("dWrite"), dB = document.getElementById("dBook");
+function door(a, b) { a.classList.remove("dim"); b.classList.add("dim"); }
+dW.addEventListener("focusin", () => door(dW, dB)); dW.addEventListener("click", () => door(dW, dB));
+dB.addEventListener("click", () => door(dB, dW));
+</script>
+</body>
+</html>

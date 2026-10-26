@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services page 1 — Index (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Hero */
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:flex-end; padding:120px 0 40px; position:relative; }
+  .hero h1 { font:500 clamp(96px,19vw,300px)/.82 "Instrument Sans"; letter-spacing:-.05em; padding:0 40px; margin-left:-.04em; }
+  .hero-meta { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; padding:40px; }
+  .hero-meta p { max-width:520px; }
+  .hero .marq { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:20px 0; font:500 40px/48px "Instrument Sans"; color:var(--sec); }
+  .hero .scroll { display:flex; align-items:center; gap:12px; } .hero .scroll i { width:1px; height:48px; background:var(--pri); animation:drip 2s var(--ease) infinite; transform-origin:top; }
+  @keyframes drip { 0% { transform:scaleY(0); } 60% { transform:scaleY(1); } 100% { transform:scaleY(1); opacity:0; } }
+
+  /* Services: reel rows */
+  .a-row { position:relative; height:176px; border-top:1px solid var(--line); overflow:hidden; cursor:pointer; isolation:isolate; }
+  .a-row:last-child { border-bottom:1px solid var(--line); }
+  .a-row::before { content:""; position:absolute; inset:0; background:var(--pri); transform:translateY(101%); transition:transform .6s var(--case); z-index:-1; }
+  .a-row:hover::before { transform:none; }
+  .a-name { position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 40px; transition:transform .6s var(--case); }
+  .a-name .huge { font-size:112px; line-height:112px; }
+  .a-row:hover .a-name { transform:translateY(-100%); }
+  .a-reel { position:absolute; left:0; top:0; height:100%; display:flex; align-items:center; white-space:nowrap; transform:translateY(100%); transition:transform .6s var(--case); color:#000; }
+  .a-row:hover .a-reel { transform:none; }
+  .a-run { display:flex; } .a-row:hover .a-run { animation:reel 18s linear infinite; } @keyframes reel { to { transform:translateX(-50%); } }
+  .a-reel span { display:inline-flex; align-items:center; font:500 112px/112px "Instrument Sans"; letter-spacing:-.02em; padding-right:64px; }
+  .a-reel span::after { content:"✦"; font-size:40px; margin-left:64px; }
+  .a-row .arrow { font-size:40px; transition:transform .5s var(--case); } .a-row:hover .arrow { transform:rotate(45deg); }
+  .a-detail { padding:24px 40px 0; display:flex; justify-content:space-between; gap:40px; }
+
+  /* Process: pinned timeline */
+  .p-line { position:relative; margin-top:56px; display:grid; grid-template-columns:repeat(6,1fr); }
+  .p-line::before { content:""; position:absolute; left:0; right:0; top:5px; height:1px; background:var(--line); }
+  .p-fill { position:absolute; left:0; top:5px; height:1px; background:var(--pri); width:0; }
+  .p-node { position:relative; padding:28px 16px 0 0; color:var(--sec); transition:color .4s; }
+  .p-node::before { content:""; position:absolute; top:0; left:0; width:11px; height:11px; border-radius:9999px; background:var(--black); border:1px solid var(--line); transition:.4s var(--ease); }
+  .p-node.done::before { border-color:var(--pri); } .p-node.on { color:var(--pri); } .p-node.on::before { background:var(--pri); transform:scale(1.2); }
+  .p-node .t { margin-top:8px; font-weight:500; }
+  .p-stage { padding:112px 40px 40px; display:flex; flex-direction:column; }
+  .p-body { margin-top:auto; border-top:1px solid var(--line); padding-top:48px; display:grid; grid-template-columns:240px 1fr; gap:32px; min-height:320px; }
+  .p-num { font:500 140px/132px "Instrument Sans"; color:var(--line); }
+  .swap { animation:in .7s var(--ease); } @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  @media (max-width:900px){ .hero h1,.hero-meta,.a-name,.p-stage { padding-left:24px; padding-right:24px; } .a-name .huge,.a-reel span { font-size:56px; line-height:60px; } .a-row { height:100px; } .p-line { grid-template-columns:repeat(6,36px); } .p-node .t { display:none; } .p-body { grid-template-columns:1fr; } .p-num { font-size:64px; line-height:64px; } .hero-meta { flex-direction:column; align-items:flex-start; } }
+</style></head>
+<body>
+<div id="app"></div>
+<script src="base.js"></script>
+<script>
+const {CATS,STEPS,n2,clamp,prog,ticks} = E;
+document.getElementById("app").innerHTML = `
+${E.header()}
+<section class="hero">
+  <h1 data-view>${E.words("Services")}</h1>
+  <div class="hero-meta"><p class="sec lead up" data-view>From the first sketch to launch: six disciplines, one team, one thread.</p><div class="scroll sec dense"><i></i>Scroll</div></div>
+  <div class="marq"><div>${CATS.map(c=>`<span>${c.name}</span>`).join("")}</div><div>${CATS.map(c=>`<span>${c.name}</span>`).join("")}</div></div>
+</section>
+
+<section class="section" style="padding-left:0;padding-right:0">
+  <div style="padding:0 40px">${E.label("What we do")}</div>
+  <div id="rows">${CATS.map((c,i)=>{ const t=[c.name,...c.items].map(x=>`<span>${x}</span>`).join(""); return `<div class="a-row"><div class="a-name"><div style="display:flex;align-items:baseline;gap:32px"><span class="dense">${n2(i)}</span><span class="huge">${c.name}</span></div><span class="arrow">↗</span></div><div class="a-reel"><div class="a-run">${t}${t}</div></div></div>`; }).join("")}</div>
+  <div class="a-detail"><p class="sec lead" style="max-width:560px">Hover a discipline to see what sits inside it.</p><a class="btn light">Start a project</a></div>
+</section>
+
+<div class="track" id="pt" style="height:600vh"><div class="stage p-stage">
+  <div class="eyebrow">How we work</div>
+  <div class="statement" style="margin-top:16px;max-width:900px">One process, followed every time.</div>
+  <div class="p-line" id="pl"><div class="p-fill" id="pf"></div>${STEPS.map((s,i)=>`<div class="p-node"><div class="dense">${n2(i)}</div><div class="t">${s[0]}</div></div>`).join("")}</div>
+  <div class="p-body"><div class="p-num" id="pn">01</div><div class="swap" id="px"></div></div>
+</div></div>
+
+${E.stats()}
+${E.tools()}
+${E.faq()}
+${E.cta()}`;
+
+const nodes=[...document.querySelectorAll(".p-node")]; let last=-1;
+ticks.push(()=>{ const p=prog(document.getElementById("pt")), i=Math.min(5,Math.floor(p*6));
+  nodes.forEach((n,k)=>{ n.classList.toggle("on",k===i); n.classList.toggle("done",k<=i); });
+  document.getElementById("pf").style.width=(nodes[i].offsetLeft/document.getElementById("pl").clientWidth*100)+"%";
+  if(i!==last){ last=i; document.getElementById("pn").textContent=n2(i); const x=document.getElementById("px"); x.classList.remove("swap"); void x.offsetWidth; x.classList.add("swap"); x.innerHTML=`<div class="quote">${STEPS[i][0]}</div><p class="sec lead" style="margin-top:16px;max-width:720px">${STEPS[i][1]}</p>`; } });
+E.init();
+</script></body></html>

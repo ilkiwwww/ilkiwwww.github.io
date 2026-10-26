@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How we work — 4 scroll variants (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --sec:#999; --pri:#fff; --ease:cubic-bezier(.22,1,.36,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--black); color:var(--pri); font:400 16px/24px Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; text-decoration:none; }
+  .sec { color:var(--sec); }
+  .eyebrow { font:500 16px/24px Inter; text-transform:uppercase; color:var(--sec); }
+  .dense { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); letter-spacing:.02em; }
+  .display { font:500 64px/64px "Instrument Sans",sans-serif; letter-spacing:-.01em; }
+  .quote { font:500 28px/36px "Instrument Sans",sans-serif; }
+  .lead { font-size:20px; line-height:28px; }
+  .chip { display:inline-flex; align-items:center; height:36px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; }
+  .btn { display:inline-flex; align-items:center; height:48px; padding:0 24px; border-radius:9999px; font-weight:500; border:1px solid var(--line); }
+  .top { position:sticky; top:0; z-index:50; background:var(--black); border-bottom:1px solid var(--line); }
+  .top .in { display:flex; align-items:center; justify-content:space-between; gap:24px; height:72px; padding:0 40px; }
+  .top nav { display:flex; gap:8px; }
+  .intro { padding:96px 40px 64px; max-width:1100px; }
+  .vhead { padding:64px 40px 24px; border-top:1px solid var(--line); display:flex; gap:24px; align-items:baseline; }
+  .vhead .note { max-width:640px; }
+  .vhead h2 { font:500 40px/48px "Instrument Sans"; }
+  .wrap { padding:0 40px; }
+
+  /* Спільне: track = висота скролу, stage = закріплений екран */
+  .track { position:relative; }
+  .stage { position:sticky; top:72px; height:calc(100vh - 72px); overflow:hidden; padding:40px; display:flex; flex-direction:column; }
+  .head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; }
+
+  /* A — Timeline */
+  .a-line { position:relative; margin-top:56px; display:grid; grid-template-columns:repeat(6,1fr); }
+  .a-line::before { content:""; position:absolute; left:0; right:0; top:5px; height:1px; background:var(--line); }
+  .a-fill { position:absolute; left:0; top:5px; height:1px; background:var(--pri); width:0; }
+  .a-node { position:relative; padding-top:28px; color:var(--sec); transition:color .4s; padding-right:16px; }
+  .a-node::before { content:""; position:absolute; top:0; left:0; width:11px; height:11px; border-radius:9999px; background:var(--black); border:1px solid var(--line); transition:.4s var(--ease); }
+  .a-node.done::before { border-color:var(--pri); }
+  .a-node.on { color:var(--pri); } .a-node.on::before { background:var(--pri); border-color:var(--pri); transform:scale(1.15); }
+  .a-node .t { margin-top:8px; font:500 16px/24px Inter; }
+  .a-body { margin-top:auto; border-top:1px solid var(--line); padding-top:48px; display:grid; grid-template-columns:200px 1fr; gap:32px; min-height:300px; }
+  .a-body .num { font:500 140px/132px "Instrument Sans"; color:var(--line); }
+  .a-swap { animation:in .7s var(--ease); }
+  @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+
+  /* B — Counter + filling list */
+  .b-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:64px; flex:1; align-items:center; }
+  .b-count { font:500 220px/200px "Instrument Sans"; letter-spacing:-.03em; }
+  .b-count small { font-size:48px; line-height:48px; color:var(--sec); }
+  .b-list { position:relative; padding-left:40px; }
+  .b-rail { position:absolute; left:5px; top:12px; bottom:12px; width:1px; background:var(--line); }
+  .b-rail i { position:absolute; left:0; top:0; width:1px; height:0; background:var(--pri); }
+  .b-item { position:relative; padding:14px 0; color:var(--line); transition:color .5s; }
+  .b-item::before { content:""; position:absolute; left:-40px; top:26px; width:11px; height:11px; border-radius:9999px; background:var(--black); border:1px solid var(--line); transition:.4s; }
+  .b-item.reached { color:var(--sec); } .b-item.reached::before { border-color:var(--pri); background:var(--pri); }
+  .b-item.on { color:var(--pri); }
+  .b-item h3 { font:500 28px/36px "Instrument Sans"; }
+  .b-item p { max-height:0; overflow:hidden; opacity:0; color:var(--sec); transition:max-height .6s var(--ease), opacity .5s, margin .5s; max-width:520px; }
+  .b-item.on p { max-height:140px; opacity:1; margin-top:8px; }
+
+  /* C — Horizontal film strip */
+  .c-strip { display:flex; gap:12px; margin-top:auto; will-change:transform; }
+  .c-card { flex:none; width:420px; height:420px; background:var(--fill); padding:32px; display:flex; flex-direction:column; justify-content:space-between; transition:background .4s, color .4s; }
+  .c-card .n { font:500 92px/72px "Instrument Sans"; color:var(--line); transition:color .4s; }
+  .c-card.on { background:var(--pri); color:#000; } .c-card.on .n { color:#000; } .c-card.on p { color:#555; }
+  .c-card h3 { font:500 28px/36px "Instrument Sans"; margin-bottom:12px; }
+  .c-bar { height:2px; background:var(--line); margin-top:32px; } .c-bar i { display:block; height:100%; width:0; background:var(--pri); }
+
+  /* D — Dial */
+  .d-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+  .d-dial { position:relative; width:min(520px,80%); aspect-ratio:1; margin:auto; }
+  .d-dial svg { width:100%; height:100%; transform:rotate(-90deg); }
+  .d-dial circle { fill:none; stroke-width:2; }
+  .d-ring { stroke:var(--line); } .d-prog { stroke:var(--pri); stroke-linecap:round; }
+  .d-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font:500 140px/132px "Instrument Sans"; }
+  .d-tick { position:absolute; left:50%; top:50%; width:0; height:0; }
+  .d-tick span { position:absolute; width:11px; height:11px; margin:-5px; border-radius:9999px; background:var(--black); border:1px solid var(--line); transition:.4s; }
+  .d-tick.reached span { background:var(--pri); border-color:var(--pri); }
+  .d-text { min-height:260px; }
+  .d-text h3 { font:500 56px/56px "Instrument Sans"; margin:16px 0 24px; }
+
+  @media (max-width:900px){
+    .top .in, .intro, .vhead, .stage { padding-left:24px; padding-right:24px; }
+    .display { font-size:40px; line-height:48px; }
+    .a-line { grid-template-columns:repeat(6,40px); } .a-node .t { display:none; }
+    .a-body, .b-grid, .d-grid { grid-template-columns:1fr; gap:24px; }
+    .a-body .num { font-size:64px; line-height:64px; } .b-count { font-size:96px; line-height:96px; }
+    .c-card { width:280px; height:360px; } .d-center { font-size:64px; line-height:64px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="in">
+  <span class="dense">How we work · scroll variants</span>
+  <nav><a class="chip" href="#a">A · Timeline</a><a class="chip" href="#b">B · Counter</a><a class="chip" href="#c">C · Film strip</a><a class="chip" href="#d">D · Dial</a></nav>
+</div></header>
+
+<section class="intro">
+  <p class="eyebrow">Prototype · not part of the site</p>
+  <h1 class="display" style="margin-top:16px">Six steps, driven by scroll.</h1>
+  <p class="sec lead" style="margin-top:24px;max-width:660px">The section pins to the screen and your scroll walks through the steps. Same six steps and tokens as the site (dark, sharp cards, round chips). Variant A is the closest to your reference. Scroll down through each one.</p>
+</section>
+
+<!-- A -->
+<div class="vhead" id="a"><span class="eyebrow">A</span><div class="note"><h2>Timeline</h2><p class="sec" style="margin-top:12px">Your reference, in our dark style: a line with six nodes fills as you scroll; the big number and text below swap with a slide-up.</p></div></div>
+<div class="track" data-track="a" style="height:500vh"><div class="stage">
+  <div class="head"><div><div class="eyebrow">How we work</div><div class="display" style="margin-top:16px">One process, followed every time.</div></div><a class="btn">Get in touch</a></div>
+  <div class="a-line" id="aLine"><div class="a-fill" id="aFill"></div></div>
+  <div class="a-body"><div class="num" id="aNum">01</div><div class="a-swap" id="aText"></div></div>
+</div></div>
+
+<!-- B -->
+<div class="vhead" id="b"><span class="eyebrow">B</span><div class="note"><h2>Counter</h2><p class="sec" style="margin-top:12px">A huge step counter on the left. On the right a rail draws down and each step lights up in turn; only the current one is open. Calm and very typographic.</p></div></div>
+<div class="track" data-track="b" style="height:500vh"><div class="stage">
+  <div class="eyebrow">How we work</div>
+  <div class="b-grid">
+    <div class="b-count"><span id="bNum">01</span><small> / 06</small></div>
+    <div class="b-list" id="bList"><div class="b-rail"><i id="bFill"></i></div></div>
+  </div>
+</div></div>
+
+<!-- C -->
+<div class="vhead" id="c"><span class="eyebrow">C</span><div class="note"><h2>Film strip</h2><p class="sec" style="margin-top:12px">Scrolling down slides a row of six cards sideways. The card in the middle turns white; a thin progress bar runs underneath. Feels like a process moving forward.</p></div></div>
+<div class="track" data-track="c" style="height:500vh"><div class="stage">
+  <div class="head"><div><div class="eyebrow">How we work</div><div class="display" style="margin-top:16px">One process, followed every time.</div></div></div>
+  <div class="c-strip" id="cStrip"></div>
+  <div class="c-bar"><i id="cFill"></i></div>
+</div></div>
+
+<!-- D -->
+<div class="vhead" id="d"><span class="eyebrow">D</span><div class="note"><h2>Dial</h2><p class="sec" style="margin-top:12px">A big ring that draws itself as you scroll, with six dots on it. The number sits in the middle, the text on the right changes. The ring echoes the “ö” logo.</p></div></div>
+<div class="track" data-track="d" style="height:500vh"><div class="stage">
+  <div class="eyebrow">How we work</div>
+  <div class="d-grid">
+    <div class="d-dial"><svg viewBox="0 0 200 200"><circle class="d-ring" cx="100" cy="100" r="98"/><circle class="d-prog" id="dProg" cx="100" cy="100" r="98"/></svg><div id="dTicks"></div><div class="d-center" id="dNum">01</div></div>
+    <div class="d-text" id="dText"></div>
+  </div>
+</div></div>
+<div style="height:30vh"></div>
+
+<script>
+const STEPS = [
+  ["Discover, as partners","We start by diving into your project and its audience — not a generic template. You're in the room from day one: Slack, Figma, your workflow, not a handoff down a chain."],
+  ["A strategy that holds up","Understanding the market is only half the job. We build thoughtful, system-based strategy and design that adapts as your product grows, not something that cracks at the first change."],
+  ["Structure, dev-ready by default","User flows and roadmaps you can test before launch, handed off as components — tokens, states, constraints. We speak dev and design like we code, so nothing gets lost on the way."],
+  ["Create, a process you can follow","Every stage gets confirmed with you, visible in Notion, Jira, Figma, or your stack. Scope, estimates, and feedback loops stay open — this is your project, and you see it ship."],
+  ["Product-led at every step","We work at the intersection of design and business throughout — from product-market fit to scale-readiness — aligning UX with growth metrics, not just the user flow."],
+  ["The Emote difference","Our edge isn't tools or templates — it's the people. Curious, invested, and obsessive about doing the right thing right. That wow-effect at the end is what makes it Emote."],
+];
+const N = STEPS.length, n2 = i => String(i+1).padStart(2,"0");
+const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+// прогрес 0..1 всередині track (закріплений відрізок)
+function progress(track){ const r = track.getBoundingClientRect(); return clamp(-(r.top - 72) / (r.height - (innerHeight - 72))); }
+
+// A
+const aLine = document.getElementById("aLine");
+STEPS.forEach((s,i)=>aLine.insertAdjacentHTML("beforeend",`<div class="a-node"><div class="dense">${n2(i)}</div><div class="t">${s[0]}</div></div>`));
+const aNodes = [...aLine.querySelectorAll(".a-node")];
+let aLast = -1;
+// B
+const bList = document.getElementById("bList");
+STEPS.forEach((s,i)=>bList.insertAdjacentHTML("beforeend",`<div class="b-item"><h3>${s[0]}</h3><p>${s[1]}</p></div>`));
+const bItems = [...bList.querySelectorAll(".b-item")];
+// C
+const cStrip = document.getElementById("cStrip");
+STEPS.forEach((s,i)=>cStrip.insertAdjacentHTML("beforeend",`<div class="c-card"><div class="n">${n2(i)}</div><div><h3>${s[0]}</h3><p class="sec">${s[1].split(". ")[0].slice(0,110)}…</p></div></div>`));
+const cCards = [...cStrip.children];
+// D
+const dTicks = document.getElementById("dTicks");
+STEPS.forEach((s,i)=>{ const a = (i/(N-1))*2*Math.PI*0.999 - Math.PI/2; dTicks.insertAdjacentHTML("beforeend",`<div class="d-tick"><span style="left:${Math.cos(a)*50}cqw"></span></div>`); });
+const dDial = document.querySelector(".d-dial"), dProg = document.getElementById("dProg");
+const CIRC = 2*Math.PI*98; dProg.style.strokeDasharray = CIRC; dProg.style.strokeDashoffset = CIRC;
+const dTickEls = [];
+function placeTicks(){ const R = dDial.clientWidth/2*0.98; dTicks.innerHTML=""; STEPS.forEach((s,i)=>{ const a = (i/N)*2*Math.PI - Math.PI/2; const el = document.createElement("div"); el.className="d-tick"; el.innerHTML="<span></span>"; el.style.transform=`translate(${dDial.clientWidth/2+Math.cos(a)*R}px, ${dDial.clientWidth/2+Math.sin(a)*R}px)`; dTicks.appendChild(el); dTickEls[i]=el; }); }
+placeTicks(); addEventListener("resize", placeTicks);
+dTicks.style.cssText = "position:absolute;inset:0";
+let dLast = -1;
+
+function tick(){
+  // A
+  let p = progress(document.querySelector('[data-track=a]')), i = Math.min(N-1, Math.floor(p*N));
+  aNodes.forEach((el,k)=>{ el.classList.toggle("on",k===i); el.classList.toggle("done",k<=i); });
+  document.getElementById("aFill").style.width = (aNodes[i].offsetLeft / aLine.clientWidth * 100) + "%";
+  if (i !== aLast){ aLast = i; document.getElementById("aNum").textContent = n2(i); const t = document.getElementById("aText"); t.classList.remove("a-swap"); void t.offsetWidth; t.classList.add("a-swap"); t.innerHTML = `<div class="quote">${STEPS[i][0]}</div><p class="sec lead" style="margin-top:16px;max-width:720px">${STEPS[i][1]}</p>`; }
+  // B
+  p = progress(document.querySelector('[data-track=b]')); i = Math.min(N-1, Math.floor(p*N));
+  bItems.forEach((el,k)=>{ el.classList.toggle("on",k===i); el.classList.toggle("reached",k<=i); });
+  document.getElementById("bNum").textContent = n2(i);
+  const last = bItems[i]; document.getElementById("bFill").style.height = (last.offsetTop + 24) + "px";
+  // C
+  const tr = document.querySelector('[data-track=c]'); p = progress(tr); i = Math.min(N-1, Math.floor(p*N));
+  const maxShift = Math.max(0, cStrip.scrollWidth - (innerWidth - 80));
+  cStrip.style.transform = `translateX(${-p*maxShift}px)`;
+  cCards.forEach((el,k)=>el.classList.toggle("on",k===i)); document.getElementById("cFill").style.width = p*100 + "%";
+  // D
+  p = progress(document.querySelector('[data-track=d]')); i = Math.min(N-1, Math.floor(p*N));
+  dProg.style.strokeDashoffset = CIRC * (1 - (i+1)/N * 0 - p);
+  dTickEls.forEach((el,k)=>el.classList.toggle("reached",k<=i));
+  if (i !== dLast){ dLast = i; document.getElementById("dNum").textContent = n2(i); const t = document.getElementById("dText"); t.innerHTML = `<div class="a-swap"><div class="dense">${n2(i)} / 06</div><h3>${STEPS[i][0]}</h3><p class="sec lead" style="max-width:520px">${STEPS[i][1]}</p></div>`; }
+}
+addEventListener("scroll", tick, {passive:true}); addEventListener("resize", tick); tick();
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EMOTE — Fur logo</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { background: radial-gradient(ellipse at 50% 42%, #f6f6f8 0%, #e4e4ea 100%); transition: background .6s; font-family: Inter, system-ui, sans-serif; }
+  body.dark { background: #000; }
+  canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .sw { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 8px; }
+  .sw button { height: 36px; padding: 0 20px; border-radius: 9999px; border: 1px solid #111; background: transparent; color: #111; font: 500 14px/1 Inter, system-ui, sans-serif; cursor: pointer; }
+  body.dark .sw button { border-color: #fff; color: #fff; }
+  .sw button.on { background: #111; color: #fff; }
+  body.dark .sw button.on { background: #fff; color: #000; }
+</style>
+</head>
+<body>
+<nav class="sw" id="sw"></nav>
+<script type="module">
+import {
+  WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, Color, ShaderMaterial, Vector2, Vector3,
+  LatheGeometry, Raycaster, MathUtils,
+} from "three";
+
+// Пухнасте лого «ö» — щільне м'яке хутро, як на референсах (плюшеві форми, градієнт від
+// глибокого фіолетового кореня до світло-лілових кінчиків). Хутро — шари-оболонки (shell
+// fur): на кожному наступному лишається менше «волосків»; дотик курсора розсуває ворс.
+const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+document.body.appendChild(renderer.domElement);
+
+const scene = new Scene();
+const camera = new PerspectiveCamera(24, 1, 0.1, 50);
+camera.position.set(0, 0, 7);
+
+// форми: пухка подушка-кільце й дві м'які кулі (пропорції лого, висота 1)
+function pillow(cx, a, c) {
+  const pts = Array.from({ length: 65 }, (_, i) => {
+    const t = -Math.PI / 2 + (i / 64) * Math.PI * 2;
+    return new Vector2(cx + a * Math.cos(t), c * Math.sin(t));
+  });
+  const g = new LatheGeometry(pts, 128); g.rotateX(Math.PI / 2); g.computeVertexNormals(); return g;
+}
+function ball(R, c) {
+  const pts = Array.from({ length: 41 }, (_, i) => {
+    const t = (i / 40) * Math.PI;
+    return new Vector2(R * Math.sin(t), -c * Math.cos(t));
+  });
+  const g = new LatheGeometry(pts, 96); g.rotateX(Math.PI / 2); g.computeVertexNormals(); return g;
+}
+
+const V = `
+uniform float uLen; uniform float uH;
+uniform vec3 uGrav; uniform vec3 uTouch; uniform float uPress;
+varying vec3 vBase; varying vec3 vN; varying vec3 vV;
+void main(){
+  vBase = position;
+  float hp = pow(uH, 1.5);
+  vec3 g = normalize(uGrav);
+  vec3 gTan = g - normal * dot(g, normal);
+  vec3 lean = vec3(sin(position.x * 23.0 + position.y * 17.0), sin(position.y * 19.0 + position.z * 29.0), sin(position.z * 21.0 + position.x * 13.0)) * 0.2;
+  vec3 p = position + normal * uLen * uH * 0.95 + (gTan * 0.7 + g * 0.3 + lean * 2.6) * uLen * hp;
+  vec3 toP = position - uTouch;
+  float w = exp(-dot(toP, toP) / 0.012) * uPress;
+  vec3 tang = toP - normal * dot(toP, normal);
+  float tl = length(tang);
+  if (tl > 1e-4) p += tang / tl * w * uLen * 1.6 * uH;
+  p -= normal * w * uLen * 0.6 * uH;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  vN = normalize(normalMatrix * normal); vV = -mv.xyz;
+  gl_Position = projectionMatrix * mv;
+}`;
+const F = `
+uniform vec3 uColor; uniform vec3 uTip; uniform float uH; uniform float uDark;
+varying vec3 vBase; varying vec3 vN; varying vec3 vV;
+float hash(vec3 p){ p = fract(p * 0.3183099 + .1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+void main(){
+  vec3 q = vBase * 460.0;
+  vec3 c = floor(q); vec3 f = fract(q) - 0.5;
+  float r = hash(c);
+  f += (vec3(hash(c + 7.1), hash(c + 13.7), hash(c + 3.3)) - 0.5) * 0.55;
+  float thick = (1.0 - uH) * 0.62;
+  if (uH > 0.0 && (r < uH * 0.9 || length(f) > thick)) discard;
+  float clump = hash(floor(vBase * 60.0)) * 0.2 + hash(floor(vBase * 18.0)) * 0.22 + hash(floor(vBase * 6.0)) * 0.14;
+  vec3 n = normalize(vN), v = normalize(vV);
+  vec3 L = normalize(vec3(-0.45, 0.6, 0.7));
+  float diff = pow(dot(n, L) * 0.5 + 0.5, 1.6);            // м'яке, обгортальне світло
+  float rim = pow(1.0 - max(dot(n, v), 0.0), 2.6);
+  float ao = mix(0.32, 1.0, pow(uH, 0.75));                // темніше біля кореня
+  vec3 col = mix(uColor * 0.55, uColor * 1.15, smoothstep(0.0, 0.7, uH));
+  col = mix(col, uTip, clamp(pow(uH, 1.2) * (0.45 + 1.1 * diff) * (0.7 + clump * 1.5), 0.0, 0.98));
+  col *= (0.55 + 0.7 * diff) * ao;
+  col += vec3(0.95, 0.82, 1.0) * rim * 0.35 * uH;
+  gl_FragColor = vec4(col, 1.0);
+  #include <colorspace_fragment>
+}`;
+
+const SHELLS = 64, LEN = 0.034;
+const mark = new Group();
+const parts = [];
+const hits = [];
+const defs = [
+  [pillow(0.26, 0.125, 0.11), new Vector3(0, -0.135, 0)],
+  [ball(0.1, 0.085), new Vector3(-0.0675, 0.4095, 0)],
+  [ball(0.1, 0.085), new Vector3(0.2385, 0.3615, 0)],
+];
+for (const [geo, pos] of defs) {
+  const u = {
+    uColor: { value: new Color("#6a3be6") }, uTip: { value: new Color("#f2cdff") }, uLen: { value: LEN },
+    uGrav: { value: new Vector3(0, -1, 0) }, uTouch: { value: new Vector3(0, 0, 10) }, uPress: { value: 0 }, uDark: { value: 0 },
+  };
+  const part = { u, press: 0, pressV: 0 };
+  parts.push(part);
+  for (let i = 0; i < SHELLS; i++) {
+    const m = new Mesh(geo, new ShaderMaterial({ uniforms: { ...u, uH: { value: i / (SHELLS - 1) } }, vertexShader: V, fragmentShader: F }));
+    m.position.copy(pos);
+    mark.add(m);
+    if (i === 0) { m.userData.part = part; hits.push(m); }
+  }
+}
+mark.scale.setScalar(2.3);
+scene.add(mark);
+
+// керування: обертання мишею з інерцією, нахил за курсором, дотик розсуває ворс
+const el = renderer.domElement;
+const ray = new Raycaster();
+let px = 0, py = 0, dragX = 0, dragY = 0, vx = 0, vy = 0, drag = false, lx = 0, ly = 0, tx = 0, ty = 0;
+el.addEventListener("pointerdown", (e) => { drag = true; lx = e.clientX; ly = e.clientY; vx = vy = 0; });
+addEventListener("pointerup", () => { drag = false; });
+addEventListener("pointermove", (e) => {
+  const r = el.getBoundingClientRect();
+  px = ((e.clientX - r.left) / r.width) * 2 - 1; py = ((e.clientY - r.top) / r.height) * 2 - 1;
+  if (!drag) return;
+  const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
+  dragY += dx * 0.008; dragX += dy * 0.008; vy = dx * 0.4; vx = dy * 0.4;
+});
+function resize() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  camera.aspect = innerWidth / innerHeight;
+  camera.fov = innerWidth / innerHeight < 0.9 ? 36 : 24;
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize); resize();
+
+// перемикач фону
+const sw = document.getElementById("sw");
+for (const [k, label] of [["light", "Light"], ["dark", "Dark"]]) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.onclick = () => { document.body.classList.toggle("dark", k === "dark"); [...sw.children].forEach((x) => x.classList.toggle("on", x === b)); };
+  sw.appendChild(b);
+}
+const initial = new URLSearchParams(location.search).get("bg") === "dark" ? 1 : 0;
+sw.children[initial].click();
+
+let last = performance.now();
+const grav = new Vector3(0, -1, 0), gravT = new Vector3(), inv = mark.quaternion.clone();
+renderer.setAnimationLoop((now) => {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  const t = now / 1000;
+  if (!drag) { dragX += vx * dt; dragY += vy * dt; const d = Math.exp(-3 * dt); vx *= d; vy *= d; dragX *= Math.exp(-0.6 * dt); dragY *= Math.exp(-0.6 * dt); }
+  tx = MathUtils.lerp(tx, py * 0.15, 0.06); ty = MathUtils.lerp(ty, px * 0.22, 0.06);
+  mark.rotation.y = 0.16 * Math.sin(t * 0.22) + ty + dragY;
+  mark.rotation.x = 0.02 * Math.sin(t * 0.3) + tx + dragX;
+  mark.position.y = 0.012 * Math.sin(t * 0.4);
+  mark.updateMatrixWorld(true);
+  inv.copy(mark.quaternion).invert();
+  gravT.set(0, -1, 0).applyQuaternion(inv); grav.lerp(gravT, 1 - Math.exp(-3 * dt));
+  ray.setFromCamera({ x: px, y: -py }, camera);
+  const hit = ray.intersectObjects(hits)[0];
+  for (const p of parts) {
+    const mine = hit && hit.object.userData.part === p;
+    if (mine) p.u.uTouch.value.copy(hit.object.worldToLocal(hit.point.clone()));
+    p.pressV += ((mine ? 1 : 0) - p.press) * 60 * dt; p.pressV *= Math.max(0, 1 - 8 * dt); p.press += p.pressV * dt;
+    p.u.uPress.value = Math.max(p.press, 0);
+    p.u.uGrav.value.copy(grav);
+  }
+  renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>

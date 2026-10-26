@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Navigation intro variants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; --reveal: cubic-bezier(.16,1,.3,1); --ease: cubic-bezier(.215,.61,.355,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #0D0D0F; color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; padding: 32px 40px 80px; }
+  h1 { font-weight: 500; font-size: 20px; line-height: 28px; }
+  .top { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; position: sticky; top: 0; z-index: 5; background: #0D0D0F; padding: 12px 0; }
+  button.ctl { all: unset; cursor: pointer; border: 1px solid var(--line); border-radius: 9999px; height: 36px; padding: 0 24px; display: inline-flex; align-items: center; font-weight: 500; }
+  button.ctl:hover { background: var(--fill); }
+  button.ctl:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  button.ctl.solid { background: var(--primary); color: var(--black); border-color: var(--primary); }
+  .var { margin-bottom: 40px; }
+  .meta { display: flex; align-items: baseline; gap: 16px; margin-bottom: 12px; }
+  .meta b { font-weight: 500; }
+  .meta span { color: var(--secondary); font-size: 12px; line-height: 16px; flex: 1; }
+
+  /* ---- смуга-шапка (імітація) ---------------------------------------- */
+  .stage { background: var(--black); height: 120px; position: relative; overflow: hidden; border: 1px solid var(--line); }
+  .bar { position: absolute; inset: 0 0 auto 0; top: 20px; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 48px; }
+  .logo { height: 36px; display: block; }
+  .tabs { display: flex; gap: 8px; }
+  .tab { height: 36px; padding: 0 24px; border: 1px solid var(--line); border-radius: 9999px; display: inline-flex; align-items: center; font-weight: 500; }
+  .tab.on { background: var(--primary); color: var(--black); border-color: var(--primary); }
+  .cta { height: 48px; padding: 0 24px; border-radius: 9999px; background: var(--primary); color: var(--black); display: inline-flex; align-items: center; font-weight: 500; }
+  .m { overflow: hidden; display: block; padding: 2px; margin: -2px; } /* маска з різкими краями */
+  .m > * { display: block; }
+
+  /* Стан «до»: усе приховано, поки немає .play */
+  .stage:not(.play) .u, .stage:not(.play) .tab-in, .stage:not(.play) .tab-ol { visibility: hidden; }
+
+  @keyframes up { from { transform: translateY(110%); } to { transform: none; } }
+  @keyframes down { from { transform: translateY(-110%); } to { transform: none; } }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes pop { from { opacity: 0; transform: scaleX(.6); } to { opacity: 1; transform: none; } }
+
+  /* 1 — все разом */
+  .v1.play .u { animation: up .9s var(--reveal) both; }
+
+  /* 2 — каскад: затримка --d задана в HTML */
+  .v2.play .u { animation: up .9s var(--reveal) both; animation-delay: calc(var(--d) * 1s); }
+
+  /* 3 — уся смуга зверху */
+  .v3 .bar { transform: translateY(-120%); }
+  .v3.play .bar { animation: down 1s var(--reveal) forwards; }
+  .v3 .u, .v3 .tab-in { visibility: visible !important; }
+
+  /* 4 — лінія, потім елементи */
+  .v4 .rule { position: absolute; left: 40px; right: 40px; bottom: 12px; height: 1px; background: var(--line); transform-origin: left; transform: scaleX(0); }
+  .v4.play .rule { animation: grow 1.1s var(--reveal) forwards; }
+  .v4.play .u { animation: up .9s var(--reveal) both; animation-delay: .45s; }
+
+  /* 5 — контури пігулок, потім текст */
+  .v5.play .tab-ol { animation: pop .7s var(--reveal) both; animation-delay: calc(var(--d) * 1s); }
+  .v5.play .tab-in { animation: up .8s var(--reveal) both; animation-delay: calc(var(--d) * 1s + .35s); }
+  .v5.play .u { animation: up .9s var(--reveal) both; animation-delay: .1s; }
+  .v5 .tab-ol { position: relative; }
+  .v5 .tab .m { padding: 2px 0; }
+
+  @media (max-width: 900px) { .bar { padding: 0 16px; } .tabs { display: none; } body { padding: 24px 16px 64px; } }
+  @media (prefers-reduced-motion: reduce) { .stage * { animation: none !important; visibility: visible !important; } .v3 .bar { transform: none; } .v4 .rule { transform: none; } }
+</style>
+</head>
+<body>
+<div class="top"><h1>Навігація: варіанти появи</h1><button class="ctl solid" id="all">▶ Replay all</button></div>
+<div id="root"></div>
+
+<script>
+  const TABS = ["Work", "Services", "About", "FAQ", "Contact"];
+  const V = [
+    ["1 · Усе разом (маска знизу)", "Логотип, таби й «Book a call» виїжджають одним рухом, як зараз у Hero."],
+    ["2 · Каскад зліва направо", "Лого → таби по черзі (крок 0.06с) → «Book a call»."],
+    ["3 · Шапка опускається зверху", "Вся смуга з'їжджає з-за верхнього краю, без окремої анімації елементів."],
+    ["4 · Лінія, потім елементи", "Тонка лінія розтягується під шапкою, далі все виїжджає знизу."],
+    ["5 · Пігулки «заповнюються»", "Спершу з'являються контури табів, потім текст усередині виїжджає знизу."],
+  ];
+  const u = (inner, d) => `<span class="m"><span class="u" style="--d:${d}">${inner}</span></span>`;
+
+  function bar(n) {
+    const logo = `<img class="logo" src="../../public/brand/emote-logo-agency-white.svg" alt="EMOTE">`;
+    let tabs, left, right, extra = "";
+    if (n === 2) {
+      left = u(logo, 0);
+      tabs = TABS.map((t, i) => `<span class="m"><span class="tab u ${i === 0 ? "on" : ""}" style="--d:${0.15 + i * 0.06}">${t}</span></span>`).join("");
+      right = u(`<span class="cta">Book a call</span>`, 0.15 + TABS.length * 0.06 + 0.05);
+    } else if (n === 5) {
+      left = u(logo, 0);
+      tabs = TABS.map((t, i) => `<span class="tab tab-ol ${i === 0 ? "on" : ""}" style="--d:${0.1 + i * 0.07}"><span class="m"><span class="tab-in" style="--d:${0.1 + i * 0.07}">${t}</span></span></span>`).join("");
+      right = u(`<span class="cta">Book a call</span>`, 0);
+    } else {
+      left = u(logo, 0);
+      tabs = TABS.map((t, i) => `<span class="m"><span class="tab u ${i === 0 ? "on" : ""}" style="--d:0">${t}</span></span>`).join("");
+      right = u(`<span class="cta">Book a call</span>`, 0);
+      if (n === 4) extra = `<i class="rule"></i>`;
+    }
+    return `<div class="bar">${left}<div class="tabs">${tabs}</div>${right}</div>${extra}`;
+  }
+
+  document.getElementById("root").innerHTML = V.map(([t, d], i) => `
+    <section class="var">
+      <div class="meta"><b>${t}</b><span>${d}</span><button class="ctl" data-r="${i + 1}">▶ Replay</button></div>
+      <div class="stage v${i + 1}" id="s${i + 1}">${bar(i + 1)}</div>
+    </section>`).join("");
+
+  function play(n) {
+    const s = document.getElementById("s" + n);
+    s.classList.remove("play"); void s.offsetWidth; s.classList.add("play");
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-r]"); if (b) play(+b.dataset.r);
+    if (e.target.closest("#all")) [1, 2, 3, 4, 5].forEach((n, k) => setTimeout(() => play(n), 0));
+  });
+  [1, 2, 3, 4, 5].forEach(play);
+</script>
+</body>
+</html>

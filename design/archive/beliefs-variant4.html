@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Beliefs, variant 4 (variations)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; --ease:cubic-bezier(.215,.61,.355,1); --reveal:cubic-bezier(.16,1,.3,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--black); color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; }
+  button { all: unset; cursor: pointer; box-sizing: border-box; }
+  button:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+  .nav { position: fixed; z-index: 10; top: 0; left: 0; right: 0; display: flex; gap: 8px; padding: 12px 40px; background: rgba(0,0,0,.92); border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .nav a { flex: none; color: var(--primary); text-decoration: none; border: 1px solid var(--line); border-radius: 9999px; height: 36px; padding: 0 20px; display: inline-flex; align-items: center; font-size: 14px; }
+  .nav a:hover { background: var(--fill); }
+  .variant { padding: 140px 40px 120px; border-bottom: 1px solid var(--line); }
+  .tag { color: var(--secondary); font-weight: 500; text-transform: uppercase; }
+  .note { color: var(--secondary); font-size: 12px; line-height: 16px; margin: 8px 0 40px; max-width: 560px; }
+  .st { font-family: "Instrument Sans", "Inter", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+  .num { font-size: 12px; line-height: 16px; color: var(--secondary); font-variant-numeric: tabular-nums; }
+  .quote { font-size: 28px; line-height: 36px; text-wrap: balance; }
+  .names button { display: block; font-family: "Instrument Sans", "Inter", sans-serif; font-weight: 500; font-size: 64px; line-height: 72px; color: var(--secondary); transition: color .5s var(--ease); text-wrap: balance; }
+  .names button[aria-selected="true"], .names button:hover { color: var(--primary); }
+  .swap { transition: opacity .35s var(--ease), transform .6s var(--reveal); }
+  .swap.out { opacity: 0; transform: translateY(24px); }
+  .progress { height: 1px; background: var(--line); position: relative; overflow: hidden; }
+  .progress i { position: absolute; inset: 0; background: var(--primary); transform-origin: left; transform: scaleX(0); }
+
+  /* A — refined: counter + balanced wrap */
+  .a .stage { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: end; }
+  .a .side { display: flex; flex-direction: column; gap: 24px; padding-bottom: 8px; }
+  .a .count { display: flex; align-items: baseline; gap: 8px; }
+  .a .count b { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+
+  /* B — autoplay with progress line (as testimonials: 6s, restarts on click) */
+  .b .stage { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; }
+  .b .names button { position: relative; padding-left: 0; }
+  .b .side { display: flex; flex-direction: column; gap: 24px; }
+
+  /* C — rows with lines, active expands description under the name */
+  .c .rows { border-bottom: 1px solid var(--line); }
+  .c .row { border-top: 1px solid var(--line); display: grid; grid-template-columns: 80px 1fr 1fr; gap: 40px; padding: 24px 0; align-items: start; }
+  .c .row button { display: contents; }
+  .c .row .name { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; color: var(--secondary); transition: color .5s var(--ease); }
+  .c .row[data-active="true"] .name, .c .row:hover .name { color: var(--primary); }
+  .c .row .d { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .8s var(--ease); }
+  .c .row[data-active="true"] .d { grid-template-rows: 1fr; }
+  .c .row .d > div { overflow: hidden; }
+  .c .row .d p { padding-top: 12px; }
+
+  /* D — pill tabs (our Button outline) + big quote */
+  .d .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 64px; }
+  .d .tabs button { height: 36px; padding: 0 24px; border: 1px solid var(--line); border-radius: 9999px; display: inline-flex; align-items: center; font-weight: 500; transition: background .3s, color .3s; }
+  .d .tabs button[aria-selected="true"] { background: var(--primary); color: var(--black); border-color: var(--primary); }
+  .d .tabs button:hover:not([aria-selected="true"]) { background: var(--fill); }
+  .d .big { max-width: 1100px; display: flex; flex-direction: column; gap: 24px; min-height: 280px; }
+  .d .big .st { font-size: 64px; }
+  .d .big .quote { color: var(--secondary); max-width: 640px; }
+
+  /* E — scroll-driven: sticky stage, tall track */
+  .e { padding-bottom: 0; }
+  .e .track { height: 300vh; position: relative; }
+  .e .pin { position: sticky; top: 0; height: 100vh; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .e .names { align-self: center; }
+  .e .side { display: flex; flex-direction: column; gap: 24px; }
+  .e .bar { width: 1px; height: 160px; background: var(--line); position: relative; }
+  .e .bar i { position: absolute; left: 0; top: 0; width: 1px; height: 100%; background: var(--primary); transform-origin: top; transform: scaleY(0); }
+
+  @media (max-width: 900px) {
+    .nav, .variant { padding-left: 16px; padding-right: 16px; }
+    .st, .names button, .c .row .name, .d .big .st { font-size: 40px; line-height: 48px; }
+    .a .stage, .b .stage, .e .pin { grid-template-columns: 1fr; }
+    .c .row { grid-template-columns: 40px 1fr; gap: 16px; }
+    .c .row .d { grid-column: 2; }
+    .quote { font-size: 20px; line-height: 28px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="#a">A · Доопрацьований</a><a href="#b">B · Автогортання</a><a href="#c">C · Рядки, що розкриваються</a>
+  <a href="#d">D · Таби-пігулки</a><a href="#e">E · Скрол керує</a>
+</nav>
+
+<section class="variant a" id="a">
+  <p class="tag">A · Доопрацьований оригінал</p>
+  <p class="note">Те саме, що в обраному варіанті, але з лічильником 02 / 04, без «висячого» слова one (text-wrap: balance) і плавним виїздом опису. Наведення, фокус, клік, стрілки ↑ ↓.</p>
+  <div class="stage">
+    <div class="names" role="tablist" aria-label="Beliefs"></div>
+    <div class="side"><div class="count"><b data-cur>01</b><span class="num">/ 04</span></div><p class="quote swap" data-desc></p></div>
+  </div>
+</section>
+
+<section class="variant b" id="b">
+  <p class="tag">B · Автогортання</p>
+  <p class="note">Кожні 6 с — наступний принцип, лінія показує відлік. Клік чи наведення перезапускає. Пауза, коли секція поза екраном (як відгуки на сайті).</p>
+  <div class="stage">
+    <div class="names" role="tablist"></div>
+    <div class="side"><div class="progress"><i data-bar></i></div><span class="num" data-cur></span><p class="quote swap" data-desc></p></div>
+  </div>
+</section>
+
+<section class="variant c" id="c">
+  <p class="tag">C · Рядки, що розкриваються</p>
+  <p class="note">Як рядки послуг: усі чотири на екрані, активний розкриває опис під собою. Найменше стрибків лейауту.</p>
+  <div class="rows"></div>
+</section>
+
+<section class="variant d" id="d">
+  <p class="tag">D · Таби-пігулки + великий текст</p>
+  <p class="note">Чотири контурні таби (наш Button outline), вибраний — білий. Принцип виводиться великим заголовком, опис під ним. Найкомпактніший по висоті.</p>
+  <div class="tabs" role="tablist"></div>
+  <div class="big swap" data-big><h3 class="st" data-title></h3><p class="quote" data-desc></p></div>
+</section>
+
+<section class="variant e" id="e">
+  <p class="tag">E · Скрол керує</p>
+  <p class="note">Секція закріплюється, а скрол перемикає принципи один за одним (300vh). Без кліків — як історія, що розгортається.</p>
+  <div class="track"><div class="pin">
+    <div class="names" role="tablist"></div>
+    <div class="side"><div class="bar"><i data-bar></i></div><span class="num" data-cur></span><p class="quote swap" data-desc></p></div>
+  </div></div>
+</section>
+
+<script>
+  const B = [
+    ["Small on purpose", "A senior team you can name, not a pyramid of juniors behind one account manager."],
+    ["Embedded from day one", "We work inside your Slack, Figma and roadmap, not across a wall."],
+    ["Design that ships", "The people who drew it are the ones answering questions when it gets built."],
+    ["Straight talk", "If something won't work, you hear it from us before it costs you."],
+  ];
+  const n = i => String(i + 1).padStart(2, "0");
+  const q = (r, s) => r.querySelector(s);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Спільна логіка: names (кнопки) + desc (текст зі «swap»).
+  function setup(root, { onChange, hover = true } = {}) {
+    const names = q(root, ".names, .tabs");
+    const desc = q(root, "[data-desc]");
+    const cur = q(root, "[data-cur]");
+    let i = 0, t;
+    names.innerHTML = B.map(([title], k) => `<button role="tab" aria-selected="${k === 0}" data-i="${k}">${title}</button>`).join("");
+    const btns = [...names.children];
+    function show(k, instant) {
+      i = (k + B.length) % B.length;
+      btns.forEach((b, j) => b.setAttribute("aria-selected", j === i));
+      const apply = () => {
+        desc.textContent = B[i][1];
+        if (cur) cur.textContent = cur.matches(".num") ? `${n(i)} / 04` : n(i);
+        desc.classList.remove("out");
+        onChange && onChange(i);
+      };
+      if (instant || reduce) return apply();
+      desc.classList.add("out"); clearTimeout(t); t = setTimeout(apply, 220);
+    }
+    names.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i); });
+    if (hover) names.addEventListener("mouseover", e => { const b = e.target.closest("button"); if (b && +b.dataset.i !== i) show(+b.dataset.i); });
+    names.addEventListener("focusin", e => { const b = e.target.closest("button"); if (b && +b.dataset.i !== i) show(+b.dataset.i); });
+    names.addEventListener("keydown", e => {
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); show(i + 1); btns[i].focus(); }
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); show(i - 1); btns[i].focus(); }
+    });
+    show(0, true);
+    return { show, get i() { return i; } };
+  }
+
+  // A
+  setup(document.getElementById("a"));
+
+  // B — автогортання 6 с
+  (() => {
+    const root = document.getElementById("b"), bar = q(root, "[data-bar]");
+    let raf, start, visible = false;
+    const api = setup(root, { onChange: () => restart() });
+    function tick(ts) {
+      if (!visible) return;
+      start ??= ts;
+      const p = Math.min((ts - start) / 6000, 1);
+      bar.style.transform = `scaleX(${p})`;
+      if (p >= 1) { api.show(api.i + 1); return; }
+      raf = requestAnimationFrame(tick);
+    }
+    function restart() { cancelAnimationFrame(raf); start = null; bar.style.transform = "scaleX(0)"; if (visible && !reduce) raf = requestAnimationFrame(tick); }
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; restart(); }, { threshold: .3 }).observe(root);
+  })();
+
+  // C — рядки, що розкриваються
+  (() => {
+    const root = document.getElementById("c"), rows = q(root, ".rows");
+    rows.innerHTML = B.map(([t, d], k) => `<div class="row" data-active="${k === 0}" data-i="${k}">
+      <span class="num">${n(k)}</span>
+      <button role="tab" class="name" aria-selected="${k === 0}">${t}</button>
+      <div class="d"><div><p class="quote">${d}</p></div></div></div>`).join("");
+    const all = [...rows.children];
+    const act = k => all.forEach((r, j) => { r.dataset.active = j === k; r.querySelector("button").setAttribute("aria-selected", j === k); });
+    rows.addEventListener("mouseover", e => { const r = e.target.closest(".row"); if (r) act(+r.dataset.i); });
+    rows.addEventListener("focusin", e => { const r = e.target.closest(".row"); if (r) act(+r.dataset.i); });
+    rows.addEventListener("click", e => { const r = e.target.closest(".row"); if (r) act(+r.dataset.i); });
+  })();
+
+  // D — таби
+  (() => {
+    const root = document.getElementById("d"), big = q(root, "[data-big]"), title = q(root, "[data-title]");
+    const api = setup(root, { hover: false, onChange: k => { title.textContent = B[k][0]; } });
+    // setup() ставить desc, але великий блок міняємо цілим (swap на контейнері)
+    const origShow = api.show;
+    q(root, ".tabs").addEventListener("click", () => { big.classList.add("out"); setTimeout(() => big.classList.remove("out"), 240); });
+    title.textContent = B[0][0];
+  })();
+
+  // E — скрол
+  (() => {
+    const root = document.getElementById("e"), track = q(root, ".track"), bar = q(root, "[data-bar]");
+    const api = setup(root, { hover: false });
+    function onScroll() {
+      const r = track.getBoundingClientRect(), max = r.height - innerHeight;
+      const p = Math.min(Math.max(-r.top / max, 0), 0.9999);
+      bar.style.transform = `scaleY(${p})`;
+      const k = Math.floor(p * B.length);
+      if (k !== api.i) api.show(k);
+    }
+    addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  })();
+</script>
+</body>
+</html>

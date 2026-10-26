@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Ask Emote: варіанти плиток</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --canvas:#0D0D0F; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; --ease: cubic-bezier(.215,.61,.355,1); --reveal: cubic-bezier(.16,1,.3,1); }
+  * { box-sizing: border-box; margin: 0; }
+  button { all: unset; box-sizing: border-box; cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  body { background: #070708; color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; padding: 32px 32px 96px; }
+  h1 { font-size: 20px; line-height: 28px; font-weight: 500; }
+  .lead { color: var(--secondary); margin: 8px 0 32px; max-width: 720px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 40px 32px; max-width: 1360px; }
+  .item h2 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+  .item p.d { color: var(--secondary); font-size: 12px; line-height: 16px; margin-bottom: 12px; min-height: 32px; }
+  .card { background: var(--fill); padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+  .quote { font-size: 28px; line-height: 36px; }
+  svg { width: 20px; height: 20px; flex: none; }
+  .t { text-align: left; transition: color .3s, background .3s, border-color .3s, transform .5s var(--ease); }
+  .tiles { display: grid; gap: 8px; }
+  .out { color: var(--primary); }
+
+  /* A — зараз */
+  .a .tiles { grid-template-columns: 1fr 1fr; }
+  .a .t { min-height: 120px; padding: 16px; background: var(--black); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; color: var(--secondary); }
+  .a .t:hover { background: var(--canvas); color: var(--primary); }
+  .a .t svg { transform: rotate(-45deg); }
+
+  /* B — контурні, на hover заливка білим */
+  .b .tiles { grid-template-columns: 1fr 1fr; }
+  .b .t { min-height: 120px; padding: 16px; border: 1px solid var(--line); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; color: var(--secondary); }
+  .b .t:hover { background: var(--primary); border-color: var(--primary); color: var(--black); }
+  .b .t svg { transform: rotate(-45deg); }
+
+  /* C — іконка зверху, текст знизу */
+  .c .tiles { grid-template-columns: 1fr 1fr; }
+  .c .t { min-height: 140px; padding: 16px; background: var(--black); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; color: var(--secondary); }
+  .c .t:hover { color: var(--primary); }
+  .c .t .ic { width: 40px; height: 40px; border-radius: 9999px; background: var(--fill); display: inline-flex; align-items: center; justify-content: center; color: var(--primary); transition: background .3s, color .3s; }
+  .c .t:hover .ic { background: var(--primary); color: var(--black); }
+
+  /* D — номери, текст 20 знизу */
+  .d .tiles { grid-template-columns: 1fr 1fr; }
+  .d .t { min-height: 160px; padding: 16px; background: var(--black); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; color: var(--secondary); }
+  .d .t .n { font-size: 12px; line-height: 16px; }
+  .d .t span.q { font-size: 20px; line-height: 28px; }
+  .d .t:hover { color: var(--primary); }
+
+  /* E — бенто: перша плитка велика */
+  .e .tiles { grid-template-columns: 1fr 1fr 1fr; grid-auto-rows: 120px; }
+  .e .t { padding: 16px; background: var(--black); border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; color: var(--secondary); }
+  .e .t:first-child { grid-column: span 2; grid-row: span 2; padding: 24px; }
+  .e .t:first-child span.q { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 40px; line-height: 44px; }
+  .e .t:hover { background: var(--canvas); color: var(--primary); }
+  .e .t svg { transform: rotate(-45deg); }
+
+  /* F — ключові слова, питання з'являється на hover */
+  .f .tiles { grid-template-columns: 1fr 1fr 1fr; grid-auto-rows: 128px; }
+  .f .t { position: relative; overflow: hidden; background: var(--black); border-radius: 20px; padding: 16px; color: var(--secondary); display: flex; align-items: flex-end; }
+  .f .t .k { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 28px; line-height: 32px; transition: transform .6s var(--reveal), opacity .3s; }
+  .f .t .q { position: absolute; left: 16px; right: 16px; top: 16px; font-size: 12px; line-height: 16px; opacity: 0; transform: translateY(8px); transition: opacity .4s, transform .6s var(--reveal); color: var(--primary); }
+  .f .t:hover { color: var(--primary); }
+  .f .t:hover .q { opacity: 1; transform: none; }
+  .f .t:hover .k { transform: translateY(0); }
+
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<h1>Ask Emote — варіанти плиток-питань</h1>
+<p class="lead">Шість варіантів того, як виглядають готові питання у попапі. Наводь курсор: у кожному є hover. Усі в нашій палітрі, чорні/контурні плитки на фоні `fill`.</p>
+<div class="grid" id="grid"></div>
+
+<script>
+  const Q = ["What does EMOTE do?", "How does a project start?", "How long does a project take?", "How much does it cost?", "Do you work with startups?", "Can I see your work?"];
+  const K = ["About us", "Process", "Timing", "Pricing", "Startups", "Our work"];
+  const ARR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const ICONS = [
+    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h6m4 0h6M12 4v6m0 4v6"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v16M16 8c0-1.7-1.8-3-4-3s-4 1.3-4 3 1.8 3 4 3 4 1.3 4 3-1.8 3-4 3-4-1.3-4-3"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14zM9 15l5-5"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>',
+  ];
+  const n = i => String(i + 1).padStart(2, "0");
+  const tiles = (cls, fn) => `<div class="card ${cls}"><p class="quote">What would you like to know?</p><div class="tiles">${Q.map((q, i) => `<button class="t">${fn(q, i)}</button>`).join("")}</div></div>`;
+
+  const V = [
+    ["A · Зараз", "Чорні плитки, текст зверху, стрілка ↗ знизу.", "a", q => `<span>${q}</span>${ARR}`],
+    ["B · Контурні, hover білий", "Без заливки, тонкий контур; на hover плитка стає білою з чорним текстом, як головна кнопка сайту.", "b", q => `<span>${q}</span>${ARR}`],
+    ["C · З іконками", "Кругла іконка-мітка зверху, питання знизу. Допомагає швидко знайти тему, на hover іконка білішає.", "c", (q, i) => `<span class="ic">${ICONS[i]}</span><span>${q}</span>`],
+    ["D · Номери й великий текст", "Номер 01–06 зверху, питання знизу шрифтом 20. Більш «редакційно», плитки вищі.", "d", (q, i) => `<span class="n">${n(i)}</span><span class="q">${q}</span>`],
+    ["E · Бенто", "Перше питання велике (на 2×2 клітинки, шрифт заголовків), решта малі. Задає головну тему.", "e", (q, i) => i === 0 ? `<span>${ARR}</span><span class="q">${q}</span>` : `<span>${q}</span>${ARR}`],
+    ["F · Ключові слова", "Плитки 3×2 з коротким словом (About us, Process…). На hover зверху з'являється саме питання.", "f", (q, i) => `<span class="q">${q}</span><span class="k">${K[i]}</span>`],
+  ];
+  document.getElementById("grid").innerHTML = V.map(([t, d, c, fn]) => `<section class="item"><h2>${t}</h2><p class="d">${d}</p>${tiles(c, fn)}</section>`).join("");
+</script>
+</body>
+</html>

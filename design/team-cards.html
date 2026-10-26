@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Team cards (call style)</title>
+<style>
+  :root {
+    --black: #000;
+    --fill: #1A1A1A;
+    --pill: #262626;
+    --primary: #fff;
+    --secondary: #999;
+    --mute: #E5484D;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--black);
+    color: var(--primary);
+    font-family: "Inter", system-ui, sans-serif;
+    padding: 80px 40px 120px;
+  }
+  .wrap { max-width: 1360px; margin: 0 auto; }
+  h1 {
+    font-family: "Instrument Sans", "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 64px;
+    line-height: 64px;
+    margin-bottom: 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .card {
+    background: var(--fill);
+    border-radius: 20px;
+    padding: 32px 32px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-height: 420px;
+  }
+  .photo {
+    position: relative;
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--pill);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; font-weight: 500; color: var(--secondary);
+  }
+  .photo img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    transition: transform 1.2s cubic-bezier(.16,1,.3,1);
+  }
+  .card:hover .photo img { transform: scale(1.05); }
+  .label {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--pill);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin-top: auto;
+    font-size: 20px; line-height: 28px; font-weight: 400;
+    max-width: 100%;
+  }
+  .label svg { flex: none; width: 24px; height: 24px; }
+  .label span { color: var(--secondary); }
+  @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 40px; line-height: 48px; } }
+  @media (max-width: 640px) { body { padding: 64px 16px 80px; } .grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .photo img { transition: none; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Meet the team</h1>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+  // Фото: ../public/team/<slug>.png (поки файлів немає — ініціали).
+  const TEAM = [
+    ["Alina Mashtalier", "Sales Manager"],
+    ["Andrey Baranovskyi", "CEO"],
+    ["Daria Kandyba", "UI/UX Designer"],
+    ["Kate Minkovych", "Illustrator"],
+    ["Khrystyna Ilkiv", "UI/UX Designer"],
+    ["Max Shepherd", "Project Manager"],
+    ["Mikhail Pashynskyi", "UI/UX Designer"],
+    ["Victoria Kachan", "Motion Designer"],
+    ["Viktoriia Bondar", "UI/UX Designer"],
+    ["Yuliia Kit", "UI/UX Designer"],
+  ];
+  const mic = `<svg viewBox="0 0 24 24" fill="none" stroke="#E5484D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M9 9v2a3 3 0 0 0 5.1 2.1"/><path d="M15 9.3V6a3 3 0 0 0-5.9-.8"/><path d="M5 11a7 7 0 0 0 11.2 5.6M19 11a7 7 0 0 1-.6 2.8"/><path d="M12 18v3"/></svg>`;
+  document.getElementById("grid").innerHTML = TEAM.map(([name, role]) => {
+    const slug = name.toLowerCase().replace(/ /g, "-");
+    const initials = name.split(" ").map(w => w[0]).join("");
+    return `<article class="card">
+      <div class="photo">${initials}<img src="../public/team/${slug}.png" alt="${name}" onerror="this.remove()"></div>
+      <div class="label">${mic}<div>${name} <span>(${role})</span></div></div>
+    </article>`;
+  }).join("");
+</script>
+</body>
+</html>

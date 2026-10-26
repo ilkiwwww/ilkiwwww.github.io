@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services page 2 — Cinematic (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Hero: кільце «ö» росте при скролі й поглинає екран */
+  .hero-track { height:220vh; } .hero-stage { display:flex; align-items:center; justify-content:center; }
+  .hero-ring { position:absolute; left:50%; top:50%; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:9999px; border:2px solid var(--pri); will-change:transform; }
+  .hero-dots { position:absolute; left:50%; top:50%; will-change:transform; }
+  .hero-dots i { position:absolute; width:20px; height:20px; border-radius:9999px; background:var(--pri); }
+  .hero-copy { position:relative; text-align:center; z-index:2; padding:0 40px; will-change:transform, opacity; }
+  .hero-copy h1 { font:500 clamp(56px,9vw,140px)/.95 "Instrument Sans"; letter-spacing:-.03em; }
+  .hero-copy p { margin:32px auto 0; max-width:520px; }
+  .hero-cap { position:absolute; left:40px; right:40px; bottom:40px; display:flex; justify-content:space-between; z-index:2; }
+
+  /* Services: curtains */
+  .b-layer { position:absolute; inset:0; padding:104px 40px 40px; display:flex; flex-direction:column; justify-content:space-between; will-change:clip-path; }
+  .l0,.l3 { background:var(--black); } .l1,.l4 { background:var(--fill); } .l2,.l5 { background:var(--pri); color:#000; }
+  .l2 .sec,.l5 .sec,.l2 .dense,.l5 .dense { color:#555; } .l2 .chip,.l5 .chip { border-color:#000; }
+  .b-top { display:flex; justify-content:space-between; }
+  .b-name { font:500 clamp(120px,22vw,320px)/.85 "Instrument Sans"; letter-spacing:-.04em; margin-left:-.04em; }
+  .b-bot { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; } .b-bot p { max-width:480px; }
+  .b-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; max-width:520px; }
+  .b-dots { position:absolute; right:40px; top:50%; transform:translateY(-50%); z-index:50; display:flex; flex-direction:column; gap:10px; mix-blend-mode:difference; }
+  .b-dots i { width:8px; height:8px; border-radius:9999px; border:1px solid #fff; transition:.3s; } .b-dots i.on { background:#fff; }
+
+  /* Process: counter */
+  .c-stage { padding:112px 40px 40px; display:flex; flex-direction:column; }
+  .c-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:64px; flex:1; align-items:center; }
+  .c-count { font:500 clamp(120px,17vw,260px)/.85 "Instrument Sans"; letter-spacing:-.04em; } .c-count small { font-size:48px; color:var(--sec); letter-spacing:0; }
+  .c-list { position:relative; padding-left:40px; }
+  .c-rail { position:absolute; left:5px; top:12px; bottom:12px; width:1px; background:var(--line); } .c-rail i { position:absolute; left:0; top:0; width:1px; height:0; background:var(--pri); }
+  .c-item { position:relative; padding:12px 0; color:var(--line); transition:color .5s; }
+  .c-item::before { content:""; position:absolute; left:-40px; top:24px; width:11px; height:11px; border-radius:9999px; background:var(--black); border:1px solid var(--line); transition:.4s; }
+  .c-item.reached { color:var(--sec); } .c-item.reached::before { border-color:var(--pri); background:var(--pri); } .c-item.on { color:var(--pri); }
+  .c-item h3 { font:500 28px/36px "Instrument Sans"; }
+  .c-item p { max-height:0; overflow:hidden; opacity:0; color:var(--sec); transition:max-height .6s var(--ease), opacity .5s, margin .5s; max-width:520px; }
+  .c-item.on p { max-height:140px; opacity:1; margin-top:8px; }
+
+  /* Selected work: film strip */
+  .f-stage { padding:112px 0 40px; display:flex; flex-direction:column; }
+  .f-head { padding:0 40px; display:flex; justify-content:space-between; align-items:flex-end; }
+  .f-strip { display:flex; gap:12px; margin:auto 0; padding-left:40px; will-change:transform; }
+  .f-card { flex:none; width:520px; }
+  .f-img { height:380px; background:var(--fill); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .f-img span { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); }
+  .f-img::after { content:""; position:absolute; inset:0; background:var(--pri); transform:translateY(101%); transition:transform .6s var(--case); mix-blend-mode:difference; }
+  .f-card:hover .f-img::after { transform:none; }
+  .f-card .meta { display:flex; justify-content:space-between; padding-top:16px; }
+  .f-bar { margin:0 40px; height:2px; background:var(--line); } .f-bar i { display:block; height:100%; width:0; background:var(--pri); }
+
+  /* Quote */
+  .q { padding:160px 40px; max-width:1200px; } .q .statement { font-size:56px; line-height:64px; }
+  @media (max-width:900px){ .hero-cap,.b-layer,.c-stage,.f-head,.q { padding-left:24px; padding-right:24px; } .hero-cap { left:24px; right:24px; } .c-grid { grid-template-columns:1fr; gap:24px; } .b-bot { flex-direction:column; align-items:flex-start; } .b-dots { display:none; } .f-card { width:300px; } .f-img { height:260px; } .f-strip { padding-left:24px; } .f-bar { margin:0 24px; } .q .statement { font-size:32px; line-height:40px; } }
+</style></head>
+<body>
+<div id="app"></div>
+<script src="base.js"></script>
+<script>
+const {CATS,STEPS,n2,clamp,ss,prog,ticks} = E;
+const WORK = [["Veggy","Food delivery app","Design · Motion"],["Vitalis","Health platform","Design · Branding"],["Axentix","Fintech dashboard","Design · Development"],["Momentum","Fitness app","Illustration · 3D"],["Apex","SaaS website","Design · Development"],["Vortex","Crypto exchange","Branding · Motion"]];
+document.getElementById("app").innerHTML = `
+${E.header()}
+<div class="track hero-track" id="ht"><div class="stage hero-stage">
+  <div class="hero-ring" id="hr"></div>
+  <div class="hero-copy" id="hc"><div class="eyebrow">Services</div><h1 data-view style="margin-top:24px">${E.words("From the first")}<br>${E.words("sketch to launch.",.2)}</h1><p class="sec lead up" data-view style="--d:.5s">Six disciplines, one team, one thread.</p></div>
+  <div class="hero-cap"><span class="dense">Design · Branding · Illustration · Motion · 3D · Development</span><span class="dense">Scroll ↓</span></div>
+</div></div>
+
+<div class="track" id="bt" style="height:700vh"><div class="stage" id="bs"><div class="b-dots" id="bd"></div></div></div>
+
+<div class="track" id="ct" style="height:600vh"><div class="stage c-stage">
+  <div class="eyebrow">How we work</div><div class="statement" style="margin-top:16px">One process, followed every time.</div>
+  <div class="c-grid"><div class="c-count"><span id="cn">01</span><small> / 06</small></div><div class="c-list" id="cl"><div class="c-rail"><i id="cf"></i></div></div></div>
+</div></div>
+
+<div class="track" id="ft" style="height:400vh"><div class="stage f-stage">
+  <div class="f-head"><div><div class="eyebrow">Selected work</div><div class="statement" style="margin-top:16px">Proof, in motion.</div></div><a class="btn">All works</a></div>
+  <div class="f-strip" id="fs">${WORK.map(w=>`<a class="f-card"><div class="f-img"><span>${w[0]} — cover</span></div><div class="meta"><span class="quote">${w[0]}</span><span class="sec">${w[2]}</span></div><div class="sec">${w[1]}</div></a>`).join("")}</div>
+  <div class="f-bar"><i id="ff"></i></div>
+</div></div>
+
+<section class="q"><div class="statement fill" data-fill>${E.fillText("“They don't just design the screen — they stay until it ships. The most structured team we have ever hired.”")}</div><p class="sec" style="margin-top:32px">Client name · Company (placeholder)</p></section>
+
+${E.stats()}
+${E.faq()}
+${E.cta()}`;
+
+// B layers
+const bs=document.getElementById("bs"), bd=document.getElementById("bd");
+CATS.forEach((c,i)=>{ bs.insertAdjacentHTML("beforeend",`<div class="b-layer l${i}" style="z-index:${i+1}"><div class="b-top"><span class="dense">${n2(i)} / 06</span><span class="dense">Services</span></div><div class="b-name">${c.name}</div><div class="b-bot"><p class="sec lead">${c.lead}</p><div class="b-chips">${c.items.map(t=>`<span class="chip">${t}</span>`).join("")}</div></div></div>`); bd.insertAdjacentHTML("beforeend","<i></i>"); });
+const layers=[...bs.querySelectorAll(".b-layer")];
+// C list
+const cl=document.getElementById("cl"); STEPS.forEach(s=>cl.insertAdjacentHTML("beforeend",`<div class="c-item"><h3>${s[0]}</h3><p>${s[1]}</p></div>`));
+const items=[...cl.querySelectorAll(".c-item")];
+
+ticks.push(()=>{
+  // hero
+  const h=prog(document.getElementById("ht")); const s=1+ss(h)*14;
+  document.getElementById("hr").style.transform=`scale(${s})`; document.getElementById("hr").style.borderWidth=(2/s)+"px";
+  document.getElementById("hc").style.transform=`translateY(${-h*80}px) scale(${1-h*.15})`; document.getElementById("hc").style.opacity=1-clamp((h-.45)/.4);
+  // curtains
+  const x=prog(document.getElementById("bt"))*(CATS.length-1);
+  layers.forEach((l,i)=>{ const e=i===0?1:ss(clamp(x-(i-1))); l.style.clipPath=`inset(${(1-e)*100}% 0 0 0)`; l.querySelector(".b-name").style.transform=`translateY(${(1-e)*18}vh)`; });
+  [...bd.children].forEach((d,i)=>d.classList.toggle("on",i===Math.round(x)));
+  // counter
+  const p=prog(document.getElementById("ct")), i=Math.min(5,Math.floor(p*6));
+  items.forEach((el,k)=>{ el.classList.toggle("on",k===i); el.classList.toggle("reached",k<=i); });
+  document.getElementById("cn").textContent=n2(i); document.getElementById("cf").style.height=(items[i].offsetTop+24)+"px";
+  // film strip
+  const f=prog(document.getElementById("ft")), strip=document.getElementById("fs");
+  strip.style.transform=`translateX(${-f*Math.max(0,strip.scrollWidth-innerWidth+40)}px)`; document.getElementById("ff").style.width=(f*100)+"%";
+});
+E.init();
+</script></body></html>

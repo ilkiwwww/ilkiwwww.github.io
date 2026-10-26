@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — How we work (stacked steps)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; --head: 112px; /* висота «шапки» згорнутого кроку */ --top: 96px; --reveal: cubic-bezier(.16,1,.3,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--black); color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; }
+  .spacer { min-height: 70vh; padding: 140px 40px 0; }
+  .eyebrow { color: var(--secondary); font-weight: 500; text-transform: uppercase; }
+  .st { font-family: "Instrument Sans", "Inter", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+
+  .how { padding: 0 40px 120px; }
+  .head { padding: 0 0 40px; display: flex; flex-direction: column; gap: 16px; }
+  .steps { position: relative; }
+
+  /* Кожен крок «липне» під попереднім: попередні лишаються згорнутими зверху. */
+  .step {
+    position: sticky;
+    top: calc(var(--top) + var(--i) * var(--head));
+    z-index: calc(var(--i) + 1);
+    background: var(--black);
+    border-top: 1px solid var(--line);
+    min-height: 62vh;
+    display: grid;
+    grid-template-columns: 160px 1fr 360px;
+    column-gap: 40px;
+    align-items: start;
+    padding-top: 24px;
+  }
+  .step:last-child { min-height: 0; padding-bottom: 80px; }
+  .num { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+  .title { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+  .desc { color: var(--secondary); padding-top: 8px; }
+  .more { grid-column: 2; margin-top: 64px; display: flex; flex-direction: column; gap: 16px; }
+  .more .label { font-size: 12px; line-height: 16px; font-weight: 500; text-transform: uppercase; color: var(--secondary); }
+  .more ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; font-size: 20px; line-height: 28px; }
+  .more li { border-top: 1px solid var(--line); padding: 8px 0; max-width: 360px; }
+
+  /* поява при вході */
+  .step > * { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform 1.2s var(--reveal); }
+  .step.in > * { opacity: 1; transform: none; }
+  .step.in > .title { transition-delay: .08s; }
+  .step.in > .desc { transition-delay: .16s; }
+  .step.in > .more { transition-delay: .24s; }
+
+  .after { padding: 120px 40px; min-height: 60vh; }
+
+  @media (max-width: 900px) {
+    :root { --head: 80px; --top: 72px; }
+    .spacer, .how, .after { padding-left: 16px; padding-right: 16px; }
+    .st, .num, .title { font-size: 40px; line-height: 48px; }
+    .step { grid-template-columns: 56px 1fr; column-gap: 16px; min-height: 70vh; }
+    .desc, .more { grid-column: 2; }
+    .desc { padding-top: 16px; }
+    .more { margin-top: 32px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .step > * { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="spacer"><p class="eyebrow">Дивись, як кроки «лягають» один на одного при скролі ↓</p></div>
+
+<section class="how" aria-labelledby="how-title">
+  <div class="head">
+    <h2 class="st" id="how-title">How we work</h2>
+  </div>
+  <div class="steps" id="steps"></div>
+</section>
+
+<div class="after"><p class="eyebrow">Далі секція команди…</p></div>
+
+<script>
+  const STEPS = [
+    { t: "Discover", d: "We learn your product, users and numbers before we draw anything. Workshops, interviews and a clear problem to solve.", l: "Where it starts", items: ["Stakeholder workshops", "User research", "Audit & benchmarks"] },
+    { t: "Design", d: "Flows, structure and interface. Senior designers work in your Figma, with a review every week.", l: "Where the magic clicks", items: ["UX flows & wireframes", "UI design & systems", "Motion & illustration"] },
+    { t: "Prototype", d: "Clickable prototypes tested with real users, so decisions are made on evidence, not opinions.", l: "Where ideas get tested", items: ["Interactive prototypes", "Usability testing", "Iteration rounds"] },
+    { t: "Ship", d: "Handoff your developers will actually enjoy, and we stay through implementation until it is live.", l: "Where it all comes together", items: ["Dev handoff & specs", "Design QA", "Post-launch support"] },
+  ];
+  const root = document.getElementById("steps");
+  root.innerHTML = STEPS.map((s, i) => `
+    <article class="step" style="--i:${i}">
+      <span class="num">${String(i + 1).padStart(2, "0")}</span>
+      <h3 class="title">${s.t}</h3>
+      <p class="desc">${s.d}</p>
+      <div class="more"><span class="label">${s.l}</span><ul>${s.items.map(x => `<li>${x}</li>`).join("")}</ul></div>
+    </article>`).join("");
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
+  root.querySelectorAll(".step").forEach(s => io.observe(s));
+</script>
+</body>
+</html>

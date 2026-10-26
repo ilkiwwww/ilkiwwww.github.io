@@ -1,0 +1,391 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/instrument-sans";
+
+/* ============================================================================
+   EMOTE — єдине джерело значень. Дефолтні шкали Tailwind (колір, шрифт,
+   скруглення, тіні) скинуто в `initial`, тож `text-lg`, `rounded-md`,
+   `gray-500` не компілюються. Усе, чого тут немає, на сайті не існує.
+
+   Значення стартові — підтверджуються з макетом.
+   Spacing лишається Tailwind-овий (1 = 4px) — це і є сітка 4px.
+   ========================================================================= */
+
+@theme {
+  /* ---- Шрифт ----------------------------------------------------------- */
+  --font-*: initial;
+  --font-sans: "Inter Variable", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Акцентний шрифт — для великих заголовків (Heading statement, display). */
+  --font-display: "Instrument Sans Variable", "Instrument Sans", "Inter Variable", sans-serif;
+
+  /* ---- Розміри тексту (line-height за замовчуванням кратний 4) --------- */
+  --text-*: initial;
+  --text-12: 12px;
+  --text-12--line-height: 16px;
+  --text-16: 16px;
+  --text-16--line-height: 24px;
+  --text-20: 20px;
+  --text-20--line-height: 28px;
+  --text-28: 28px;
+  --text-28--line-height: 36px;
+  --text-40: 40px;
+  --text-40--line-height: 48px;
+  --text-56: 56px;
+  --text-56--line-height: 56px;
+  --text-64: 64px;
+  --text-64--line-height: 64px;
+  /* Заголовок у клітинці сітки команди (Heading level="cell"): Figma 92, line-height 80% = 73.6 → 72 */
+  --text-92: 92px;
+  --text-92--line-height: 72px;
+  /* Великий заголовок фінального CTA (Heading level="display") */
+  --text-96: 96px;
+  --text-96--line-height: 92px;
+  --text-128: 128px;
+  --text-128--line-height: 120px;
+  --text-140: 140px;
+  --text-140--line-height: 132px; /* Figma 140.7/132 */
+
+  /* ---- Кольори: за роллю, кожен має одну задачу ------------------------ */
+  --color-*: initial;
+  --color-primary: #ffffff; /* основний колір: текст, світла кнопка */
+  --color-black: #000000;
+  --color-canvas: #0d0d0f;     /* фон сторінки (темна тема) */
+  --color-secondary: #999999; /* вторинний колір: другорядний текст (білий 60% на чорному) */
+  --color-fill: #1a1a1a; /* заливка: таби, картки, плейсхолдери, hover рядка — одна на весь сайт */
+  --color-tertiary: #333333; /* третинний колір: усі лінії й контури */
+
+  /* ---- Скруглення ------------------------------------------------------ */
+  --radius-*: initial;
+  --radius-control: 9999px; /* кнопки, таби, бейджі — повне скруглення (з макету) */
+  /* rounded-full лишається для кіл */
+
+  /* ---- Тіні: жодної (дефолтні скинуто) ---------------------------------- */
+  --shadow-*: initial;
+
+  /* ---- Рух ------------------------------------------------------------- */
+  --ease-intro: cubic-bezier(0.65, 0, 0.35, 1); /* лінії Hero */
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1); /* поява при скролі (expo-out) */
+  --ease-case: cubic-bezier(0.215, 0.61, 0.355, 1); /* зміна кейсу в Hero (Power3.out, як metalab) */
+}
+
+/* Тема темна: сторінка на чорному, основний текст білий. */
+body {
+  background: var(--color-canvas);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Інтро Hero ---------------------------------------------------------- */
+/* Одноразово при відкритті сторінки:
+   0–0.6s     лінії виростають складеними у вертикаль (переходи в Hero → Lines);
+   0.6–1.3s   діагональ повертається на свій кут — лінії «роз'їжджаються»;
+   1.0s       з'являється обкладинка;
+   1.1s       шапка виїжджає знизу;
+   1.2s       таби виїжджають по одному кожні 60ms;
+   1.5s       кейс виїжджає знизу.
+   Затримки задаються через --delay на елементі (Hero). */
+@keyframes intro-show {
+  from { visibility: hidden; }
+  to { visibility: visible; }
+}
+
+.intro-bg { animation: intro-show 0s 1s both; }
+
+/* Виїзд знизу вгору в межах рамки (overflow-hidden батька): різкі краї,
+   без прозорості. */
+@keyframes reveal-up {
+  from { translate: 0 100%; }
+  to { translate: 0 0; }
+}
+
+.reveal-up { animation: reveal-up 0.9s var(--ease-intro) var(--delay, 0s) both; }
+
+/* Шоуріл зі скролом (Showreel.jsx). Трек високий, сцена в ньому закріплена на весь екран.
+   --a (0 → 1, пише JS зі скролу): заголовок зменшується, картка одночасно розтягується від 62%
+   до повної ширини й піднімається до верху, накриваючи заголовок. */
+.reel-track { height: 160vh; }
+.reel-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; --a: 0; }
+.reel-title {
+  position: absolute;
+  inset: calc(var(--spacing) * 28) 0 auto;
+  z-index: 1;
+  text-align: center;
+  transform-origin: 50% 0;
+  transform: translateY(calc(var(--a) * -8vh)) scale(calc(1 - var(--a) * 0.55));
+}
+.reel-card {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: calc(42vh - var(--a) * 42vh);
+  width: calc(62% + var(--a) * 38%);
+  height: 100vh;
+  transform: translateX(-50%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel-track { height: auto; }
+  .reel-stage { position: static; height: auto; padding: 80px 0; }
+  .reel-title { position: static; transform: none; margin-bottom: 40px; }
+  .reel-card { position: relative; left: 0; top: 0; width: 100%; height: auto; aspect-ratio: 20 / 9; transform: none; }
+}
+
+/* Акордеон «How we work» (ServicesPage.jsx): тіло відкритого кроку розкривається по висоті. */
+.how-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.8s var(--ease-case);
+}
+.how-body > div { min-height: 0; overflow: hidden; }
+.how-row[data-open] .how-body { grid-template-rows: 1fr; }
+
+/* Попап «Book a call»: затемнення проявляється, картка трохи піднімається знизу. */
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modal-card {
+  from { opacity: 0; translate: 0 24px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.modal-fade { animation: modal-fade 0.4s var(--ease-case) both; }
+.modal-card { animation: modal-card 0.7s var(--ease-reveal) both; }
+
+/* Шапка: уся смуга з'їжджає зверху на місце одним рухом, після інтро Hero (1.1s). */
+@keyframes header-drop {
+  from { translate: 0 -200%; }
+  to { translate: 0 0; }
+}
+.header-drop { animation: header-drop 1s var(--ease-reveal) 1.1s both; }
+.header-drop-now { animation-delay: 0.15s; }
+
+/* ---- Поява при скролі (ui/Motion.jsx) ------------------------------------
+   Як на metalab.com: блок чекає, поки зайде у в'южпорт ([data-inview]), і
+   його частини з'являються по черзі (--delay):
+   .rise  — виїзд знизу з рамки з різкими краями (текст, цифри);
+   .line-grow — лінія розтягується зліва направо;
+   .fade  — проявлення (тільки великий заголовок).
+   Один раз; далі стан не змінюється. */
+.rise { overflow: hidden; }
+.rise > * { translate: 0 100%; }
+/* Рамка з запасом 12px зверху й знизу й 8px по боках: не ріже «$», хвости літер і focus-обводку контролів. */
+.rise-bleed { margin: -12px -8px; padding: 12px 8px; }
+.rise-bleed > * { translate: 0 calc(100% + 12px); }
+.line-grow { scale: 0 1; transform-origin: left; }
+.fade { opacity: 0; }
+
+.rise > *,
+.line-grow,
+.fade {
+  transition-property: translate, scale, opacity;
+  transition-duration: 1.2s;
+  transition-timing-function: var(--ease-reveal);
+  transition-delay: var(--delay, 0s);
+}
+
+[data-inview] .rise > * { translate: 0 0; }
+[data-inview] .line-grow { scale: 1 1; }
+[data-inview] .fade { opacity: 1; }
+
+/* ---- Зміна кейсу в Hero — як на metalab.com ------------------------------
+   Усі кейси лежать один на одному; активний має [data-active].
+   .case-part — текст чи фон: неактивний прозорий і зсунутий на 40px знизу
+                (.from-bottom), активний проявляється й доїжджає на місце;
+   .case-wipe — фото: неактивне закрите шторкою, активне відкривається від
+                краю (.wipe-left).
+   Поява 0.8s, зникнення 0.3s — одночасно, тож кейси коротко перетікають. */
+.case-part {
+  opacity: 0;
+  visibility: hidden;
+  translate: var(--case-x, 0) var(--case-y, 0);
+  transition: opacity 0.3s var(--ease-case), translate 0.3s var(--ease-case), visibility 0s 0.3s;
+}
+.case-wipe {
+  clip-path: var(--case-clip, inset(0));
+  transition: clip-path 0.3s var(--ease-case);
+}
+:is([data-active] .case-part, .case-part[data-active]) {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition: opacity 0.8s var(--ease-case), translate 0.8s var(--ease-case), visibility 0s;
+}
+[data-active] .case-wipe {
+  clip-path: inset(0);
+  transition-duration: 0.8s;
+}
+.from-bottom { --case-y: 40px; }
+.wipe-left { --case-clip: inset(0 100% 0 0); }
+
+/* ---- Сторінка кейсу: панель «The story» (WorkDetailPage.jsx) ---------------
+   Від lg: галерея 2fr + панель 1fr; при закритті колонка панелі стискається
+   до 0fr, тож фото плавно розтягуються (крива й тривалість — як у зміни кейсу);
+   вміст панелі встигає згаснути. Нижче lg — одна колонка, закрита панель зникає. */
+.story-layout { display: grid; gap: calc(var(--spacing) * 16); }
+.story-aside { min-width: 0; overflow: hidden; }
+.story-aside-inner { transition: opacity 0.3s var(--ease-case); }
+[data-closed] > .story-aside > .story-aside-inner { opacity: 0; }
+@media (max-width: 63.99rem) {
+  [data-closed] > .story-aside { display: none; }
+}
+@media (min-width: 64rem) {
+  .story-layout {
+    gap: 0;
+    grid-template-columns: 2fr 1fr;
+    transition: grid-template-columns 0.8s var(--ease-case);
+  }
+  .story-layout[data-closed] { grid-template-columns: 1fr 0fr; }
+}
+
+/* ---- Картки робіт: наведення (Work.jsx, від lg) ---------------------------
+   Наведена картка росте (flex-grow ×1.15 — у Work.jsx), сусіди звужуються;
+   підписи сусідів стають `tertiary`. Крива й тривалість — як у зміни кейсу в Hero. */
+.work-card { transition: flex-grow 0.8s var(--ease-case); }
+.work-caption * { transition: color 0.4s var(--ease-case); }
+@media (hover: hover) and (min-width: 64rem) {
+  .work-row:has(.work-card:hover) .work-card:not(:hover) .work-caption * { color: var(--color-tertiary); }
+}
+
+/* ---- Послуги: розкриття рядка й зміна картинки (Services.jsx, від lg) ------
+   .service-reveal — колодязь під картинку: закритий має висоту 0, у
+                     відкритому рядку ([data-open]) розкривається до повної;
+   .service-shot   — картинка підпослуги: активна відкривається шторкою
+                     знизу поверх попередньої, попередня закривається вже під
+                     нею, коли нова перекрила її (через 0.8s).
+   Крива й тривалість — як у зміни кейсу в Hero. */
+.service-reveal {
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.8s var(--ease-case);
+}
+.service-reveal > * { min-height: 0; overflow: hidden; }
+/* Підсвітка відкритого рядка: ледь помітна заливка `fill` на всю ширину
+   екрана (виходить за gutters секції — 40px від lg). Проявляється разом із
+   розкриттям. isolate на рядку тримає її під текстом, але над фоном секції. */
+.service-row { position: relative; isolation: isolate; }
+.service-row::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(var(--spacing) * -10);
+  background: var(--color-fill);
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-case);
+}
+@media (hover: hover) and (min-width: 64rem) {
+  .service-row[data-open]::before { opacity: 1; }
+}
+.service-row[data-open] .service-reveal { grid-template-rows: 1fr; }
+.service-shot {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0s 0.8s;
+}
+.service-shot[data-active] {
+  z-index: 1;
+  clip-path: inset(0);
+  transition: clip-path 0.8s var(--ease-case);
+}
+/* Опис підпослуги: активний виїжджає знизу й проявляється, попередній зникає
+   одразу (0.3s) — як зникнення старого в зміні кейсу. */
+.service-text {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s var(--ease-case), transform 0.3s var(--ease-case);
+}
+.service-text[data-active] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s var(--ease-case) 0.1s, transform 0.8s var(--ease-case) 0.1s;
+}
+
+/* ---- Курсор-лого (ui/Cursor.jsx) -----------------------------------------
+   Частини лежать у (0,0) екрана, зсунуті margin так, що нульова точка —
+   їхній центр; далі їх веде transform з JS. Колір — білий з тонким чорним контуром. Системний курсор ховається лише коли
+   Cursor увімкнувся (.has-cursor на <html>). */
+.has-cursor,
+.has-cursor * { cursor: none !important; }
+.cursor {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 0;
+  height: 0;
+  z-index: 100;
+  pointer-events: none;
+  color: var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+/* Без mix-blend-mode: він у частині браузерів ховав лого над шарами з анімацією (попапи). Контур робить лого видимим і на білій кнопці. */
+.cursor-part { position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 1px var(--color-black)); will-change: transform; transition: opacity 0.2s; }
+.cursor-part svg { display: block; }
+.cursor-ring { margin: -14.47px 0 0 -15.06px; transform-origin: 15.06px 14.47px; }
+.cursor-dot { margin: -3.58px 0 0 -3.72px; }
+
+/* Фінальний CTA: низ скляного лого розчиняється в чорному (Figma — градієнт
+   поверх зображення лого). */
+.cta-fade { background: linear-gradient(to bottom, transparent 55%, var(--color-black)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-fade,
+  .modal-card { animation: none; }
+  .marquee { animation: none; }
+  .ring,
+  .ring-card { transition: none; }
+  .how-body,
+  .service-reveal,
+  .service-shot,
+  .service-text,
+  .service-row::before { transition: none; }
+  .intro-bg,
+  .reveal-up,
+  .header-drop { animation: none; }
+  .rise > *,
+  .line-grow,
+  .fade { transition: none; translate: none; scale: none; opacity: 1; }
+  .case-part,
+  .case-wipe { transition: none; translate: none; }
+  .work-card,
+  .work-caption { transition: none; }
+}
+
+/* ---- Hero «Carousel» (HeroCarousel.jsx) --------------------------------------
+   Як у першій версії з 3D-кільцем: три однакові картки 340×486 (вибрана пряма,
+   сусіди розвернуті на ~55° так, що внутрішній (ближчий до центру) край ближчий до глядача, як на кільці і трохи затемнені), далі картки зникають.
+   Інші кейси стоять за краєм невидимі. Зміна — .8s ease-case, як у решти Hero. */
+.hc-stage {
+  --aw: 210px; --ah: 300px; --gap: 40px;
+  perspective: 1800px;
+  perspective-origin: 50% 50%;
+}
+@media (min-width: 768px) {
+  .hc-stage { --aw: 270px; --ah: 386px; --gap: 64px; }
+}
+@media (min-width: 1024px) {
+  .hc-stage { --aw: 340px; --ah: 486px; --gap: 90px; }
+}
+.hc-card {
+  --off: calc(var(--aw) + var(--gap));
+  transform-origin: var(--origin, 50%) 50%;
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 22px);
+  width: var(--aw);
+  height: var(--ah);
+  opacity: var(--o, 0);
+  rotate: y var(--ry, 0deg);
+  translate: calc(-50% + var(--x, 0px)) -50%;
+  transition: translate 0.8s var(--ease-case), rotate 0.8s var(--ease-case), opacity 0.8s var(--ease-case);
+}
+.hc-card[data-pos="0"]  { --x: 0px; --ry: 0deg; --o: 1; z-index: 2; }
+.hc-card[data-pos="-1"] { --x: calc(var(--off) * -1); --origin: 100%; --ry: -55deg; --o: 0.85; }
+.hc-card[data-pos="1"]  { --x: var(--off); --origin: 0%; --ry: 55deg; --o: 0.85; }
+.hc-card[data-pos="-2"] { --x: calc(var(--off) * -1.5); --origin: 100%; --ry: -70deg; --o: 0; pointer-events: none; }
+.hc-card[data-pos="2"]  { --x: calc(var(--off) * 1.5); --origin: 0%; --ry: 70deg; --o: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .hc-card { transition: none; }
+}
+
+/* Services: на lg блок закріплений на ~4 екрани скролу; категорії перемикає скрол, панель завжди в екрані. */
+@media (min-width: 64rem) {
+  .services-track { height: calc(100dvh + 300vh); }
+  .services-stage { position: sticky; top: calc(var(--spacing) * 24); height: calc(100dvh - 120px); max-height: 760px; align-content: start; }
+}

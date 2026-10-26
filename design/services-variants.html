@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services — 4 UI variants (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* Токени сайту: чорний фон, fill #1A1A1A, лінії #333, secondary #999; картки без скруглення, кнопки/чіпи — повне. */
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --sec:#999; --pri:#fff; --ease:cubic-bezier(.22,1,.36,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--pri); font:400 16px/24px Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { padding:0 40px; }
+  .display { font:500 64px/64px "Instrument Sans",Inter,sans-serif; letter-spacing:-.01em; }
+  .eyebrow { font:500 16px/24px Inter; text-transform:uppercase; color:var(--sec); }
+  .dense { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); letter-spacing:.02em; }
+  .sec { color:var(--sec); }
+  .chip { display:inline-flex; align-items:center; height:36px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; white-space:nowrap; transition:border-color .2s, background .2s, color .2s; }
+  .chip:hover { border-color:var(--pri); }
+  .ph { background:var(--fill); display:flex; align-items:center; justify-content:center; color:var(--sec); font:500 12px/16px Inter; text-transform:uppercase; }
+
+  /* Шапка прототипу */
+  .top { position:sticky; top:0; z-index:20; background:var(--black); border-bottom:1px solid var(--line); }
+  .top .wrap { display:flex; align-items:center; justify-content:space-between; gap:24px; height:72px; }
+  .top nav { display:flex; gap:8px; }
+  .intro { padding:96px 40px 48px; }
+  .intro p { max-width:640px; margin-top:24px; font-size:20px; line-height:28px; }
+  .variant { border-top:1px solid var(--line); padding:64px 0 120px; }
+  .vhead { display:flex; align-items:baseline; gap:24px; margin-bottom:64px; }
+  .vhead .note { max-width:560px; }
+
+  /* A — Index: великі рядки, наведення розкриває */
+  .a-row { border-top:1px solid var(--line); }
+  .a-row:last-child { border-bottom:1px solid var(--line); }
+  .a-head { display:grid; grid-template-columns:80px 1fr auto 40px; align-items:center; gap:24px; padding:32px 0; cursor:pointer; }
+  .a-head .display { transition:color .3s; }
+  .a-row:not(:hover) .a-head .display { color:var(--pri); }
+  .a-list:hover .a-row:not(:hover) .display { color:var(--line); }
+  .a-tags { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; max-width:520px; }
+  .a-arrow { transition:transform .4s var(--ease); font-size:24px; text-align:right; }
+  .a-row:hover .a-arrow { transform:rotate(45deg); }
+  .a-body { display:grid; grid-template-rows:0fr; transition:grid-template-rows .6s var(--ease); }
+  .a-row:hover .a-body { grid-template-rows:1fr; }
+  .a-body > div { overflow:hidden; }
+  .a-inner { display:grid; grid-template-columns:80px 1fr 380px; gap:24px; padding:0 0 40px; }
+  .a-inner .lead { grid-column:2; font-size:20px; line-height:28px; max-width:560px; }
+  .a-inner .ph { grid-column:3; grid-row:1 / span 2; height:200px; }
+
+  /* B — Bento: мозаїка карток різного розміру */
+  .b-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:12px; }
+  .b-card { background:var(--fill); padding:24px; display:flex; flex-direction:column; justify-content:space-between; gap:24px; min-height:300px; transition:background .35s, color .35s; cursor:pointer; }
+  .b-card:hover { background:var(--pri); color:#000; }
+  .b-card:hover .sec, .b-card:hover .dense { color:#555; }
+  .b-card:hover .chip { border-color:#000; }
+  .b-card .top2 { display:flex; justify-content:space-between; }
+  .b-card .name { font:500 40px/48px "Instrument Sans"; }
+  .b-card .tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .b1 { grid-column:span 7; min-height:420px; }
+  .b2 { grid-column:span 5; }
+  .b3 { grid-column:span 4; }
+  .b4 { grid-column:span 4; }
+  .b5 { grid-column:span 4; }
+  .b6 { grid-column:span 12; min-height:240px; flex-direction:row; align-items:flex-end; }
+  .b6 .name { font-size:64px; line-height:64px; }
+
+  /* C — Stack: картки накладаються при скролі (sticky) */
+  .c-stack { position:relative; }
+  .c-card { position:sticky; background:var(--fill); border:1px solid var(--line); margin-bottom:24px; display:grid; grid-template-columns:1fr 1fr; gap:40px; padding:40px; min-height:480px; }
+  .c-card:nth-child(1){ top:96px } .c-card:nth-child(2){ top:120px } .c-card:nth-child(3){ top:144px }
+  .c-card:nth-child(4){ top:168px } .c-card:nth-child(5){ top:192px } .c-card:nth-child(6){ top:216px }
+  .c-card .num { font:500 140px/132px "Instrument Sans"; color:var(--line); }
+  .c-card h3 { font:500 40px/48px "Instrument Sans"; margin:24px 0 16px; }
+  .c-card ul { list-style:none; margin-top:24px; }
+  .c-card li { display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line); }
+  .c-card .ph { min-height:100%; }
+  .c-card .left { display:flex; flex-direction:column; justify-content:space-between; }
+
+  /* D — Split: ліворуч назви, праворуч липка панель, що міняється */
+  .d { display:grid; grid-template-columns:1fr 1fr; gap:64px; }
+  .d-names { display:flex; flex-direction:column; }
+  .d-name { font:500 64px/64px "Instrument Sans"; padding:20px 0; border-top:1px solid var(--line); color:var(--line); cursor:pointer; transition:color .3s; display:flex; justify-content:space-between; align-items:baseline; }
+  .d-name:last-child { border-bottom:1px solid var(--line); }
+  .d-name small { font:500 12px/16px Inter; }
+  .d-name[aria-selected="true"] { color:var(--pri); }
+  .d-panel { position:sticky; top:104px; align-self:start; background:var(--fill); padding:32px; display:flex; flex-direction:column; gap:24px; min-height:520px; }
+  .d-panel .ph { height:200px; }
+  .d-panel h3 { font:500 40px/48px "Instrument Sans"; }
+  .d-panel li { list-style:none; display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line); }
+  .d-fade { transition:opacity .25s; }
+  .d-fade.out { opacity:0; }
+
+  @media (max-width:900px){
+    .wrap,.intro { padding-left:24px; padding-right:24px; }
+    .display { font-size:40px; line-height:48px; }
+    .a-head { grid-template-columns:48px 1fr 24px; } .a-tags { display:none; }
+    .a-inner { grid-template-columns:1fr; } .a-inner .lead,.a-inner .ph { grid-column:1; grid-row:auto; }
+    .b-grid > * { grid-column:span 12 !important; } .b6 { flex-direction:column; }
+    .c-card { grid-template-columns:1fr; position:static; } .c-card .num { font-size:64px; line-height:64px; }
+    .d { grid-template-columns:1fr; } .d-panel { position:static; } .d-name { font-size:40px; line-height:48px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <span class="dense">Services · UI variants</span>
+  <nav>
+    <a class="chip" href="#a">A · Index</a><a class="chip" href="#b">B · Bento</a>
+    <a class="chip" href="#c">C · Stack</a><a class="chip" href="#d">D · Split</a>
+  </nav>
+</div></header>
+
+<section class="intro">
+  <p class="eyebrow">Prototype · not part of the site</p>
+  <h1 class="display" style="margin-top:16px;max-width:900px">From the first sketch to launch.</h1>
+  <p class="sec">Four ways to present the six service categories. Same content and tokens as the site (dark, sharp cards, round buttons); only the layout and interaction differ.</p>
+</section>
+
+<!-- A -->
+<section class="variant" id="a"><div class="wrap">
+  <div class="vhead"><span class="eyebrow">A</span><div class="note"><h2 class="display">Index</h2><p class="sec" style="margin-top:12px">A big typographic list. Hover a row: the others dim, the row opens with the lead and a picture. Fast to scan, very editorial. Closest to the current services section on the home page.</p></div></div>
+  <div class="a-list" id="aList"></div>
+</div></section>
+
+<!-- B -->
+<section class="variant" id="b"><div class="wrap">
+  <div class="vhead"><span class="eyebrow">B</span><div class="note"><h2 class="display">Bento</h2><p class="sec" style="margin-top:12px">One mosaic of cards of different sizes: you see all six at once, and the size hints at what matters most (Design is the biggest). Hover inverts a card to white.</p></div></div>
+  <div class="b-grid" id="bGrid"></div>
+</div></section>
+
+<!-- C -->
+<section class="variant" id="c"><div class="wrap">
+  <div class="vhead"><span class="eyebrow">C</span><div class="note"><h2 class="display">Stack</h2><p class="sec" style="margin-top:12px">Scroll tells the story in order: each category is a full card that slides over the previous one. Best for “from the first sketch to launch” as a process.</p></div></div>
+  <div class="c-stack" id="cStack"></div>
+</div></section>
+
+<!-- D -->
+<section class="variant" id="d"><div class="wrap">
+  <div class="vhead"><span class="eyebrow">D</span><div class="note"><h2 class="display">Split</h2><p class="sec" style="margin-top:12px">Names on the left, a sticky detail panel on the right that changes as you hover or tap a name. Calm, nothing jumps, lots of room for the detail.</p></div></div>
+  <div class="d"><div class="d-names" id="dNames" role="tablist"></div><aside class="d-panel" id="dPanel"></aside></div>
+</div></section>
+
+<script>
+const CATS = [
+  { name:"Design", title:"We start with how people actually use it.", lead:"Before a single screen, we sit with your product and the people it is for. Research, flows and wireframes you can test come first; the interface follows.", items:["UI/UX Design","Web Design","Mobile App Design","Website Redesign","UX/UI Audit"] },
+  { name:"Branding", title:"Then it has to be recognisable.", lead:"A mark, a palette and a voice, drawn once and written down, so the identity holds when other hands touch it.", items:["Brand Identity","Logo Design","Brand Guidelines"] },
+  { name:"Illustration", title:"A visual language that isn't borrowed.", lead:"Icons, characters and scenes drawn for your product's tone. No stock packs, no lookalikes.", items:["Icon Set","Character Illustration","Editorial Illustration"] },
+  { name:"Motion", title:"Motion shows why, not just what.", lead:"Small feedback that confirms every tap, and short films that explain a feature in seconds.", items:["Micro-interactions","Product Animation","Explainer Video"] },
+  { name:"3D", title:"Depth, where flat won't do.", lead:"Renders, icons and hero scenes with no photo shoot, even before the product exists.", items:["Product Render","3D Icon Set","3D Illustration"] },
+  { name:"Development", title:"Built exactly as designed.", lead:"Pixel-perfect front-end, specs a dev team can build from, and the same people through launch.", items:["Front-End Build","Design Handoff","QA & Launch Support"] },
+];
+const n = i => String(i+1).padStart(2,"0");
+const chips = (a) => a.map(t=>`<span class="chip">${t}</span>`).join("");
+
+// A
+document.getElementById("aList").innerHTML = CATS.map((c,i)=>`
+  <div class="a-row" tabindex="0">
+    <div class="a-head"><span class="dense">${n(i)}</span><span class="display">${c.name}</span><div class="a-tags">${chips(c.items.slice(0,3))}</div><span class="a-arrow">↗</span></div>
+    <div class="a-body"><div><div class="a-inner"><p class="lead">${c.lead}</p><p class="sec" style="grid-column:2">${c.items.join(" · ")}</p><div class="ph">${c.name} — 380 × 200</div></div></div></div>
+  </div>`).join("");
+
+// B
+const bCls = ["b1","b2","b3","b4","b5","b6"];
+document.getElementById("bGrid").innerHTML = CATS.map((c,i)=>`
+  <article class="b-card ${bCls[i]}">
+    <div class="top2"><span class="dense">${n(i)}</span><span class="dense">${c.items.length} services</span></div>
+    <div><h3 class="name">${c.name}</h3><p class="sec" style="margin-top:12px;max-width:520px">${c.lead}</p></div>
+    <div class="tags">${chips(c.items.slice(0, i===0?5:3))}</div>
+  </article>`).join("");
+
+// C
+document.getElementById("cStack").innerHTML = CATS.map((c,i)=>`
+  <article class="c-card">
+    <div class="left">
+      <div><div class="num">${n(i)}</div><h3>${c.title}</h3><p class="sec" style="max-width:480px">${c.lead}</p></div>
+      <ul>${c.items.map(t=>`<li><span>${t}</span><span class="sec">↗</span></li>`).join("")}</ul>
+    </div>
+    <div class="ph">${c.name} — picture</div>
+  </article>`).join("");
+
+// D
+const names = document.getElementById("dNames"), panel = document.getElementById("dPanel");
+names.innerHTML = CATS.map((c,i)=>`<div class="d-name" role="tab" tabindex="0" data-i="${i}" aria-selected="${i===0}">${c.name}<small>${n(i)}</small></div>`).join("");
+function show(i){
+  const c = CATS[i];
+  panel.classList.add("out");
+  panel.innerHTML = `<div class="d-fade"><div class="ph">${c.name} — picture</div><h3 style="margin-top:24px">${c.title}</h3><p class="sec" style="margin:12px 0 24px">${c.lead}</p><ul>${c.items.map(t=>`<li><span>${t}</span><span class="sec">↗</span></li>`).join("")}</ul></div>`;
+  panel.classList.remove("out");
+  [...names.children].forEach((el,k)=>el.setAttribute("aria-selected", k===i));
+}
+names.addEventListener("mouseover", e=>{ const t=e.target.closest(".d-name"); if(t) show(+t.dataset.i); });
+names.addEventListener("focusin", e=>{ const t=e.target.closest(".d-name"); if(t) show(+t.dataset.i); });
+names.addEventListener("click", e=>{ const t=e.target.closest(".d-name"); if(t) show(+t.dataset.i); });
+show(0);
+</script>
+</body>
+</html>

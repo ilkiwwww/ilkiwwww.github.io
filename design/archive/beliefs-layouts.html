@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Beliefs layouts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--black); color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; }
+  .nav { position: fixed; z-index: 10; top: 0; left: 0; right: 0; display: flex; gap: 8px; padding: 12px 40px; background: rgba(0,0,0,.92); border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .nav a { flex: none; color: var(--primary); text-decoration: none; border: 1px solid var(--line); border-radius: 9999px; height: 36px; padding: 0 20px; display: inline-flex; align-items: center; font-size: 14px; }
+  .nav a:hover { background: var(--fill); }
+  .variant { padding: 140px 40px 120px; border-bottom: 1px solid var(--line); }
+  .tag { color: var(--secondary); font-size: 16px; font-weight: 500; text-transform: uppercase; margin-bottom: 24px; }
+  .st { font-family: "Instrument Sans", "Inter", sans-serif; font-weight: 500; font-size: 64px; line-height: 64px; }
+  .num { font-size: 12px; line-height: 16px; color: var(--secondary); }
+  .ttl { font-size: 20px; line-height: 28px; font-weight: 500; }
+  .txt { color: var(--secondary); }
+  .line { height: 1px; background: var(--line); }
+  .head { margin-bottom: 40px; }
+
+  /* 0 — current */
+  .v0 .cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
+  .v0 .col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* 1 — rows */
+  .v1 .row { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 40px; padding: 32px 0; border-top: 1px solid var(--line); align-items: baseline; transition: background .3s; }
+  .v1 .row:last-child { border-bottom: 1px solid var(--line); }
+  .v1 .row:hover { background: var(--fill); box-shadow: 0 0 0 100vmax var(--fill); clip-path: inset(0 -100vmax); }
+  .v1 .row .ttl { font-size: 28px; line-height: 36px; }
+
+  /* 2 — sticky split */
+  .v2 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .v2 .sticky { position: sticky; top: 120px; }
+  .v2 .item { display: flex; flex-direction: column; gap: 16px; padding: 40px 0; border-top: 1px solid var(--line); min-height: 220px; }
+  .v2 .item:first-child { padding-top: 0; border-top: 0; }
+
+  /* 3 — 2x2 */
+  .v3 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px 40px; }
+  .v3 .cell { display: flex; flex-direction: column; gap: 16px; border-top: 1px solid var(--line); padding-top: 24px; }
+  .v3 .cell .st { color: var(--secondary); }
+  .v3 .cell .ttl { font-size: 28px; line-height: 36px; }
+
+  /* 4 — one at a time */
+  .v4 .stage { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; min-height: 360px; }
+  .v4 .names { display: flex; flex-direction: column; }
+  .v4 .names button { all: unset; cursor: pointer; font-family: "Instrument Sans", "Inter", sans-serif; font-weight: 500; font-size: 64px; line-height: 72px; color: var(--secondary); transition: color .4s; }
+  .v4 .names button[aria-selected="true"], .v4 .names button:hover, .v4 .names button:focus-visible { color: var(--primary); }
+  .v4 .desc { font-size: 28px; line-height: 36px; transition: opacity .4s, transform .4s; }
+  .v4 .desc.out { opacity: 0; transform: translateY(16px); }
+  .v4 .desc .num { display: block; margin-bottom: 16px; }
+
+  /* 5 — under showreel strip */
+  .v5 .reel { aspect-ratio: 20/9; background: var(--fill); display: flex; align-items: center; justify-content: center; color: var(--secondary); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
+  .v5 .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-top: 24px; }
+  .v5 .strip div { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .v5 .strip .ttl { font-size: 20px; }
+  .v5 .strip .txt { font-size: 12px; line-height: 16px; }
+
+  @media (max-width: 900px) {
+    .nav, .variant { padding-left: 16px; padding-right: 16px; }
+    .st { font-size: 40px; line-height: 48px; }
+    .v0 .cols, .v5 .strip { grid-template-columns: 1fr 1fr; }
+    .v1 .row { grid-template-columns: 48px 1fr; }
+    .v1 .row .txt { grid-column: 2; }
+    .v2 .split, .v3 .grid, .v4 .stage { grid-template-columns: 1fr; }
+    .v2 .sticky { position: static; }
+    .v4 .names button { font-size: 40px; line-height: 48px; }
+  }
+  @media (max-width: 560px) { .v0 .cols, .v5 .strip { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="#v0">0 · Зараз</a><a href="#v1">1 · Рядки</a><a href="#v2">2 · Липкий заголовок</a>
+  <a href="#v3">3 · Сітка 2×2</a><a href="#v4">4 · Один за раз</a><a href="#v5">5 · Під шоурілом</a>
+</nav>
+
+<section class="variant v0" id="v0">
+  <p class="tag">0 · Зараз на сайті</p>
+  <h2 class="st head">Four things we<br>don't compromise on.</h2>
+  <div class="cols" data-cols></div>
+</section>
+
+<section class="variant v1" id="v1">
+  <p class="tag">1 · Рядки з лініями</p>
+  <h2 class="st head">Four things we<br>don't compromise on.</h2>
+  <div data-rows></div>
+</section>
+
+<section class="variant v2" id="v2">
+  <p class="tag">2 · Заголовок липкий, принципи прокручуються</p>
+  <div class="split">
+    <h2 class="st sticky">Four things we<br>don't compromise on.</h2>
+    <div data-items></div>
+  </div>
+</section>
+
+<section class="variant v3" id="v3">
+  <p class="tag">3 · Сітка 2×2 з великими номерами</p>
+  <h2 class="st head">Four things we<br>don't compromise on.</h2>
+  <div class="grid" data-grid></div>
+</section>
+
+<section class="variant v4" id="v4">
+  <p class="tag">4 · Один принцип за раз (наведення / клік)</p>
+  <div class="stage">
+    <div class="names" role="tablist" data-names></div>
+    <p class="desc" id="desc" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="variant v5" id="v5">
+  <p class="tag">5 · Підписи під шоурілом, без окремого заголовка</p>
+  <div class="reel">Showreel</div>
+  <div class="strip" data-strip></div>
+</section>
+
+<script>
+  const B = [
+    ["Small on purpose", "A senior team you can name, not a pyramid of juniors behind one account manager."],
+    ["Embedded from day one", "We work inside your Slack, Figma and roadmap, not across a wall."],
+    ["Design that ships", "The people who drew it are the ones answering questions when it gets built."],
+    ["Straight talk", "If something won't work, you hear it from us before it costs you."],
+  ];
+  const n = i => String(i + 1).padStart(2, "0");
+  const $ = s => document.querySelector(s);
+
+  $("[data-cols]").innerHTML = B.map(([t, d], i) =>
+    `<div class="col"><div class="line"></div><span class="num">${n(i)}</span><span class="ttl">${t}</span><span class="txt">${d}</span></div>`).join("");
+
+  $("[data-rows]").innerHTML = B.map(([t, d], i) =>
+    `<div class="row"><span class="num">${n(i)}</span><span class="ttl">${t}</span><span class="txt">${d}</span></div>`).join("");
+
+  $("[data-items]").innerHTML = B.map(([t, d], i) =>
+    `<div class="item"><span class="num">${n(i)}</span><span class="ttl">${t}</span><span class="txt">${d}</span></div>`).join("");
+
+  $("[data-grid]").innerHTML = B.map(([t, d], i) =>
+    `<div class="cell"><span class="st">${n(i)}</span><span class="ttl">${t}</span><span class="txt">${d}</span></div>`).join("");
+
+  $("[data-strip]").innerHTML = B.map(([t, d]) =>
+    `<div><span class="ttl">${t}</span><span class="txt">${d}</span></div>`).join("");
+
+  // 4 — перемикання
+  const names = $("[data-names]"), desc = $("#desc");
+  names.innerHTML = B.map(([t], i) => `<button role="tab" aria-selected="${i === 0}" data-i="${i}">${t}</button>`).join("");
+  function show(i) {
+    names.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-selected", j === i));
+    desc.classList.add("out");
+    setTimeout(() => { desc.innerHTML = `<span class="num">${n(i)}</span>${B[i][1]}`; desc.classList.remove("out"); }, 200);
+  }
+  names.addEventListener("mouseover", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i); });
+  names.addEventListener("focusin", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i); });
+  names.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i); });
+  desc.innerHTML = `<span class="num">${n(0)}</span>${B[0][1]}`;
+</script>
+</body>
+</html>

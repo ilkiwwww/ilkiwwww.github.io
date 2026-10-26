@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services page 3 — Playful (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Hero: слово крутиться саме */
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:120px 40px 40px; gap:48px; }
+  .h-line { display:flex; align-items:center; gap:32px; flex-wrap:wrap; }
+  .h-line .we { font:500 clamp(64px,11vw,176px)/1 "Instrument Sans"; letter-spacing:-.03em; color:var(--sec); }
+  .h-win { height:clamp(64px,11vw,176px); overflow:hidden; }
+  .h-col { transition:transform .9s var(--ease); }
+  .h-col div { height:clamp(64px,11vw,176px); font:500 clamp(64px,11vw,176px)/1 "Instrument Sans"; letter-spacing:-.03em; }
+  .h-sub { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; border-top:1px solid var(--line); padding-top:32px; }
+  .h-sub p { max-width:520px; } .h-tabs { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+
+  /* Services: cursor gallery */
+  .c-row { display:grid; grid-template-columns:80px 1fr auto; align-items:baseline; gap:24px; padding:28px 0; border-top:1px solid var(--line); cursor:pointer; transition:opacity .4s; }
+  .c-row:last-child { border-bottom:1px solid var(--line); }
+  .c-row .huge { font-size:96px; line-height:96px; transition:transform .6s var(--case); }
+  .c-list:hover .c-row { opacity:.25; } .c-list .c-row:hover { opacity:1; } .c-row:hover .huge { transform:translateX(32px); }
+  .c-subs { display:flex; flex-direction:column; align-items:flex-end; gap:4px; max-width:260px; opacity:0; transform:translateX(24px); transition:.5s var(--case); text-align:right; }
+  .c-row:hover .c-subs { opacity:1; transform:none; }
+  .c-float { position:fixed; left:0; top:0; width:260px; height:340px; pointer-events:none; z-index:40; background:var(--fill); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .3s; font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); will-change:transform; }
+  .c-float.on { opacity:1; }
+
+  /* Process: dial */
+  .d-stage { padding:112px 40px 40px; display:flex; flex-direction:column; }
+  .d-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+  .d-dial { position:relative; width:min(520px,80%); aspect-ratio:1; margin:auto; }
+  .d-dial svg { width:100%; height:100%; transform:rotate(-90deg); } .d-dial circle { fill:none; stroke-width:2; }
+  .d-center { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font:500 140px/132px "Instrument Sans"; }
+  .d-tick { position:absolute; left:0; top:0; width:0; height:0; } .d-tick span { position:absolute; width:11px; height:11px; margin:-5px; border-radius:9999px; background:var(--black); border:1px solid var(--line); transition:.4s; } .d-tick.on span { background:var(--pri); border-color:var(--pri); }
+  .d-text h3 { font:500 56px/56px "Instrument Sans"; margin:16px 0 24px; }
+  .swap { animation:in .7s var(--ease); } @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+
+  /* Team strip */
+  .team { display:flex; gap:12px; padding:0 40px; }
+  .team .m { flex:none; width:240px; } .team .m img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; filter:grayscale(1); transition:filter .5s, transform .6s var(--case); } .team .m:hover img { filter:none; }
+  .team .m:nth-child(even) { margin-top:64px; }
+  .team-wrap { overflow:hidden; padding-bottom:64px; }
+  .team-wrap .marq > div { animation-duration:60s; gap:12px; padding-right:12px; }
+  @media (max-width:900px){ .hero,.d-stage { padding-left:24px; padding-right:24px; } .h-sub { flex-direction:column; align-items:flex-start; } .h-tabs { justify-content:flex-start; } .d-grid { grid-template-columns:1fr; gap:24px; } .d-center { font-size:64px; line-height:64px; } .c-subs { display:none; } .c-row { grid-template-columns:40px 1fr; } .c-row .huge { font-size:56px; line-height:60px; } .c-float { display:none; } }
+</style></head>
+<body>
+<div id="app"></div>
+<div class="c-float" id="cf"></div>
+<script src="base.js"></script>
+<script>
+const {CATS,STEPS,n2,clamp,prog,ticks} = E;
+const TEAM=["alina-mashtalier","andrey-baranovskyi","max-shepherd","mikhail-pashynskyi","khrystyna-ilkiv","daria-kandyba","kate-minkovych","victoria-kachan","viktoriia-bondar","yuliia-kit"];
+const teamHtml=TEAM.map(t=>`<div class="m"><img src="../../public/team/${t}.png" alt=""></div>`).join("");
+document.getElementById("app").innerHTML = `
+${E.header()}
+<section class="hero">
+  <div class="eyebrow">Services</div>
+  <div class="h-line" data-view><span class="we">We do</span><div class="h-win"><div class="h-col" id="hcol">${[...CATS,CATS[0]].map(c=>`<div>${c.name}</div>`).join("")}</div></div></div>
+  <div class="h-sub"><p class="sec lead">${"Six disciplines, one team. Pick one to see what sits inside — or watch them roll."}</p><div class="h-tabs" id="htabs">${CATS.map((c,i)=>`<button class="chip" data-i="${i}">${c.name}</button>`).join("")}</div></div>
+</section>
+
+<section class="section">
+  ${E.label("What we do")}
+  <div class="c-list" id="cl">${CATS.map((c,i)=>`<div class="c-row" data-name="${c.name}"><span class="dense">${n2(i)}</span><span class="huge">${c.name}</span><div class="c-subs">${c.items.map(t=>`<span class="sec">${t}</span>`).join("")}</div></div>`).join("")}</div>
+</section>
+
+<div class="track" id="dt" style="height:600vh"><div class="stage d-stage">
+  <div class="eyebrow">How we work</div><div class="statement" style="margin-top:16px">One process, followed every time.</div>
+  <div class="d-grid">
+    <div class="d-dial" id="dd"><svg viewBox="0 0 200 200"><circle stroke="#333" cx="100" cy="100" r="98"/><circle id="dp" stroke="#fff" stroke-linecap="round" cx="100" cy="100" r="98"/></svg><div id="dtk"></div><div class="d-center" id="dn">01</div></div>
+    <div class="d-text" id="dx"></div>
+  </div>
+</div></div>
+
+<section class="section" style="padding-left:0;padding-right:0;padding-bottom:0"><div style="padding:0 40px">${E.label("The people behind it")}<div class="statement fill" data-fill style="max-width:900px;margin-bottom:64px">${E.fillText("Real people, real craft — the same faces from the first call to launch.")}</div></div>
+  <div class="team-wrap"><div class="marq"><div class="team">${teamHtml}</div><div class="team">${teamHtml}</div></div></div></section>
+
+${E.tools()}
+${E.stats()}
+${E.faq()}
+${E.cta()}`;
+
+// hero reel (авто)
+let hi=0; const col=document.getElementById("hcol"), tabs=[...document.querySelectorAll("#htabs .chip")];
+const H=()=>col.firstElementChild.offsetHeight; let paused=false, timer;
+function go(i,instant){ hi=i; col.style.transition=instant?"none":""; col.style.transform=`translateY(${-i*H()}px)`; tabs.forEach((t,k)=>t.classList.toggle("on",k===i%6)); }
+function auto(){ clearInterval(timer); timer=setInterval(()=>{ if(paused||document.hidden) return; const n=hi+1; go(n); if(n===6) setTimeout(()=>go(0,true),950); },2200); }
+tabs.forEach(t=>t.addEventListener("click",()=>{ go(+t.dataset.i); auto(); })); addEventListener("resize",()=>go(hi%6,true)); go(0,true); auto();
+
+// cursor gallery
+const cf=document.getElementById("cf"), cl=document.getElementById("cl"); let mx=0,my=0,fx=0,fy=0,rot=0;
+cl.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;}); cl.addEventListener("mouseover",e=>{const r=e.target.closest(".c-row"); if(r){cf.textContent=r.dataset.name+" — picture"; cf.classList.add("on");}}); cl.addEventListener("mouseleave",()=>cf.classList.remove("on"));
+(function loop(){ const dx=mx-130-fx; fx+=dx*.12; fy+=(my-170-fy)*.12; rot+=(clamp(dx/40,-1,1)*10-rot)*.1; cf.style.transform=`translate(${fx}px,${fy}px) rotate(${rot}deg)`; requestAnimationFrame(loop); })();
+
+// dial
+const dd=document.getElementById("dd"), dp=document.getElementById("dp"), dtk=document.getElementById("dtk"); const C=2*Math.PI*98; dp.style.strokeDasharray=C; dp.style.strokeDashoffset=C;
+const tk=[]; function place(){ const R=dd.clientWidth/2*.98, c=dd.clientWidth/2; dtk.innerHTML=""; STEPS.forEach((s,i)=>{ const a=(i/6)*2*Math.PI-Math.PI/2; const el=document.createElement("div"); el.className="d-tick"; el.innerHTML="<span></span>"; el.style.transform=`translate(${c+Math.cos(a)*R}px,${c+Math.sin(a)*R}px)`; dtk.appendChild(el); tk[i]=el; }); } dtk.style.cssText="position:absolute;inset:0"; place(); addEventListener("resize",place);
+let dl=-1;
+ticks.push(()=>{ const q=prog(document.getElementById("dt")), i=Math.min(5,Math.floor(q*6)); dp.style.strokeDashoffset=C*(1-q); tk.forEach((el,k)=>el.classList.toggle("on",k<=i));
+  if(i!==dl){ dl=i; document.getElementById("dn").textContent=n2(i); document.getElementById("dx").innerHTML=`<div class="swap"><div class="dense">${n2(i)} / 06</div><h3>${STEPS[i][0]}</h3><p class="sec lead" style="max-width:520px">${STEPS[i][1]}</p></div>`; } });
+E.init();
+</script></body></html>

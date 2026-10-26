@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Ask Emote drawer: варіанти меню</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#1A1A1A; --line:#333; --primary:#fff; --secondary:#999; --reveal: cubic-bezier(.16,1,.3,1); --ease: cubic-bezier(.215,.61,.355,1); }
+  * { box-sizing: border-box; margin: 0; }
+  button { all: unset; box-sizing: border-box; cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  body { background: #070708; color: var(--primary); font-family: "Inter", system-ui, sans-serif; font-size: 16px; line-height: 24px; -webkit-font-smoothing: antialiased; padding: 32px 32px 96px; }
+  h1 { font-size: 20px; line-height: 28px; font-weight: 500; }
+  .lead { color: var(--secondary); margin: 8px 0 32px; max-width: 720px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 32px 24px; }
+  .item h2 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+  .item p.d { color: var(--secondary); font-size: 12px; line-height: 16px; margin-bottom: 12px; min-height: 32px; }
+
+  /* ---- рамка-шторка (імітація) ---------------------------------------- */
+  .drawer { position: relative; height: 760px; background: var(--fill); border-radius: 32px; display: flex; flex-direction: column; overflow: hidden; }
+  .dh { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; }
+  .label { color: var(--secondary); font-weight: 500; text-transform: uppercase; }
+  .x { width: 48px; height: 48px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; }
+  .x:hover { background: var(--black); }
+  .body { flex: 1; overflow-y: auto; padding: 0 24px; display: flex; flex-direction: column; }
+  .foot { padding: 24px; }
+  .field { display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 4px 0 24px; border: 1px solid var(--line); border-radius: 9999px; background: var(--black); }
+  .field:focus-within { border-color: var(--primary); }
+  .field input { all: unset; flex: 1; min-width: 0; }
+  .field input::placeholder { color: var(--secondary); }
+  .send { width: 48px; height: 48px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; }
+  .send:hover { background: var(--fill); }
+  svg { width: 24px; height: 24px; flex: none; }
+  .quote { font-size: 28px; line-height: 36px; }
+  .sec { color: var(--secondary); }
+  .asked .empty { display: none; }
+  .thread { display: none; flex-direction: column; gap: 24px; margin-top: auto; padding: 24px 0; }
+  .asked .thread { display: flex; }
+  .atxt { font-size: 20px; line-height: 28px; animation: in .6s var(--reveal) both; }
+  @keyframes in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .dots { display: flex; gap: 8px; padding: 10px 0; } .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); animation: dot 1.2s ease-in-out infinite; } .dots i:nth-child(2){animation-delay:.15s} .dots i:nth-child(3){animation-delay:.3s}
+  @keyframes dot { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+  .rows { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+  .rq { display: flex; align-items: center; gap: 16px; width: 100%; padding: 14px 0; border-bottom: 1px solid var(--line); color: var(--secondary); text-align: left; transition: color .3s; }
+  .rq:hover, .rq:focus-visible { color: var(--primary); }
+  .mt { margin-top: auto; }
+
+  /* 1 — зараз */
+  .v1 .empty { margin-top: auto; padding-bottom: 24px; display: flex; flex-direction: column; gap: 32px; }
+
+  /* 2 — плитки 2×3 */
+  .v2 .empty { margin-top: auto; padding-bottom: 24px; display: flex; flex-direction: column; gap: 24px; }
+  .v2 .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .v2 .tile { background: var(--black); border-radius: 20px; padding: 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; color: var(--secondary); transition: color .3s, background .3s; text-align: left; }
+  .v2 .tile:hover { color: var(--primary); background: #0D0D0F; }
+  .v2 .tile svg { transform: rotate(-45deg); width: 20px; height: 20px; }
+
+  /* 3 — за темами */
+  .v3 .empty { margin-top: auto; padding-bottom: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .v3 .grp { border-bottom: 1px solid var(--line); }
+  .v3 .grp:first-of-type { border-top: 1px solid var(--line); }
+  .v3 .gh { display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 16px 0; font-size: 20px; line-height: 28px; }
+  .v3 .gh svg { transition: transform .4s var(--ease); }
+  .v3 .grp[data-open] .gh svg { transform: rotate(45deg); }
+  .v3 .gb { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s var(--ease); }
+  .v3 .grp[data-open] .gb { grid-template-rows: 1fr; }
+  .v3 .gb > div { overflow: hidden; }
+  .v3 .gb .rq { border-bottom: 0; padding: 10px 0; }
+  .v3 .gb .rq:last-child { margin-bottom: 8px; }
+
+  /* 4 — поле зверху, питання під ним */
+  .v4 .top { padding: 0 24px 16px; }
+  .v4 .empty { display: flex; flex-direction: column; gap: 16px; padding-top: 8px; }
+  .v4 .hint { display: flex; align-items: center; justify-content: space-between; }
+  .v4 .thread { margin-top: 0; }
+
+  /* 5 — чат: привітання й швидкі відповіді */
+  .v5 .empty { margin-top: auto; display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
+  .v5 .msg { max-width: 88%; padding: 16px 20px; background: var(--black); border-radius: 24px 24px 24px 8px; font-size: 16px; line-height: 24px; }
+  .v5 .reply { align-self: flex-end; max-width: 88%; padding: 12px 20px; border: 1px solid var(--line); border-radius: 9999px; color: var(--primary); text-align: left; transition: background .3s; }
+  .v5 .reply:hover { background: var(--black); }
+  .v5 .replies { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+  /* 6 — редакційний: великі номери */
+  .v6 .empty { margin-top: auto; padding-bottom: 24px; display: flex; flex-direction: column; gap: 24px; }
+  .v6 .big { font-family: "Instrument Sans", sans-serif; font-weight: 500; font-size: 40px; line-height: 44px; }
+  .v6 .num { counter-reset: n; list-style: none; padding: 0; border-top: 1px solid var(--line); }
+  .v6 .num .rq { counter-increment: n; padding: 12px 0; gap: 20px; font-size: 20px; line-height: 28px; }
+  .v6 .num .rq::before { content: counter(n, decimal-leading-zero); font-size: 12px; line-height: 16px; width: 20px; }
+  .v6 .num .rq:hover { padding-left: 8px; }
+  .v6 .num .rq { transition: color .3s, padding .4s var(--ease); }
+
+  @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<h1>Ask Emote — варіанти меню шторки</h1>
+<p class="lead">Шість варіантів вмісту шторки: як показати готові питання й поле. Усе клікабельне: натисни питання, щоб побачити відповідь і «Go deeper».</p>
+<div class="grid" id="grid"></div>
+
+<script>
+  const SUGG = ["What does EMOTE do?", "How does a project start?", "How long does a project take?", "How much does it cost?", "Do you work with startups?", "Can I see your work?"];
+  const ANS = {
+    "What does EMOTE do?": ["We are a product design team: interfaces, brands, illustration, motion and 3D for founders and product teams.", ["How does a project start?", "Can I see your work?"]],
+    "How does a project start?": ["With a short call. We learn your product and goals, then send a clear plan: scope, team, timeline.", ["How long does a project take?", "How much does it cost?"]],
+    "How long does a project take?": ["From a few weeks for a focused sprint to a few months for a full redesign.", ["How does a project start?", "How much does it cost?"]],
+    "How much does it cost?": ["Every project is scoped individually. Book a call and we will send a clear estimate within a few days.", ["How does a project start?", "How long does a project take?"]],
+    "Do you work with startups?": ["Yes. Founders and early product teams are a big part of our work.", ["What does EMOTE do?", "Can I see your work?"]],
+    "Can I see your work?": ["Of course. Selected case studies are on the Work page.", ["What does EMOTE do?", "How does a project start?"]],
+  };
+  const FALLBACK = ["I'm not sure about that yet. The best way to get a precise answer is to talk to the team.", ["What does EMOTE do?", "How does a project start?"]];
+  const ARR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 5v9h14M15 10l4 4-4 4"/></svg>';
+  const PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
+  const GO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const row = q => `<li><button class="rq" data-q="${q}">${ARR}<span>${q}</span></button></li>`;
+  const rows = (list) => `<ul class="rows">${list.map(row).join("")}</ul>`;
+  const head = `<div class="dh"><span class="label">Ask Emote</span><button class="x" aria-label="Close">${X}</button></div>`;
+  const foot = `<div class="foot"><form class="field"><input placeholder="Ask a question…" aria-label="Ask"><button class="send" aria-label="Send">${GO}</button></form></div>`;
+  const wrap = (cls, inner, top = "") => `<div class="drawer ${cls}">${head}${top}<div class="body">${inner}<div class="thread"></div></div>${foot}</div>`;
+
+  const V = [
+    ["1 · Зараз", "Запит угорі, питання рядками з лініями, поле внизу.",
+      wrap("v1", `<div class="empty"><p class="quote">What would you like to know?</p><div><p class="label" style="margin-bottom:16px">Try asking</p>${rows(SUGG)}</div></div>`)],
+    ["2 · Плитки 2×3", "Питання як великі плитки-картки в сітці. Візуально легше «сканувати», менше схоже на список.",
+      wrap("v2", `<div class="empty"><p class="quote">What would you like to know?</p><div class="tiles">${SUGG.map(q => `<button class="tile" data-q="${q}"><span>${q}</span>${GO}</button>`).join("")}</div></div>`)],
+    ["3 · За темами", "Питання згруповані: About, Process, Pricing. Розкривається по одній темі, видно менше, але структурніше.",
+      wrap("v3", `<div class="empty"><p class="quote">What would you like to know?</p><div>
+        ${[["About EMOTE", [SUGG[0], SUGG[4], SUGG[5]]], ["Process", [SUGG[1], SUGG[2]]], ["Pricing", [SUGG[3]]]].map(([t, l], i) => `<div class="grp" ${i === 0 ? "data-open" : ""}><button class="gh">${t}${PLUS}</button><div class="gb"><div>${l.map(q => `<button class="rq" data-q="${q}">${ARR}<span>${q}</span></button>`).join("")}</div></div></div>`).join("")}
+      </div></div>`)],
+    ["4 · Поле зверху", "Поле на першому місці (одразу пишеш), питання-підказки під ним. Відповіді з'являються нижче. Як пошук.",
+      wrap("v4", `<div class="empty"><div class="hint"><p class="label">Or try asking</p></div>${rows(SUGG.slice(0, 4))}</div>`,
+        `<div class="top"><form class="field" id="top-field"><input placeholder="Ask a question…" aria-label="Ask"><button class="send" aria-label="Send">${GO}</button></form></div>`).replace(foot, "")],
+    ["5 · Чат із привітанням", "Emote вітається, готові питання виглядають як швидкі відповіді праворуч. Найбільш «розмовний», менше інтерфейсу.",
+      wrap("v5", `<div class="empty"><div class="msg">Hi, I'm the EMOTE assistant. Ask me about our work, process or pricing.</div><div class="replies">${SUGG.slice(0, 4).map(q => `<button class="reply" data-q="${q}">${q}</button>`).join("")}</div></div>`)],
+    ["6 · Редакційний", "Великий заголовок і нумеровані питання великим шрифтом, на hover зсуваються. Перегукується з типографікою сайту.",
+      wrap("v6", `<div class="empty"><p class="big">Ask us<br>anything.</p><ul class="rows num">${SUGG.map(row).join("")}</ul></div>`)],
+  ];
+
+  document.getElementById("grid").innerHTML = V.map(([t, d, html]) => `<section class="item"><h2>${t}</h2><p class="d">${d}</p>${html}</section>`).join("");
+
+  document.querySelectorAll(".item").forEach(item => {
+    const dr = item.querySelector(".drawer"), th = item.querySelector(".thread"), input = item.querySelector("input");
+    function ask(q) {
+      dr.classList.add("asked");
+      th.insertAdjacentHTML("beforeend", `<div style="display:flex;flex-direction:column;gap:16px"><p class="sec">${q}</p><div class="dots"><i></i><i></i><i></i></div></div>`);
+      const turn = th.lastElementChild; input.value = "";
+      setTimeout(() => {
+        const [a, f] = ANS[q] || FALLBACK;
+        turn.querySelector(".dots").outerHTML = `<p class="atxt">${a}</p><div><p class="label" style="margin-bottom:12px">Go deeper</p>${rows(f)}</div>`;
+        dr.querySelector(".body").scrollTop = 1e5;
+      }, 900);
+    }
+    item.addEventListener("click", e => {
+      const g = e.target.closest(".gh"); if (g) { const grp = g.parentElement; grp.toggleAttribute("data-open"); return; }
+      const b = e.target.closest("[data-q]"); if (b) ask(b.dataset.q);
+      if (e.target.closest(".x")) { dr.classList.remove("asked"); th.innerHTML = ""; }
+    });
+    item.querySelectorAll("form").forEach(f => f.addEventListener("submit", e => { e.preventDefault(); const i = f.querySelector("input"); if (i.value.trim()) ask(i.value.trim()); }));
+  });
+</script>
+</body>
+</html>
