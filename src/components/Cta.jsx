@@ -4,6 +4,7 @@ import Button from "./ui/Button.jsx";
 import ScrollHeading from "./ui/ScrollHeading.jsx";
 import Section from "./ui/Section.jsx";
 import Text from "./ui/Text.jsx";
+import { hasWebGL } from "./glass/hasWebGL.js";
 
 // Футер (Figma, node 40002187:279): внизу сцени ліворуч legal, праворуч
 // соцмережі.
@@ -21,15 +22,6 @@ const SOCIALS = [
 // просто заголовок на чорному. Текстовий шар пропускає курсор до лого
 // (pointer-events-none), клікабельна лише кнопка.
 const CtaScene = lazy(() => import("./glass/CtaScene.jsx"));
-
-const hasWebGL = (() => {
-  try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
-  } catch {
-    return false;
-  }
-})();
 
 // Футер: legal ліворуч, соцмережі праворуч. У сцені CTA лежить внизу (absolute), без CTA — звичайним рядком.
 function Footer({ className = "" }) {

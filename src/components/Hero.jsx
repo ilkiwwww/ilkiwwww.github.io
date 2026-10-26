@@ -1,19 +1,30 @@
+import { lazy, Suspense, useRef } from "react";
 import { HERO_CASES, HERO_QUOTE } from "../data/hero.js";
 import Heading from "./ui/Heading.jsx";
-import Media from "./ui/Media.jsx";
+import { hasWebGL } from "./glass/hasWebGL.js";
 import Text from "./ui/Text.jsx";
 import { Reveal } from "./ui/Motion.jsx";
 
-// Перший екран — за Figma (UI-Design, node 40002452:3, 1440×900): фон — темний
-// скляний 3D-об'єкт, по центру заголовок (його лівий край стоїть на 428 при 1440),
+const CtaScene = lazy(() => import("./glass/CtaScene.jsx"));
+
+// Перший екран — за Figma (UI-Design, node 40002452:3, 1440×900): фон — справжня 3D-сцена
+// (темне скляне лого «ö», glass/CtaScene.jsx, та сама, що у фінальному CTA), по центру заголовок (його лівий край стоїть на 428 при 1440),
 // унизу ліворуч цитата клієнта, унизу праворуч назви кейсів (перша — активна).
 // Інтро: заголовок, цитата й назви виїжджають знизу з рамки (`Reveal`).
 export default function Hero() {
+  const stage = useRef(null);
   return (
-    <section className="relative h-svh min-h-160 overflow-hidden bg-canvas">
-      <Media src="hero-3d.png" placeholder="none" fill alt="" />
+    <section ref={stage} className="relative h-svh min-h-160 overflow-hidden bg-black">
+      {hasWebGL && (
+        <Suspense fallback={null}>
+          <div className="absolute inset-0" aria-hidden="true">
+            <CtaScene containerRef={stage} />
+          </div>
+        </Suspense>
+      )}
 
-      <div className="absolute inset-0 flex items-center px-6 pb-10 md:px-10">
+      {/* Текстовий шар пропускає курсор до лого. */}
+      <div className="pointer-events-none absolute inset-0 flex items-center px-6 pb-10 md:px-10">
         <Reveal delay={0.3} className="ml-auto w-full max-w-243">
           <Heading level="hero" tone="primary">
             We build
@@ -25,7 +36,7 @@ export default function Hero() {
         </Reveal>
       </div>
 
-      <div className="absolute inset-x-6 bottom-10 flex items-end justify-between gap-10 md:inset-x-10">
+      <div className="pointer-events-none absolute inset-x-6 bottom-10 flex items-end justify-between gap-10 md:inset-x-10">
         <Reveal delay={0.6} className="max-w-83">
           <Text weight="medium">{HERO_QUOTE}</Text>
         </Reveal>
