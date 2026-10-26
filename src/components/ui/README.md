@@ -11,7 +11,7 @@
 | `TextField` | поле форми (Figma, Contact): підпис — сам плейсхолдер `lead` (білий), під ним лише нижня лінія `tertiary` (у фокусі білий), без рамки й скруглення; висота 56, `multiline` росте з текстом; `label` → `placeholder` + `aria-label` |
 | `IconButton` | один розмір 48, без заливки, hover `fill` |
 | `Select` | випадайка у вигляді табу `outline` (36) |
-| `Heading` | `display` (56 → 140, h1 Work і кейсу, фінальний CTA), `statement` (40 → 64, теза секції, цифри, назва кейсу в Hero), `cell` (40 → 64 → 92/72 від xl, заголовок «Meet our team» у клітинці сітки команди; Figma 92 / 80%); Instrument Sans Medium; тони `primary`/`secondary` |
+| `Heading` | `hero` (40 → 64 → 96/92 від lg, h1 першого екрана), `display` (56 → 140, h1 Work і кейсу, фінальний CTA), `statement` (40 → 64, теза секції, цифри, назва кейсу в Hero), `cell` (40 → 64 → 92/72 від xl, заголовок «Meet our team» у клітинці сітки команди; Figma 92 / 80%); Instrument Sans Medium; тони `primary`/`secondary` |
 | `Text` | `quote` 28/36, `lead` 20/28, `body` 16/24, `dense` 12/16; `weight="medium"`, `uppercase`; тони `primary`/`secondary` |
 | `Eyebrow` | лейбл над заголовком: Inter Medium 16, uppercase, `secondary` |
 | `Section` | обгортка секції: фон `black`, gutters 24 → 40, ритм `default` / `top` |

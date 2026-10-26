@@ -2,7 +2,7 @@ import AboutPage from "./components/AboutPage.jsx";
 import ContactPage from "./components/ContactPage.jsx";
 import DesignSystemPage from "./components/DesignSystemPage.jsx";
 import Facts from "./components/Facts.jsx";
-import HeroCarousel from "./components/HeroCarousel.jsx";
+import Hero from "./components/Hero.jsx";
 import Page from "./components/Page.jsx";
 import Services from "./components/Services.jsx";
 import ServicesPage from "./components/ServicesPage.jsx";
@@ -22,7 +22,7 @@ export default function App() {
   if (path.startsWith("/work/")) return <WorkDetailPage slug={path.slice(6)} />;
   return (
     <Page>
-      <HeroCarousel />
+      <Hero />
       <Facts />
       <Work />
       <Services />
