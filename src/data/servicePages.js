@@ -3,12 +3,14 @@
 // Це окремі дані від data/services.js (секція «Services» на головній з картинками підпослуг).
 export const SERVICES_INTRO = {
   title: "From the first sketch to launch.",
-  text: "One team, one thread. Here is how an idea becomes a product, step by step.",
+  text: "For startups and growing teams that need a product people actually enjoy using. One team, one thread: here is how an idea becomes a product, step by step.",
 };
 
 export const CATEGORIES = [
   {
     slug: "design",
+    range: "From a single landing page to a full product redesign.",
+    cta: "Start a design project",
     name: "Design",
     title: "We start with how people actually use it.",
     lead: "Before a single screen, we sit with your product and the people it is for. Research, flows and wireframes you can test come first; the interface follows.",
@@ -23,6 +25,8 @@ export const CATEGORIES = [
   },
   {
     slug: "branding",
+    range: "From a lean startup identity to a complete brand platform.",
+    cta: "Start a branding project",
     name: "Branding",
     title: "Then it has to be recognisable.",
     lead: "A mark, a palette and a voice, drawn once and written down, so the identity holds when other hands touch it.",
@@ -35,6 +39,8 @@ export const CATEGORIES = [
   },
   {
     slug: "illustration",
+    range: "From one icon set to a full illustration language.",
+    cta: "Start an illustration project",
     name: "Illustration",
     title: "A visual language that isn't borrowed.",
     lead: "Icons, characters and scenes drawn for your product's tone. No stock packs, no lookalikes.",
@@ -47,6 +53,8 @@ export const CATEGORIES = [
   },
   {
     slug: "motion",
+    range: "From a single micro-interaction to a launch film.",
+    cta: "Start a motion project",
     name: "Motion",
     title: "Motion shows why, not just what.",
     lead: "Small feedback that confirms every tap, and short films that explain a feature in seconds.",
@@ -55,22 +63,12 @@ export const CATEGORIES = [
       ["Product Animation", "Motion that explains a feature instead of just decorating it."],
       ["Explainer Video", "A short animated walkthrough for launch pages and pitches."],
     ],
-    next: "And where flat isn't enough, we add depth.",
-  },
-  {
-    slug: "3d",
-    name: "3D",
-    title: "Depth, where flat won't do.",
-    lead: "Renders, icons and hero scenes with no photo shoot, even before the product exists.",
-    items: [
-      ["Product Render", "Photoreal 3D renders with no photo shoot required."],
-      ["3D Icon Set", "Dimensional icons that stand out from flat competitors."],
-      ["3D Illustration", "Scenes and objects built for hero sections and marketing."],
-    ],
     next: "Last, everything is built exactly the way it was designed.",
   },
   {
     slug: "development",
+    range: "From a single page build to a design system in code.",
+    cta: "Start a build",
     name: "Development",
     title: "Built exactly as designed.",
     lead: "Pixel-perfect front-end, specs a dev team can build from, and the same people through launch.",
@@ -97,5 +95,3 @@ export const PROCESS = {
   ],
 };
 
-// Кнопка на кожній картці категорії.
-export const CATEGORY_CTA = "Start a project";

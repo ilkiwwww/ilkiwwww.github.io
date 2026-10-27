@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CATEGORIES, CATEGORY_CTA, PROCESS, SERVICES_INTRO } from "../data/servicePages.js";
+import { CATEGORIES, PROCESS, SERVICES_INTRO } from "../data/servicePages.js";
 import { openBookCall } from "./BookCall.jsx";
 import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
@@ -90,6 +90,9 @@ function CategoriesSection() {
         <Text size="lead" tone="secondary">
           {cat.lead}
         </Text>
+        <Text size="dense" weight="medium" uppercase tone="secondary">
+          {cat.range}
+        </Text>
         <ul>
           {cat.items.map(([name, text]) => (
             <li key={name} className="flex flex-col gap-1 border-t border-tertiary py-2">
@@ -103,7 +106,7 @@ function CategoriesSection() {
           ))}
         </ul>
         <Button variant="light" size="md" className="self-start" onClick={openBookCall}>
-          {CATEGORY_CTA}
+          {cat.cta}
         </Button>
       </aside>
       </div>

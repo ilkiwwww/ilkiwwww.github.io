@@ -14,7 +14,7 @@ export const SALES = {
   linkedin: "#",
   perks: ["We reply within 12 hours", "We sign an NDA if you ask", "Your first call is free"],
 };
-export const SERVICE_OPTIONS = ["Design", "Branding", "Illustration", "Motion", "3D", "Development"];
+export const SERVICE_OPTIONS = ["Design", "Branding", "Illustration", "Motion", "Development"];
 export const BUDGET_OPTIONS = ["under 10K", "10K—50K", "over 50K"];
 
 // Різниця «час у поясі tz» мінус UTC для моменту `date`, у мс.

@@ -36,14 +36,6 @@ export const SERVICES = [
     ].map(item),
   },
   {
-    name: "3D",
-    items: [
-      ["Product Render", "Photoreal renders of your product, built for sites, ads and presentations."],
-      ["3D Icon Set", "Depth and light for your icons, without losing consistency across the set."],
-      ["3D Illustration", "Expressive 3D scenes that bring a brand idea to life in a single image."],
-    ].map(item),
-  },
-  {
     name: "Branding",
     items: [
       ["Brand Identity", "Positioning, name, voice and visual language that make you recognisable."],
