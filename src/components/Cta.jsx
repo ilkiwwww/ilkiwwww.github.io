@@ -28,7 +28,7 @@ function Footer({ className = "" }) {
   return (
     <footer className={`flex items-end justify-between gap-6 ${className}`}>
       <Text size="dense" weight="medium" tone="secondary" uppercase>
-        © 2016-2026 THE
+        © 2019-2026 THE
         <br />
         Emote Agency Privacy Policy
       </Text>

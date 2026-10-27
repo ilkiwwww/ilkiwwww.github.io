@@ -160,3 +160,48 @@ export function Reveal({ delay = 0, fill = false, className = "", children }) {
     </div>
   );
 }
+
+// Друкований текст при завантаженні (інтро): літери з'являються по одній після `delay`.
+// Місце під весь текст зарезервоване (ненадруковане лише невидиме), тож верстка не стрибає.
+// `lines` — рядки; без руху (reduced motion) текст одразу повний.
+export function Typewriter({ lines, delay = 0, speed = 40 }) {
+  const total = lines.reduce((n, line) => n + line.length, 0);
+  const [typed, setTyped] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? total : 0,
+  );
+
+  // Інтро може стояти на паузі, поки йде екран завантаження (Loader.jsx).
+  const [ready, setReady] = useState(() => typeof document === "undefined" || document.documentElement.dataset.intro !== "wait");
+  useEffect(() => {
+    if (ready) return;
+    const go = () => setReady(true);
+    window.addEventListener("emote:intro", go);
+    return () => window.removeEventListener("emote:intro", go);
+  }, [ready]);
+
+  useEffect(() => {
+    if (!ready || typed >= total) return;
+    const id = setTimeout(() => setTyped((n) => n + 1), typed === 0 ? delay * 1000 : speed);
+    return () => clearTimeout(id);
+  }, [ready, typed, total, delay, speed]);
+
+  let seen = 0;
+  return (
+    <>
+      <span className="sr-only">{lines.join(" ")}</span>
+      <span aria-hidden="true">
+        {lines.map((line, i) => {
+          const start = seen;
+          seen += line.length;
+          return (
+            <span key={i}>
+              {i > 0 && <br />}
+              <span>{line.slice(0, Math.max(0, typed - start))}</span>
+              <span className="invisible">{line.slice(Math.max(0, typed - start))}</span>
+            </span>
+          );
+        })}
+      </span>
+    </>
+  );
+}

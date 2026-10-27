@@ -2,6 +2,7 @@ import AboutPage from "./components/AboutPage.jsx";
 import ContactPage from "./components/ContactPage.jsx";
 import DesignSystemPage from "./components/DesignSystemPage.jsx";
 import Facts from "./components/Facts.jsx";
+import Loader from "./components/Loader.jsx";
 import Hero from "./components/Hero.jsx";
 import Page from "./components/Page.jsx";
 import Services from "./components/Services.jsx";
@@ -22,6 +23,7 @@ export default function App() {
   if (path.startsWith("/work/")) return <WorkDetailPage slug={path.slice(6)} />;
   return (
     <Page>
+      <Loader />
       <Hero />
       <Facts />
       <Work />

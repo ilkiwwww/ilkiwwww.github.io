@@ -35,6 +35,9 @@
   --text-64: 64px;
   --text-64--line-height: 64px;
   /* Заголовок у клітинці сітки команди (Heading level="cell"): Figma 92, line-height 80% = 73.6 → 72 */
+  /* Заголовок Hero (Heading level="hero"): Figma 74.4/70, line-height округлено до сітки 4 */
+  --text-74: 74px;
+  --text-74--line-height: 72px;
   --text-92: 92px;
   --text-92--line-height: 72px;
   /* Великий заголовок фінального CTA (Heading level="display") */
@@ -51,8 +54,8 @@
   --color-black: #000000;
   --color-canvas: #0d0d0f;     /* фон сторінки (темна тема) */
   --color-secondary: #999999; /* вторинний колір: другорядний текст (білий 60% на чорному) */
-  --color-fill: #1a1a1a; /* заливка: таби, картки, плейсхолдери, hover рядка — одна на весь сайт */
-  --color-tertiary: #333333; /* третинний колір: усі лінії й контури */
+  --color-fill: #141414; /* заливка: таби, картки, плейсхолдери, hover рядка — одна на весь сайт */
+  --color-tertiary: #242424; /* третинний колір: усі лінії й контури */
 
   /* ---- Скруглення ------------------------------------------------------ */
   --radius-*: initial;
@@ -89,6 +92,94 @@ body {
 }
 
 .reveal-up { animation: reveal-up 0.9s var(--ease-intro) var(--delay, 0s) both; }
+
+/* Хронологія інтро Hero: лінії розходяться від центру (0–1.2s) → друкується заголовок (1.0s…)
+   → цитата й назви кейсів. */
+@keyframes line-x {
+  from { scale: 0 1; }
+  to { scale: 1 1; }
+}
+@keyframes line-diag {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.intro-line-x { transform-origin: center; animation: line-x 1.2s var(--ease-intro) both; }
+.intro-line-diag { stroke-dasharray: 1; animation: line-diag 1.2s var(--ease-intro) both; }
+
+/* Екран завантаження головної (Loader.jsx): слова прокручуються, інтро Hero чекає на паузі. */
+.loader-words { translate: 0 calc(var(--i) * -100% / var(--n)); transition: translate 0.5s var(--ease-reveal); }
+/* Підморгування правого ока в лого на екрані завантаження. */
+@keyframes wink {
+  0%, 100% { scale: 1 1; }
+  45%, 55% { scale: 1 0.1; }
+}
+.loader-wink { transform-box: fill-box; transform-origin: center; animation: wink 0.5s var(--ease-intro) 0.5s both; }
+[data-intro="wait"] .reveal-up,
+[data-intro="wait"] .header-drop,
+[data-intro="wait"] .intro-line-x,
+[data-intro="wait"] .intro-line-diag,
+[data-intro="wait"] .hero-scene { animation-play-state: paused; }
+/* Другий стан Hero (Hero.jsx, [data-open] на секції): заголовок і цитата йдуть, з'являється карусель
+   обкладинок, внизу ліворуч опис кейсу, назви кейсів переїжджають праворуч. Картки каруселі
+   розкладає CSS за --d (відстань до активної): активна на всю ширину між двома вузькими. */
+.hero-zone { pointer-events: none; }
+[data-open] .hero-zone { pointer-events: auto; }
+
+.hero-scene { opacity: 0.4; transition: opacity 0.6s var(--ease-case), visibility 0s; animation: scene-in 1.6s var(--ease-intro) 3.2s backwards; } /* інтро: лого з'являється останнім */
+@keyframes scene-in { from { opacity: 0; } }
+[data-open] .hero-scene { opacity: 0; visibility: hidden; transition-delay: 0s, 0.6s; }
+
+.hero-lead { transition: opacity 0.6s var(--ease-case), translate 0.6s var(--ease-case), visibility 0s; }
+[data-open] .hero-lead { opacity: 0; translate: 0 -24px; visibility: hidden; transition-delay: 0s, 0s, 0.6s; }
+
+.hero-cards {
+  --s: 200px;
+  --g: 20px;
+  /* Figma: картки 510 заввишки, бічні 200, вибрана 680, проміжок 20. На низькому екрані вони стискаються,
+     щоб не наїжджати на назву й опис кейсу внизу (зона від 152, блок знизу 176 + проміжок 32). */
+  height: min(510px, calc(max(100svh, 640px) - 360px));
+  container-type: inline-size;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 40px;
+  transition: opacity 0.6s var(--ease-case), translate 0.8s var(--ease-case), visibility 0s 0.6s;
+}
+[data-open] .hero-cards { opacity: 1; visibility: visible; translate: 0 0; transition-delay: 0.2s, 0.2s, 0s; }
+.hero-card {
+  --m: calc(100cqw - 2 * (var(--s) + var(--g)));
+  left: calc((var(--s) + var(--g)) * (1 + var(--d)) + min(max(var(--d), 0), 1) * (var(--m) - var(--s)));
+  width: calc(var(--s) + max(0, 1 - max(var(--d), -1 * var(--d))) * (var(--m) - var(--s)));
+  transition: left 0.9s var(--ease-case), width 0.9s var(--ease-case);
+}
+
+.cta-fade { background: linear-gradient(to bottom, transparent 55%, var(--color-black)); }
+
+.hero-shade {
+  background: var(--color-black);
+  /* 0 у вибраної картки, 0.7 у сусідніх (Figma: чорний 70% на «next») */
+  opacity: calc(0.7 * min(1, max(var(--d), -1 * var(--d))));
+  transition: opacity 0.9s var(--ease-case);
+}
+
+.hero-card:has(.hero-side:hover, .hero-side:focus-visible) .hero-shade { opacity: 0.3; } /* сусід під курсором світлішає: на нього можна клікнути */
+
+.hero-arrow { transition: opacity 0.3s var(--ease-case), visibility 0s; }
+[data-open] .hero-arrow { opacity: 0; visibility: hidden; transition-delay: 0s, 0.3s; }
+
+.hero-detail { opacity: 0; visibility: hidden; transition: opacity 0.4s var(--ease-case), visibility 0s 0.4s; }
+[data-open] .hero-detail { opacity: 1; visibility: visible; transition-delay: 0.3s, 0s; }
+
+/* Hero закріплюється на ~70% екрана скролу: за цей час відкривається перший кейс (Hero.jsx), далі йде наступна секція. */
+@media (min-width: 48rem) {
+  .hero-scroll { height: 170svh; }
+  .hero-stage { position: sticky; top: 0; }
+}
+
+/* Назви кейсів унизу Hero: сірі, при наведенні — білі. */
+.hero-case { cursor: pointer; transition: color 0.3s var(--ease-case); }
+.hero-case[data-active] { color: var(--color-primary); }
+.hero-case:hover { color: var(--color-primary); }
 
 /* Шоуріл зі скролом (Showreel.jsx). Трек високий, сцена в ньому закріплена на весь екран.
    --a (0 → 1, пише JS зі скролу): заголовок зменшується, картка одночасно розтягується від 62%
@@ -309,10 +400,6 @@ body {
 .cursor-ring { margin: -14.47px 0 0 -15.06px; transform-origin: 15.06px 14.47px; }
 .cursor-dot { margin: -3.58px 0 0 -3.72px; }
 
-/* Фінальний CTA: низ скляного лого розчиняється в чорному (Figma — градієнт
-   поверх зображення лого). */
-.cta-fade { background: linear-gradient(to bottom, transparent 55%, var(--color-black)); }
-
 @media (prefers-reduced-motion: reduce) {
   .modal-fade,
   .modal-card { animation: none; }
@@ -322,9 +409,17 @@ body {
   .service-shot,
   .service-text,
   .service-row::before { transition: none; }
+  .hero-lead,
+  .hero-cards,
+  .hero-card,
+  .hero-detail,
+  .hero-arrow { transition: none; }
+  .hero-scene { animation: none; }
   .reveal-up,
-  .header-drop { animation: none; }
-  .rise > *,
+  .header-drop,
+  .intro-line-x,
+  .intro-line-diag,
+    .rise > *,
   .line-grow,
   .fade { transition: none; translate: none; scale: none; opacity: 1; }
   .case-part,

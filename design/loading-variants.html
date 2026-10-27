@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMOTE — Loading variants</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --line:#242424; --primary:#fff; --secondary:#999; --intro: cubic-bezier(.65,0,.35,1); --reveal: cubic-bezier(.16,1,.3,1); }
+  * { box-sizing: border-box; margin: 0; }
+  body { background:#0D0D0F; color:var(--primary); font-family:"Inter",system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  .bar { position:fixed; z-index:50; top:12px; left:50%; translate:-50% 0; display:flex; gap:8px; padding:6px; background:#1A1A1A; border-radius:9999px; }
+  .bar button { all:unset; cursor:pointer; padding:8px 16px; border-radius:9999px; color:var(--secondary); font-size:14px; }
+  .bar button[aria-pressed="true"] { background:#fff; color:#000; }
+  .bar .replay { color:#fff; border:1px solid #333; }
+  .note { position:fixed; z-index:50; bottom:12px; left:50%; translate:-50% 0; color:var(--secondary); font-size:13px; }
+
+  .stage { position:relative; height:100vh; background:#000; overflow:hidden; }
+  /* Hero-імітація: лінії + заголовок + «лого» */
+  .lx { position:absolute; left:0; right:0; top:calc(50% + 152px); height:1px; background:var(--line); transform-origin:center; scale:0 1; }
+  .ld { position:absolute; left:50%; top:50%; width:0; height:1px; background:var(--line); transform-origin:left center; rotate:30deg; }
+  .ld.b { rotate:210deg; }
+  .head { position:absolute; left:100px; top:50%; translate:0 -45%; font:500 74px/72px "Instrument Sans",sans-serif; white-space:pre; }
+  .head span { visibility:hidden; }
+  .head span.on { visibility:visible; }
+  .orb { position:absolute; right:12%; top:52%; width:46vh; height:46vh; border-radius:50%; border:1px solid #3a3a3e; box-shadow: inset 0 0 80px #111; opacity:0; translate:0 -50%; }
+  .go .lx { animation:lx 1.2s var(--intro) var(--t,0s) both; }
+  .go .ld { animation:ld 1.2s var(--intro) var(--t,0s) both; }
+  .go .orb { animation:orb 1.6s var(--reveal) calc(var(--t,0s) + 1.6s) both; }
+  @keyframes lx { to { scale:1 1; } }
+  @keyframes ld { to { width:2400px; } }
+  @keyframes orb { to { opacity:.4; } }
+
+  /* Лоадери (поверх сцени) */
+  .loader { position:absolute; inset:0; z-index:5; background:#000; display:flex; align-items:center; justify-content:center; }
+  .loader.out { opacity:0; transition:opacity .6s ease; pointer-events:none; }
+
+  /* A — лічильник */
+  .count { font:500 120px/1 "Instrument Sans",sans-serif; font-variant-numeric:tabular-nums; }
+  .count small { font-size:32px; color:var(--secondary); margin-left:8px; }
+  .a-bar { position:absolute; left:0; bottom:0; height:2px; background:#fff; width:0; }
+
+  /* B — лого з очима */
+  .eyes { display:flex; flex-direction:column; align-items:center; gap:28px; }
+  .face { width:120px; height:120px; border-radius:50%; background:#fff; position:relative; }
+  .face i { position:absolute; top:44px; width:18px; height:18px; border-radius:50%; background:#000; animation:blink 1.4s infinite; }
+  .face i:nth-child(1){ left:34px; } .face i:nth-child(2){ right:34px; }
+  .face::before,.face::after { content:""; position:absolute; top:-14px; width:20px; height:20px; border-radius:50%; background:#fff; }
+  .face::before{ left:22px; } .face::after{ right:22px; }
+  @keyframes blink { 0%,40%,100% { scale:1 1; } 46%,52% { scale:1 .1; } }
+  .eyes p { color:var(--secondary); font-size:14px; letter-spacing:.2em; text-transform:uppercase; }
+
+  /* C — слова */
+  .words { height:92px; overflow:hidden; font:500 80px/92px "Instrument Sans",sans-serif; text-align:center; }
+  .words div { transition:translate .5s var(--reveal); }
+
+  /* D — шторка */
+  .curtain { position:absolute; inset:0; z-index:5; background:#000; display:flex; align-items:flex-end; padding:40px; }
+  .curtain b { font:500 14px/1 "Inter"; letter-spacing:.2em; text-transform:uppercase; color:var(--secondary); }
+  .curtain.up { translate:0 -100%; transition:translate 1.1s var(--intro); }
+</style>
+</head>
+<body>
+<div class="bar" role="tablist">
+  <button data-v="a" aria-pressed="true">A · Лічильник</button>
+  <button data-v="b" aria-pressed="false">B · Лого «ö»</button>
+  <button data-v="c" aria-pressed="false">C · Слова</button>
+  <button data-v="d" aria-pressed="false">D · Шторка</button>
+  <button class="replay" id="replay">↻ Ще раз</button>
+</div>
+<div class="note" id="note"></div>
+
+<div class="stage" id="stage">
+  <div class="lx"></div><div class="ld"></div><div class="ld b"></div>
+  <div class="head" id="head"></div>
+  <div class="orb"></div>
+  <div id="loaderSlot"></div>
+</div>
+
+<script>
+const NOTES = {
+  a: "A · Лічильник 0→100% (у реалі = справжнє завантаження 3D і шрифтів) → лінії → текст → лого",
+  b: "B · Лого «ö» кліпає очима, поки вантажиться → зникає → лінії → текст → лого",
+  c: "C · Слова змінюють одне одного → лінії → текст → лого",
+  d: "D · Чорна шторка з'їжджає вгору, під нею стартують лінії → текст → лого",
+};
+const LINES = ["We build","best websites","for your business"];
+const stage = document.getElementById("stage"), head = document.getElementById("head"), slot = document.getElementById("loaderSlot"), note = document.getElementById("note");
+let variant = "a", timers = [];
+const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+
+function type(startMs) {
+  head.innerHTML = LINES.join("\n").split("").map(c => c === "\n" ? "\n" : `<span>${c}</span>`).join("");
+  [...head.querySelectorAll("span")].forEach((s, i) => later(() => s.classList.add("on"), startMs + i * 40));
+}
+function intro(t) { // t — секунди, коли стартують лінії
+  stage.classList.remove("go"); void stage.offsetWidth;
+  stage.style.setProperty("--t", t + "s"); stage.classList.add("go");
+  type((t + 1.0) * 1000);
+}
+function run() {
+  timers.forEach(clearTimeout); timers = [];
+  stage.classList.remove("go"); head.innerHTML = ""; slot.innerHTML = "";
+  note.textContent = NOTES[variant];
+
+  if (variant === "a") {
+    slot.innerHTML = `<div class="loader" id="L"><div class="count"><span id="n">0</span><small>%</small></div><div class="a-bar" id="bar"></div></div>`;
+    const n = document.getElementById("n"), bar = document.getElementById("bar"); let v = 0;
+    const tick = () => { v = Math.min(100, v + 1 + Math.random() * 3); n.textContent = Math.floor(v); bar.style.width = v + "%";
+      if (v < 100) later(tick, 35); else { later(() => { document.getElementById("L").classList.add("out"); intro(0.3); }, 250); } };
+    tick();
+  }
+  if (variant === "b") {
+    slot.innerHTML = `<div class="loader" id="L"><div class="eyes"><div class="face"><i></i><i></i></div><p>Loading</p></div></div>`;
+    later(() => { document.getElementById("L").classList.add("out"); intro(0.4); }, 2200);
+  }
+  if (variant === "c") {
+    const W = ["Design","Brand","Motion","3D","Web","EMOTE"];
+    slot.innerHTML = `<div class="loader" id="L"><div class="words"><div id="w">${W.map(x=>`<div>${x}</div>`).join("")}</div></div></div>`;
+    const w = document.getElementById("w");
+    W.forEach((_, i) => later(() => w.style.translate = `0 ${-i * 92}px`, i * 380));
+    later(() => { document.getElementById("L").classList.add("out"); intro(0.3); }, W.length * 380 + 300);
+  }
+  if (variant === "d") {
+    slot.innerHTML = `<div class="curtain" id="L"><b>Emote Agency</b></div>`;
+    later(() => document.getElementById("L").classList.add("up"), 700);
+    intro(1.2);
+  }
+}
+document.querySelectorAll("[data-v]").forEach(b => b.onclick = () => {
+  variant = b.dataset.v;
+  document.querySelectorAll("[data-v]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  run();
+});
+document.getElementById("replay").onclick = run;
+run();
+</script>
+</body>
+</html>

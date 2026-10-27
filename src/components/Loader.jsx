@@ -1,0 +1,65 @@
+import { useEffect, useState } from "react";
+import Heading from "./ui/Heading.jsx";
+
+// Екран завантаження головної: слова змінюють одне одного, потім шторка зникає
+// і стартує інтро Hero (лінії → заголовок → цитата). Поки йдуть слова,
+// інтро стоїть на паузі (`html[data-intro="wait"]`, див. main.jsx і index.css),
+// Останній крок — лого «ö» (те саме, що курсор), одне око підморгує.
+const WORDS = ["Design", "Brand", "Motion", "Web"];
+const STEP = 380; // мс на крок
+const HOLD = 1500; // мс на лого перед виїздом
+const LOGO = WORDS.length; // індекс кроку з лого
+const STEPS = WORDS.length + 2; // слова, лого й порожній крок, щоб лого виїхало, як слова
+const RING = "M25.7267 14.8778C22.8154 12.0803 19.2713 10.6815 15.0626 10.6815C10.8539 10.6815 7.30979 12.0803 4.36689 14.8778C1.45563 17.6753 0 21.0769 0 25.146C0 29.2151 1.48727 32.6485 4.36689 35.446C7.30979 38.2435 10.8539 39.6105 15.0626 39.6105C19.2713 39.6105 22.8154 38.2435 25.7267 35.446C28.6379 32.6485 30.1252 29.2151 30.1252 25.146C30.1252 21.0769 28.6379 17.6436 25.7267 14.8778ZM23.9862 26.0043C23.7331 28.5158 22.6888 30.5503 20.8218 31.9809C18.9548 33.4114 16.7397 34.0155 14.2082 33.7611C11.6767 33.5068 9.61981 32.4895 8.06925 30.7093C6.55033 28.8655 5.88581 26.7355 6.13896 24.2241C6.39211 21.7127 7.43637 19.7417 9.30337 18.2794C11.1704 16.7852 13.3855 16.1812 15.917 16.4355C18.4485 16.6898 20.5054 17.7389 22.056 19.551C23.6065 21.363 24.2394 23.4929 23.9862 26.0043Z";
+const DOT_1 = "M15.0311 1.04907C14.3033 0.349691 13.4489 0 12.4047 0C11.3604 0 10.4744 0.349691 9.74656 1.04907C9.01874 1.74846 8.67065 2.575 8.67065 3.59228C8.67065 4.60957 9.05039 5.43611 9.74656 6.13549C10.4744 6.83487 11.3604 7.15277 12.4047 7.15277C13.4489 7.15277 14.335 6.80308 15.0311 6.13549C15.7589 5.43611 16.107 4.60957 16.107 3.59228C16.107 2.575 15.7589 1.74846 15.0311 1.04907Z";
+const DOT_2 = "M27.1506 2.95642C26.4228 2.25704 25.5684 1.90735 24.5241 1.90735C23.4799 1.90735 22.5938 2.25704 21.866 2.95642C21.1382 3.6558 20.7901 4.48235 20.7901 5.49963C20.7901 6.51691 21.1698 7.34346 21.866 8.04284C22.5938 8.74222 23.4799 9.06012 24.5241 9.06012C25.5684 9.06012 26.4544 8.71043 27.1506 8.04284C27.8784 7.34346 28.2265 6.51691 28.2265 5.49963C28.2265 4.48235 27.8784 3.6558 27.1506 2.95642Z";
+
+const SLOT = "flex h-24 items-center justify-center md:h-32 lg:h-40";
+
+function Mark({ wink }) {
+  return (
+    <svg viewBox="0 0 30.13 39.61" className="h-20 w-auto text-primary md:h-28 lg:h-36" fill="currentColor" aria-hidden="true">
+      <path d={RING} />
+      <path d={DOT_1} />
+      <path d={DOT_2} className={wink ? "loader-wink" : undefined} />
+    </svg>
+  );
+}
+
+export function startIntro() {
+  delete document.documentElement.dataset.intro;
+  window.dispatchEvent(new Event("emote:intro"));
+}
+
+export default function Loader() {
+  const [step, setStep] = useState(0);
+  const [done, setDone] = useState(document.documentElement.dataset.intro !== "wait");
+
+  useEffect(() => {
+    if (done) return;
+    // Слова й лого йдуть кроками; після лого ще один крок — лого виїжджає вгору, як слова.
+    const timers = Array.from({ length: LOGO + 1 }, (_, i) => setTimeout(() => setStep(i), i * STEP));
+    const exit = LOGO * STEP + HOLD;
+    timers.push(
+      setTimeout(() => setStep(STEPS - 1), exit),
+      setTimeout(startIntro, exit + 200),
+      setTimeout(() => setDone(true), exit + 450),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [done]);
+
+  if (done) return null;
+  return (
+    <div aria-hidden="true" className="fixed inset-0 z-90 flex items-center justify-center bg-black">
+      <div className={`relative w-full overflow-hidden ${SLOT}`}>
+        <div className="loader-words absolute inset-x-0 top-0 text-center" style={{ "--i": step, "--n": STEPS }}>
+          {WORDS.map((word) => (
+            <Heading as="p" level="hero" key={word} className={SLOT}>{word}</Heading>
+          ))}
+          <div className={SLOT}><Mark wink={step === LOGO} /></div>
+          <div className={SLOT} />
+        </div>
+      </div>
+    </div>
+  );
+}

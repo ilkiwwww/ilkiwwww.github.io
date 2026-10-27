@@ -12,10 +12,10 @@ import Text from "./ui/Text.jsx";
 const COLORS = [
   { group: "Кольори", token: "primary", value: "#FFFFFF", role: "основний текст, світла кнопка", swatch: "bg-primary" },
   { group: "Кольори", token: "secondary", value: "#999999", role: "другорядний текст", swatch: "bg-secondary" },
-  { group: "Кольори", token: "tertiary", value: "#333333", role: "усі лінії й контури", swatch: "bg-tertiary" },
+  { group: "Кольори", token: "tertiary", value: "#242424", role: "усі лінії й контури", swatch: "bg-tertiary" },
   { group: "Фони", token: "black", value: "#000000", role: "фон секцій; текст на білій кнопці", swatch: "bg-black" },
   { group: "Фони", token: "canvas", value: "#0D0D0F", role: "фон сторінки", swatch: "bg-canvas" },
-  { group: "Фони", token: "fill", value: "#1A1A1A", role: "заливка: картки, плейсхолдери, hover рядка", swatch: "bg-fill" },
+  { group: "Фони", token: "fill", value: "#141414", role: "заливка: картки, плейсхолдери, hover рядка", swatch: "bg-fill" },
 ];
 
 const HEADINGS = [

@@ -20,7 +20,7 @@ const BLACK = new Color("#000000");
 const DAMP = 0.05;
 const REDUCED = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function GlassMark({ scale, offsetY, mobile }) {
+function GlassMark({ scale, offsetX, offsetY, mobile }) {
   const group = useRef();
   const mesh = useRef();
   const material = useRef();
@@ -78,6 +78,7 @@ function GlassMark({ scale, offsetY, mobile }) {
     g.rotation.y = idle * 0.38 * Math.sin(t * 0.26) + st.tiltY + st.dragY;
     g.rotation.x = idle * 0.03 * Math.sin(t * 0.37) + st.tiltX + st.dragX;
     g.rotation.z = idle * 0.02 * Math.sin(t * 0.29 + 1.0);
+    g.position.x = offsetX;
     g.position.y = offsetY + idle * 0.03 * scale * Math.sin(t * 0.6);
     uniforms.uTime.value = REDUCED ? 0 : t;
     uniforms.uBulge.value = MathUtils.lerp(uniforms.uBulge.value, st.hover && !st.dragging ? 1 : 0, k);
@@ -120,14 +121,17 @@ function GlassMark({ scale, offsetY, mobile }) {
   );
 }
 
-function Layout({ mobile, onReady }) {
+function Layout({ mobile, onReady, view }) {
   const env = useEnvironment({ files: "/glass/studio.exr" });
   const viewport = useThree((s) => s.viewport);
   // Сюди доходимо, лише коли HDRI і модель завантажились (Suspense)
   useEffect(() => { onReady?.(); }, [onReady]);
   // Знак (висота моделі 1) — 87% висоти сцени, точно по центру (Figma: 617 з 709)
-  const scale = mobile ? Math.min(viewport.height * 0.8, viewport.width * 1.15) : viewport.height * 0.87;
-  const offsetY = 0;
+  // `view` (Hero): масштаб і зсув знака в частках сцени (x вправо, y вгору).
+  const k = view?.scale ?? 0.87;
+  const scale = mobile ? Math.min(viewport.height * 0.8, viewport.width * 1.15) : viewport.height * k;
+  const offsetX = mobile ? 0 : (view?.x ?? 0) * viewport.width;
+  const offsetY = mobile ? 0 : (view?.y ?? 0) * viewport.height;
   return (
     <>
       <Environment map={env} />
@@ -135,12 +139,12 @@ function Layout({ mobile, onReady }) {
       <directionalLight position={[3, 0.6, -2.5]} intensity={4.5} color="#86b4ff" />
       <directionalLight position={[0, 0, 4]} intensity={0.25} />
       <directionalLight position={[0, -3, 1]} intensity={0.4} color="#dfe6ff" />
-      <GlassMark scale={scale} offsetY={offsetY} mobile={mobile} />
+      <GlassMark scale={scale} offsetX={offsetX} offsetY={offsetY} mobile={mobile} />
     </>
   );
 }
 
-export default function CtaScene({ containerRef, onReady }) {
+export default function CtaScene({ containerRef, onReady, view }) {
   const [active, setActive] = useState(false);
   const [mobile, setMobile] = useState(() => window.innerWidth < 768);
 
@@ -166,7 +170,7 @@ export default function CtaScene({ containerRef, onReady }) {
     >
       <color attach="background" args={["#000000"]} />
       <Suspense fallback={null}>
-        <Layout mobile={mobile} onReady={onReady} />
+        <Layout mobile={mobile} onReady={onReady} view={view} />
       </Suspense>
     </Canvas>
   );
