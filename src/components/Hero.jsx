@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HERO_CASES, HERO_QUOTE } from "../data/hero.js";
 import Heading from "./ui/Heading.jsx";
 import Button, { controlClasses } from "./ui/Button.jsx";
@@ -7,12 +7,6 @@ import Media from "./ui/Media.jsx";
 import Text from "./ui/Text.jsx";
 import { openBookCall } from "./BookCall.jsx";
 import { Reveal, Typewriter } from "./ui/Motion.jsx";
-import { hasWebGL } from "./glass/hasWebGL.js";
-
-// Темне скляне 3D-лого «ö» позаду (та сама сцена, що у фінальному CTA); вантажиться ліниво.
-// Знак у кадрі, як у Figma (1440×900): зсунутий праворуч і вниз, кільце виходить за нижній край.
-const CtaScene = lazy(() => import("./glass/CtaScene.jsx"));
-const MARK_VIEW = { scale: 1.1, x: 0.2, y: -0.22 };
 
 const N = HERO_CASES.length;
 const wrap = (i) => ((i % N) + N) % N;
@@ -38,7 +32,6 @@ export default function Hero() {
   // Скрол показує наведення: щойно Hero прокручено на чверть, відкривається перший кейс. Далі кейси лишаються
   // відкритими (і при скролі вгору, і коли курсор пішов) — повертає на дефолтний Hero лише клік по лого (Home).
   const track = useRef(null);
-  const stage = useRef(null);
   const past = useRef(false);
   useEffect(() => {
     const onScroll = () => {
@@ -102,13 +95,6 @@ export default function Hero() {
   return (
     <div ref={track} className="hero-scroll">
     <section data-open={open || undefined} className="hero-stage h-svh min-h-160 overflow-hidden bg-black">
-      <div ref={stage} className="hero-scene absolute inset-0" aria-hidden="true">
-        {hasWebGL && (
-          <Suspense fallback={null}>
-            <CtaScene containerRef={stage} view={MARK_VIEW} />
-          </Suspense>
-        )}
-      </div>
       {/* Лінії — як у Figma: діагональ під 30° через центр, горизонталь на 150 нижче центру. */}
       <svg className="pointer-events-none absolute inset-0 size-full text-tertiary" aria-hidden="true">
         <svg x="50%" y="50%" overflow="visible">
@@ -132,6 +118,19 @@ export default function Hero() {
           </Reveal>
         </div>
       </div>
+
+      {/* Мобільний: другого стану немає, внизу лише назви кейсів посиланнями (від md їх замінює зона нижче). */}
+      <Reveal delay={2.5} className="absolute inset-x-0 bottom-12 px-6 md:hidden">
+        <ul className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Cases">
+          {HERO_CASES.map((item, i) => (
+            <li key={item.name}>
+              <Text as="a" href={`/work/${item.slug}`} tone={i === 0 ? "primary" : "secondary"}>
+                {item.name}
+              </Text>
+            </li>
+          ))}
+        </ul>
+      </Reveal>
 
       {/* Нижня зона: у другому стані ловить курсор (вихід — повернення), у першому пропускає. */}
       <div ref={zone} className="hero-zone absolute inset-x-0 top-38 bottom-0 hidden md:block">

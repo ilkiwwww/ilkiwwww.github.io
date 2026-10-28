@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How we work — 3 reference-based variants (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#141414; --line:#242424; --sec:#999; --pri:#fff; --ease:cubic-bezier(.22,1,.36,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--black); color:var(--pri); font:400 16px/24px Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; text-decoration:none; }
+  .sec { color:var(--sec); }
+  .eyebrow { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); }
+  .statement { font:500 64px/64px "Instrument Sans",sans-serif; }
+  .quote { font:500 28px/36px "Instrument Sans",sans-serif; }
+  .chip { display:inline-flex; align-items:center; height:36px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; }
+  .top { position:sticky; top:0; z-index:50; background:var(--black); border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:24px; height:72px; padding:0 40px; }
+  .top nav { display:flex; gap:8px; }
+  .vhead { padding:64px 40px 24px; border-top:1px solid var(--line); display:flex; gap:24px; align-items:baseline; }
+  .vhead h2 { font:500 40px/48px "Instrument Sans"; }
+  .vhead p { margin-top:12px; max-width:660px; }
+  .track { position:relative; }
+  .stage { position:sticky; top:72px; height:calc(100vh - 72px); overflow:hidden; padding:40px; display:flex; flex-direction:column; }
+  .swap { animation:in .7s var(--ease); }
+  @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+
+  /* R1 — Card strip (ref 1): cards with a visual, active card bright, others dim */
+  .r1-strip { display:flex; gap:12px; margin-top:auto; will-change:transform; }
+  .r1-card { flex:none; width:360px; padding:24px; background:var(--fill); opacity:.35; transition:opacity .5s var(--ease); display:flex; flex-direction:column; gap:16px; height:480px; }
+  .r1-card.on { opacity:1; }
+  .r1-head { display:flex; align-items:center; gap:12px; }
+  .r1-dot { width:24px; height:24px; border-radius:9999px; border:1px solid var(--line); display:grid; place-items:center; font:500 12px/16px Inter; }
+  .r1-card.on .r1-dot { background:var(--pri); color:#000; border-color:var(--pri); }
+  .r1-vis { flex:1; border:1px solid var(--line); background:var(--black); display:grid; place-items:center; color:var(--line); font:500 92px/72px "Instrument Sans"; }
+  .r1-card.on .r1-vis { color:var(--sec); }
+  .r1-card p { color:var(--sec); font-size:14px; line-height:20px; }
+
+  /* R2 — Day planner (ref 2): time labels left, pills whose height = duration, ticks done, "now" marker */
+  .r2 { max-width:760px; margin:0 auto; padding:80px 24px 200px; position:relative; }
+  .r2-row { position:relative; display:grid; grid-template-columns:96px 72px 1fr; gap:0 16px; margin-bottom:12px; }
+  .r2-when { font:500 12px/16px Inter; color:var(--sec); text-transform:uppercase; padding-top:20px; text-align:right; }
+  .r2-rail { position:relative; display:flex; justify-content:center; }
+  .r2-rail::before { content:""; position:absolute; top:-12px; bottom:-12px; width:1px; background:var(--line); }
+  .r2-row.done .r2-rail::before { background:var(--pri); }
+  .r2-pill { position:relative; width:56px; border-radius:9999px; background:var(--fill); border:1px solid var(--line); display:grid; align-content:start; justify-items:center; padding-top:16px; color:var(--sec); transition:.5s var(--ease); font:500 12px/16px Inter; }
+  .r2-row.done .r2-pill { background:var(--pri); color:#000; border-color:var(--pri); }
+  .r2-row.now .r2-pill { border-color:var(--pri); color:var(--pri); }
+  .r2-body { padding:18px 0 0; opacity:.4; transition:opacity .5s var(--ease); }
+  .r2-row.done .r2-body, .r2-row.now .r2-body { opacity:1; }
+  .r2-body p { color:var(--sec); margin-top:8px; max-width:420px; }
+  .r2-check { position:absolute; right:0; top:22px; width:20px; height:20px; border-radius:9999px; border:1px solid var(--line); display:grid; place-items:center; font-size:12px; color:#000; transition:.4s; }
+  .r2-row.done .r2-check { background:var(--pri); border-color:var(--pri); }
+  .r2-row .r2-body { position:relative; }
+
+  /* R3 — Ruler + playhead (ref 3): week ruler on top, bars as ranges, a vertical playhead moves with scroll */
+  .r3-ruler { position:relative; height:56px; margin-top:32px; border-bottom:1px solid var(--line); }
+  .r3-tick { position:absolute; bottom:0; width:1px; height:12px; background:var(--line); }
+  .r3-tick.w { height:24px; background:var(--sec); }
+  .r3-lab { position:absolute; bottom:32px; transform:translateX(-50%); font:500 12px/16px Inter; color:var(--sec); text-transform:uppercase; }
+  .r3-area { position:relative; margin-top:0; }
+  .r3-cols { display:grid; grid-template-columns:repeat(6,1fr); margin-top:24px; }
+  .r3-col { padding-right:16px; color:var(--sec); transition:color .4s; font:500 16px/24px Inter; }
+  .r3-col.on { color:var(--pri); } .r3-col.past { color:var(--pri); }
+  .r3-bar { position:absolute; height:44px; background:var(--fill); border:1px solid var(--line); padding:0 16px; display:flex; align-items:center; justify-content:space-between; white-space:nowrap; overflow:hidden; color:var(--sec); transition:.5s var(--ease); }
+  .r3-bar.on { background:var(--pri); color:#000; border-color:var(--pri); }
+  .r3-bar.past { color:var(--pri); }
+  .r3-play { position:absolute; top:-56px; bottom:-8px; width:1px; background:var(--pri); }
+  .r3-play span { position:absolute; top:0; left:50%; transform:translate(-50%,-100%); background:var(--pri); color:#000; font:500 12px/16px Inter; text-transform:uppercase; padding:4px 12px; border-radius:9999px; white-space:nowrap; }
+  .r3-text { margin-top:auto; display:grid; grid-template-columns:200px 1fr; gap:32px; border-top:1px solid var(--line); padding-top:24px; min-height:160px; }
+  .r3-text .n { font:500 92px/72px "Instrument Sans"; color:var(--line); }
+
+  @media (max-width:900px){
+    .top, .vhead, .stage { padding-left:24px; padding-right:24px; }
+    .statement { font-size:40px; line-height:48px; }
+    .r2-row { grid-template-columns:56px 56px 1fr; } .r3-text { grid-template-columns:1fr; gap:12px; }
+    .r1-card { width:280px; height:400px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="eyebrow">How we work · reference variants</span>
+  <nav><a class="chip" href="#r1">1 · Cards</a><a class="chip" href="#r2">2 · Planner</a><a class="chip" href="#r3">3 · Ruler</a></nav>
+</header>
+
+<div class="vhead" id="r1"><span class="eyebrow">1</span><div><h2>Cards</h2><p class="sec">From your first reference: a row of cards, each with a small header, a title and a visual block. Scroll slides the row sideways; the card in focus is bright, the rest dim. Visual blocks are placeholders for step illustrations.</p></div></div>
+<div class="track" data-track="r1" style="height:500vh"><div class="stage">
+  <div class="eyebrow">How we work</div>
+  <div class="statement" style="margin-top:16px">One process,<br>followed every time.</div>
+  <div class="r1-strip" id="r1Strip"></div>
+</div></div>
+
+<div class="vhead" id="r2"><span class="eyebrow">2</span><div><h2>Planner</h2><p class="sec">From your second reference: a day-planner. Step number on the left, a rail with pills, a tick when the step is passed. Not pinned: it fills as you scroll past it.</p></div></div>
+<div class="r2" id="r2List"></div>
+
+<div class="vhead" id="r3"><span class="eyebrow">3</span><div><h2>Ruler</h2><p class="sec">From your third reference, without time: the ruler is split into six stages, not weeks. A vertical playhead moves with scroll, its label names the current step; the step under it turns white and its text shows below.</p></div></div>
+<div class="track" data-track="r3" style="height:500vh"><div class="stage">
+  <div class="eyebrow">How we work</div>
+  <div class="statement" style="margin-top:16px">One process,<br>followed every time.</div>
+  <div class="r3-ruler" id="r3Ruler"></div>
+  <div class="r3-area"><div class="r3-cols" id="r3Cols"></div><div class="r3-play" id="r3Play"><span id="r3Lab">01</span></div></div>
+  <div class="r3-text"><div class="n" id="r3Num">01</div><div id="r3Text"></div></div>
+</div></div>
+<div style="height:30vh"></div>
+
+<script>
+// [title, text] — без таймінгів: етапи, не строки
+const STEPS = [
+  ["Discover, as partners","We start by diving into your project and its audience — not a generic template. You're in the room from day one: Slack, Figma, your workflow, not a handoff down a chain."],
+  ["A strategy that holds up","Understanding the market is only half the job. We build thoughtful, system-based strategy and design that adapts as your product grows, not something that cracks at the first change."],
+  ["Structure, dev-ready by default","User flows and roadmaps you can test before launch, handed off as components — tokens, states, constraints. We speak dev and design like we code, so nothing gets lost on the way."],
+  ["Create, a process you can follow","Every stage gets confirmed with you, visible in Notion, Jira, Figma, or your stack. Scope, estimates, and feedback loops stay open — this is your project, and you see it ship."],
+  ["Product-led at every step","We work at the intersection of design and business throughout — from product-market fit to scale-readiness — aligning UX with growth metrics, not just the user flow."],
+  ["The Emote difference","Our edge isn't tools or templates — it's the people. Curious, invested, and obsessive about doing the right thing right. That wow-effect at the end is what makes it Emote."]
+];
+const N = STEPS.length, n2 = i => String(i+1).padStart(2,"0");
+const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+const pinned = t => { const r = t.getBoundingClientRect(); return clamp(-(r.top - 72) / (r.height - (innerHeight - 72))); };
+const $ = id => document.getElementById(id);
+const swap = (el, html) => { el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); el.innerHTML = html; };
+
+// R1
+STEPS.forEach((s,i)=>$("r1Strip").insertAdjacentHTML("beforeend",`<div class="r1-card"><div class="r1-head"><span class="r1-dot">${i+1}</span><span class="eyebrow">Step ${n2(i)}</span></div><div class="quote">${s[0]}</div><div class="r1-vis">${n2(i)}</div><p>${s[1].split(". ")[0].slice(0,120)}…</p></div>`));
+const r1c=[...$("r1Strip").children];
+// R2 — pill height by duration
+STEPS.forEach((s,i)=>$("r2List").insertAdjacentHTML("beforeend",`<div class="r2-row"><div class="r2-when">Step ${n2(i)}</div><div class="r2-rail"><div class="r2-pill" style="height:96px">${n2(i)}</div></div><div class="r2-body"><div class="quote">${s[0]}</div><p>${s[1]}</p><span class="r2-check">✓</span></div></div>`));
+const r2r=[...document.querySelectorAll(".r2-row")];
+// R3 — шість етапів на лінійці, без часу
+const ruler=$("r3Ruler");
+for(let k=0;k<=N;k++){ ruler.insertAdjacentHTML("beforeend",`<i class="r3-tick w" style="left:${k/N*100}%"></i>`); if(k<N){ ruler.insertAdjacentHTML("beforeend",`<span class="r3-lab" style="left:${(k+.5)/N*100}%">${n2(k)}</span>`); for(let d=1;d<5;d++) ruler.insertAdjacentHTML("beforeend",`<i class="r3-tick" style="left:${(k+d/5)/N*100}%"></i>`); } }
+STEPS.forEach((s,i)=>$("r3Cols").insertAdjacentHTML("beforeend",`<div class="r3-col">${s[0]}</div>`));
+const r3c=[...$("r3Cols").children]; let l3=-1;
+
+function tick(){
+  let p=pinned(document.querySelector('[data-track=r1]')), i=Math.min(N-1,Math.floor(p*N));
+  const strip=$("r1Strip"); const max=Math.max(0,strip.scrollWidth-(innerWidth-80));
+  strip.style.transform=`translateX(${-p*max}px)`; r1c.forEach((el,k)=>el.classList.toggle("on",k===i));
+
+  const mid=innerHeight*.55; let cur=-1;
+  r2r.forEach((el,k)=>{ const r=el.getBoundingClientRect(); const done=r.bottom<mid, now=r.top<mid&&r.bottom>=mid; el.classList.toggle("done",done); el.classList.toggle("now",now); if(done||now) cur=k; });
+
+  p=pinned(document.querySelector('[data-track=r3]')); const a=Math.min(N-1,Math.floor(p*N));
+  $("r3Play").style.left=(p*100)+"%"; $("r3Lab").textContent=`Step ${n2(a)}`;
+  r3c.forEach((el,k)=>{ el.classList.toggle("on",k===a); el.classList.toggle("past",k<a); });
+  if(a!==l3){ l3=a; $("r3Num").textContent=n2(a); swap($("r3Text"),`<div class="quote">${STEPS[a][0]}</div><p class="sec" style="margin-top:12px;max-width:560px">${STEPS[a][1]}</p>`); }
+}
+addEventListener("scroll",tick,{passive:true}); addEventListener("resize",tick); tick();
+</script>
+</body>
+</html>

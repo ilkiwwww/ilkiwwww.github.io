@@ -9,7 +9,6 @@ export const SERVICES_INTRO = {
 export const CATEGORIES = [
   {
     slug: "design",
-    range: "From a single landing page to a full product redesign.",
     cta: "Start a design project",
     name: "Design",
     title: "We start with how people actually use it.",
@@ -25,7 +24,6 @@ export const CATEGORIES = [
   },
   {
     slug: "branding",
-    range: "From a lean startup identity to a complete brand platform.",
     cta: "Start a branding project",
     name: "Branding",
     title: "Then it has to be recognisable.",
@@ -39,7 +37,6 @@ export const CATEGORIES = [
   },
   {
     slug: "illustration",
-    range: "From one icon set to a full illustration language.",
     cta: "Start an illustration project",
     name: "Illustration",
     title: "A visual language that isn't borrowed.",
@@ -53,7 +50,6 @@ export const CATEGORIES = [
   },
   {
     slug: "motion",
-    range: "From a single micro-interaction to a launch film.",
     cta: "Start a motion project",
     name: "Motion",
     title: "Motion shows why, not just what.",
@@ -67,7 +63,6 @@ export const CATEGORIES = [
   },
   {
     slug: "development",
-    range: "From a single page build to a design system in code.",
     cta: "Start a build",
     name: "Development",
     title: "Built exactly as designed.",

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phone mockup 375×812</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1a1a1c; }
+  body { display: grid; place-items: center; min-height: 100vh; font: 12px system-ui; color: #999; }
+  .stage { display: grid; gap: 16px; justify-items: center; padding: 24px 0; }
+  .phone { padding: 14px; border-radius: 56px; background: #000; box-shadow: 0 0 0 2px #3a3a3d, 0 24px 80px #000; position: relative; }
+  iframe { display: block; width: 375px; height: 812px; border: 0; border-radius: 44px; background: #000; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone"><iframe id="f" title="EMOTE mobile"></iframe></div>
+  <div>375 × 812 · <span id="u"></span> · змінити: ?src=http://localhost:PORT/about</div>
+</div>
+<script>
+  const src = new URLSearchParams(location.search).get("src") || "http://localhost:5173/";
+  document.getElementById("f").src = src;
+  document.getElementById("u").textContent = src;
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How we work — 4 timeline variants (prototype)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Sans:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#000; --fill:#141414; --line:#242424; --sec:#999; --pri:#fff; --ease:cubic-bezier(.22,1,.36,1); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--black); color:var(--pri); font:400 16px/24px Inter,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; text-decoration:none; }
+  .sec { color:var(--sec); }
+  .eyebrow { font:500 12px/16px Inter; text-transform:uppercase; color:var(--sec); }
+  .statement { font:500 64px/64px "Instrument Sans",sans-serif; }
+  .quote { font:500 28px/36px "Instrument Sans",sans-serif; }
+  .display { font:500 140px/132px "Instrument Sans",sans-serif; }
+  .chip { display:inline-flex; align-items:center; height:36px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; }
+  .btn { display:inline-flex; align-items:center; height:48px; padding:0 24px; border:1px solid var(--line); border-radius:9999px; font-weight:500; }
+  .top { position:sticky; top:0; z-index:50; background:var(--black); border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:24px; height:72px; padding:0 40px; }
+  .top nav { display:flex; gap:8px; }
+  .vhead { padding:64px 40px 24px; border-top:1px solid var(--line); display:flex; gap:24px; align-items:baseline; }
+  .vhead h2 { font:500 40px/48px "Instrument Sans"; }
+  .vhead p { margin-top:12px; max-width:640px; }
+  .track { position:relative; }
+  .stage { position:sticky; top:72px; height:calc(100vh - 72px); overflow:hidden; padding:40px; display:flex; flex-direction:column; }
+  .dot { width:12px; height:12px; border-radius:9999px; border:1px solid var(--line); background:var(--black); transition:.4s var(--ease); }
+  .reached > .dot, .dot.reached { background:var(--pri); border-color:var(--pri); }
+  .swap { animation:in .7s var(--ease); }
+  @keyframes in { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+
+  /* 1 — Horizontal rail, step columns, active text opens below */
+  .t1-rail { position:relative; display:grid; grid-template-columns:repeat(6,1fr); margin-top:auto; }
+  .t1-rail::before { content:""; position:absolute; left:0; right:0; top:5px; height:1px; background:var(--line); }
+  .t1-fill { position:absolute; left:0; top:5px; height:1px; background:var(--pri); width:0; transition:width .6s var(--ease); }
+  .t1-col { position:relative; padding:32px 16px 0 0; color:var(--sec); transition:color .4s; }
+  .t1-col .dot { position:absolute; top:0; left:0; }
+  .t1-col.on { color:var(--pri); }
+  .t1-col .quote { margin-top:8px; font-size:20px; line-height:28px; }
+  .t1-body { margin-top:48px; min-height:150px; display:grid; grid-template-columns:200px 1fr; gap:32px; border-top:1px solid var(--line); padding-top:32px; margin-bottom:auto; }
+  .t1-body .n { font:500 92px/72px "Instrument Sans"; color:var(--line); }
+
+  /* 2 — Vertical centre line, zig-zag cards (normal scroll, line draws) */
+  .t2 { position:relative; max-width:1100px; margin:0 auto; padding:80px 0 160px; }
+  .t2-line { position:absolute; left:50%; top:80px; bottom:160px; width:1px; background:var(--line); }
+  .t2-line i { position:absolute; left:0; top:0; width:1px; height:0; background:var(--pri); }
+  .t2-item { position:relative; width:50%; padding:0 56px 96px 0; text-align:right; opacity:.35; transition:opacity .6s var(--ease); }
+  .t2-item:nth-child(odd) { margin-left:0; }
+  .t2-item:nth-child(even) { margin-left:50%; padding:0 0 96px 56px; text-align:left; }
+  .t2-item.on { opacity:1; }
+  .t2-item .dot { position:absolute; top:12px; right:-6px; }
+  .t2-item:nth-child(even) .dot { right:auto; left:-6px; }
+  .t2-item .n { font:500 12px/16px Inter; color:var(--sec); }
+  .t2-item .quote { margin:8px 0 12px; }
+  .t2-item p { color:var(--sec); }
+  .t2-item:nth-child(odd) p { margin-left:auto; max-width:420px; }
+  .t2-item:nth-child(even) p { max-width:420px; }
+
+  /* 3 — Segmented bar on top, one big title swaps */
+  .t3-bar { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+  .t3-seg { height:2px; background:var(--line); position:relative; }
+  .t3-seg i { position:absolute; inset:0; background:var(--pri); transform:scaleX(0); transform-origin:left; transition:transform .6s var(--ease); }
+  .t3-seg.reached i { transform:scaleX(1); }
+  .t3-labels { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:12px; }
+  .t3-labels span { color:var(--line); transition:color .4s; } .t3-labels span.on { color:var(--pri); }
+  .t3-main { margin:auto 0; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:end; }
+  .t3-main .statement { max-width:620px; }
+
+  /* 4 — Left vertical rail with sticky heading; steps stack, active one is white */
+  .t4 { display:grid; grid-template-columns:1fr 1fr; gap:64px; padding:80px 40px 160px; }
+  .t4-left { position:sticky; top:152px; align-self:start; }
+  .t4-list { position:relative; padding-left:48px; }
+  .t4-rail { position:absolute; left:5px; top:12px; bottom:12px; width:1px; background:var(--line); }
+  .t4-rail i { position:absolute; left:0; top:0; width:1px; height:0; background:var(--pri); }
+  .t4-item { position:relative; padding:0 0 120px; opacity:.35; transition:opacity .6s var(--ease); }
+  .t4-item.on { opacity:1; }
+  .t4-item .dot { position:absolute; left:-48px; top:10px; }
+  .t4-item .quote { margin-bottom:12px; }
+  .t4-item p { color:var(--sec); max-width:480px; }
+
+  @media (max-width:900px){
+    .top, .vhead, .stage, .t4 { padding-left:24px; padding-right:24px; }
+    .statement { font-size:40px; line-height:48px; } .display { font-size:56px; line-height:56px; }
+    .t1-rail { grid-template-columns:repeat(6,32px); } .t1-col .quote { display:none; }
+    .t1-body, .t3-main, .t4 { grid-template-columns:1fr; gap:24px; }
+    .t2-line { left:6px; } .t2-item, .t2-item:nth-child(even) { width:100%; margin-left:0; padding:0 0 64px 40px; text-align:left; }
+    .t2-item .dot, .t2-item:nth-child(even) .dot { left:0; right:auto; } .t2-item:nth-child(odd) p { margin-left:0; }
+    .t4-left { position:static; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="eyebrow">How we work · timelines</span>
+  <nav><a class="chip" href="#t1">1 · Rail</a><a class="chip" href="#t2">2 · Zig-zag</a><a class="chip" href="#t3">3 · Segments</a><a class="chip" href="#t4">4 · Side rail</a></nav>
+</header>
+
+<div class="vhead" id="t1"><span class="eyebrow">1</span><div><h2>Rail</h2><p class="sec">Pinned screen. Horizontal rail with six columns fills left to right; the open step shows a big number and its text underneath.</p></div></div>
+<div class="track" data-track="t1" style="height:500vh"><div class="stage">
+  <div class="eyebrow">How we work</div>
+  <div class="statement" style="margin-top:16px">One process,<br>followed every time.</div>
+  <div class="t1-rail" id="t1Rail"><div class="t1-fill" id="t1Fill"></div></div>
+  <div class="t1-body"><div class="n" id="t1Num">01</div><div id="t1Text"></div></div>
+</div></div>
+
+<div class="vhead" id="t2"><span class="eyebrow">2</span><div><h2>Zig-zag</h2><p class="sec">Not pinned: a vertical centre line draws as you scroll, steps alternate left and right and light up as the line reaches them.</p></div></div>
+<div class="t2" data-track="t2"><div class="t2-line"><i id="t2Fill"></i></div><div id="t2List"></div></div>
+
+<div class="vhead" id="t3"><span class="eyebrow">3</span><div><h2>Segments</h2><p class="sec">Pinned screen. Six thin segments on top fill one by one with labels beneath; one big step title swaps in the middle with its text beside it.</p></div></div>
+<div class="track" data-track="t3" style="height:500vh"><div class="stage">
+  <div class="t3-bar" id="t3Bar"></div><div class="t3-labels eyebrow" id="t3Labels"></div>
+  <div class="t3-main"><div class="statement" id="t3Title"></div><div id="t3Text" class="sec" style="max-width:420px"></div></div>
+  <div class="eyebrow" id="t3Count">01 / 06</div>
+</div></div>
+
+<div class="vhead" id="t4"><span class="eyebrow">4</span><div><h2>Side rail</h2><p class="sec">Not pinned: heading sticks on the left while the six steps scroll on the right along a vertical rail that fills; passed steps stay lit, the current one is brightest.</p></div></div>
+<div class="t4" data-track="t4">
+  <div class="t4-left"><div class="eyebrow">How we work</div><div class="statement" style="margin-top:16px">One process,<br>followed every time.</div><a class="btn" style="margin-top:40px">Get in touch</a></div>
+  <div class="t4-list" id="t4List"><div class="t4-rail"><i id="t4Fill"></i></div></div>
+</div>
+<div style="height:30vh"></div>
+
+<script>
+const STEPS = [
+  ["Discover, as partners","We start by diving into your project and its audience — not a generic template. You're in the room from day one: Slack, Figma, your workflow, not a handoff down a chain."],
+  ["A strategy that holds up","Understanding the market is only half the job. We build thoughtful, system-based strategy and design that adapts as your product grows, not something that cracks at the first change."],
+  ["Structure, dev-ready by default","User flows and roadmaps you can test before launch, handed off as components — tokens, states, constraints. We speak dev and design like we code, so nothing gets lost on the way."],
+  ["Create, a process you can follow","Every stage gets confirmed with you, visible in Notion, Jira, Figma, or your stack. Scope, estimates, and feedback loops stay open — this is your project, and you see it ship."],
+  ["Product-led at every step","We work at the intersection of design and business throughout — from product-market fit to scale-readiness — aligning UX with growth metrics, not just the user flow."],
+  ["The Emote difference","Our edge isn't tools or templates — it's the people. Curious, invested, and obsessive about doing the right thing right. That wow-effect at the end is what makes it Emote."]
+];
+const N = STEPS.length, n2 = i => String(i+1).padStart(2,"0");
+const clamp = (v,a=0,b=1) => Math.min(b, Math.max(a, v));
+const pinned = t => { const r = t.getBoundingClientRect(); return clamp(-(r.top - 72) / (r.height - (innerHeight - 72))); };
+const $ = id => document.getElementById(id);
+const swap = (el, html) => { el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); el.innerHTML = html; };
+
+// 1
+const t1Rail = $("t1Rail");
+STEPS.forEach((s,i)=>t1Rail.insertAdjacentHTML("beforeend",`<div class="t1-col"><span class="dot"></span><div class="eyebrow">${n2(i)}</div><div class="quote">${s[0]}</div></div>`));
+const t1Cols=[...t1Rail.querySelectorAll(".t1-col")]; let l1=-1;
+// 2
+STEPS.forEach((s,i)=>$("t2List").insertAdjacentHTML("beforeend",`<div class="t2-item"><span class="dot"></span><div class="n">${n2(i)}</div><div class="quote">${s[0]}</div><p>${s[1]}</p></div>`));
+const t2Items=[...document.querySelectorAll(".t2-item")];
+// 3
+STEPS.forEach((s,i)=>{ $("t3Bar").insertAdjacentHTML("beforeend",`<div class="t3-seg"><i></i></div>`); $("t3Labels").insertAdjacentHTML("beforeend",`<span>${n2(i)}</span>`); });
+const t3Segs=[...document.querySelectorAll(".t3-seg")], t3Lab=[...$("t3Labels").children]; let l3=-1;
+// 4
+STEPS.forEach((s,i)=>$("t4List").insertAdjacentHTML("beforeend",`<div class="t4-item"><span class="dot"></span><div class="eyebrow">${n2(i)}</div><div class="quote">${s[0]}</div><p>${s[1]}</p></div>`));
+const t4Items=[...document.querySelectorAll(".t4-item")];
+
+// «лінія дійшла до центру екрана» для незакріплених варіантів
+function free(list, fillEl, box, dotTop){
+  const r = box.getBoundingClientRect(), mid = innerHeight*0.5;
+  const reachedY = clamp(mid - r.top, 0, r.height);
+  let cur = -1;
+  list.forEach((el,k)=>{ const y = el.getBoundingClientRect().top + dotTop; const on = y <= mid; el.classList.toggle("on", false); if (on) cur = k; el.querySelector(".dot").classList.toggle("reached", on); });
+  list.forEach((el,k)=>el.classList.toggle("on", k===Math.max(cur,0)));
+  fillEl.style.height = reachedY + "px";
+}
+
+function tick(){
+  let p = pinned(document.querySelector('[data-track=t1]')), i = Math.min(N-1, Math.floor(p*N));
+  t1Cols.forEach((el,k)=>{ el.classList.toggle("on",k===i); el.querySelector(".dot").classList.toggle("reached",k<=i); });
+  $("t1Fill").style.width = (t1Cols[i].offsetLeft / t1Rail.clientWidth * 100) + "%";
+  if (i!==l1){ l1=i; $("t1Num").textContent=n2(i); swap($("t1Text"),`<div class="quote">${STEPS[i][0]}</div><p class="sec" style="margin-top:12px;max-width:560px">${STEPS[i][1]}</p>`); }
+
+  const b2=document.querySelector('[data-track=t2]');
+  free(t2Items,$("t2Fill"),b2,18); $("t2Fill").style.height = clamp(innerHeight*0.5 - b2.getBoundingClientRect().top - 80, 0, b2.offsetHeight-240)+"px";
+
+  p = pinned(document.querySelector('[data-track=t3]')); i = Math.min(N-1, Math.floor(p*N));
+  t3Segs.forEach((el,k)=>el.classList.toggle("reached",k<=i)); t3Lab.forEach((el,k)=>el.classList.toggle("on",k===i));
+  if (i!==l3){ l3=i; swap($("t3Title"),STEPS[i][0]); swap($("t3Text"),STEPS[i][1]); $("t3Count").textContent=`${n2(i)} / 06`; }
+
+  const b4=document.querySelector('[data-track=t4]'), list=$("t4List");
+  free(t4Items,$("t4Fill"),list,16);
+}
+addEventListener("scroll", tick, {passive:true}); addEventListener("resize", tick); tick();
+</script>
+</body>
+</html>

@@ -1,10 +1,8 @@
-import { lazy, Suspense, useRef } from "react";
 import { openBookCall } from "./BookCall.jsx";
 import Button from "./ui/Button.jsx";
 import ScrollHeading from "./ui/ScrollHeading.jsx";
 import Section from "./ui/Section.jsx";
 import Text from "./ui/Text.jsx";
-import { hasWebGL } from "./glass/hasWebGL.js";
 
 // Футер (Figma, node 40002187:279): внизу сцени ліворуч legal, праворуч
 // соцмережі.
@@ -15,13 +13,8 @@ const SOCIALS = [
 ];
 
 // Фінальний CTA — за Figma (node 40002134:181, 1440×709).
-// Позаду — велике темне скляне 3D-лого «ö» (glass/CtaScene.jsx), поверх нього
-// великий заголовок «Let's make it work.» (`display`) і «Book a call».
+// Великий заголовок «Let's make it work.» (`display`) і «Book a call» на чорному.
 // Заголовок заповнюється з сірого в білий за скролом, як інші заголовки.
-// 3D (three.js) вантажиться ліниво, окремим чанком; без WebGL лишається
-// просто заголовок на чорному. Текстовий шар пропускає курсор до лого
-// (pointer-events-none), клікабельна лише кнопка.
-const CtaScene = lazy(() => import("./glass/CtaScene.jsx"));
 
 // Футер: legal ліворуч, соцмережі праворуч. У сцені CTA лежить внизу (absolute), без CTA — звичайним рядком.
 function Footer({ className = "" }) {
@@ -47,8 +40,6 @@ function Footer({ className = "" }) {
 
 // `footerOnly` — сторінка без CTA (Contact): лише футер на чорному.
 export default function Cta({ footerOnly = false }) {
-  const stage = useRef(null);
-
   if (footerOnly) {
     return (
       <Section rhythm="none" className="py-8">
@@ -60,15 +51,7 @@ export default function Cta({ footerOnly = false }) {
   return (
     <Section id="contact" rhythm="none" aria-labelledby="cta-title">
       {/* Сцена на всю ширину секції (за межі gutters) */}
-      <div ref={stage} className="relative -mx-6 h-140 overflow-hidden md:-mx-10 md:h-177">
-        {hasWebGL && (
-          <Suspense fallback={null}>
-            <div className="absolute inset-0" aria-hidden="true">
-              <CtaScene containerRef={stage} />
-            </div>
-          </Suspense>
-        )}
-        <div className="cta-fade pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="relative -mx-6 h-140 overflow-hidden md:-mx-10 md:h-177">
 
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-10 px-6 text-center">
           <ScrollHeading id="cta-title" level="display" lines={["Let’s make", "it work."]} breakAlways end={0.6} />

@@ -117,17 +117,12 @@ body {
 [data-intro="wait"] .reveal-up,
 [data-intro="wait"] .header-drop,
 [data-intro="wait"] .intro-line-x,
-[data-intro="wait"] .intro-line-diag,
-[data-intro="wait"] .hero-scene { animation-play-state: paused; }
+[data-intro="wait"] .intro-line-diag { animation-play-state: paused; }
 /* Другий стан Hero (Hero.jsx, [data-open] на секції): заголовок і цитата йдуть, з'являється карусель
    обкладинок, внизу ліворуч опис кейсу, назви кейсів переїжджають праворуч. Картки каруселі
    розкладає CSS за --d (відстань до активної): активна на всю ширину між двома вузькими. */
 .hero-zone { pointer-events: none; }
 [data-open] .hero-zone { pointer-events: auto; }
-
-.hero-scene { opacity: 0.4; transition: opacity 0.6s var(--ease-case), visibility 0s; animation: scene-in 1.6s var(--ease-intro) 3.2s backwards; } /* інтро: лого з'являється останнім */
-@keyframes scene-in { from { opacity: 0; } }
-[data-open] .hero-scene { opacity: 0; visibility: hidden; transition-delay: 0s, 0.6s; }
 
 .hero-lead { transition: opacity 0.6s var(--ease-case), translate 0.6s var(--ease-case), visibility 0s; }
 [data-open] .hero-lead { opacity: 0; translate: 0 -24px; visibility: hidden; transition-delay: 0s, 0s, 0.6s; }
@@ -153,8 +148,6 @@ body {
   transition: left 0.9s var(--ease-case), width 0.9s var(--ease-case);
 }
 
-.cta-fade { background: linear-gradient(to bottom, transparent 55%, var(--color-black)); }
-
 .hero-shade {
   background: var(--color-black);
   /* 0 у вибраної картки, 0.7 у сусідніх (Figma: чорний 70% на «next») */
@@ -169,6 +162,17 @@ body {
 
 .hero-detail { opacity: 0; visibility: hidden; transition: opacity 0.4s var(--ease-case), visibility 0s 0.4s; }
 [data-open] .hero-detail { opacity: 1; visibility: visible; transition-delay: 0.3s, 0s; }
+
+/* Підпослуги в панелі категорії (ServicesPage): за замовчуванням список на всю ширину, при наведенні ліворуч лишається
+   вузька колонка (Figma: 213), праворуч з'являється колонка з описом і фото. */
+.svc-left { flex: 0 0 100%; min-width: 0; transition: flex-basis 0.6s var(--ease-case); }
+.svc-right { opacity: 0; transition: opacity 0.4s var(--ease-case); }
+.svc-split[data-open] .svc-right { opacity: 1; transition-delay: 0.2s; }
+@media (min-width: 64rem) {
+  .svc-split[data-open] .svc-left { flex-basis: 213px; }
+}
+@keyframes svc-fade { from { opacity: 0; } }
+.svc-fade { animation: svc-fade 0.4s var(--ease-case) both; }
 
 /* Hero закріплюється на ~70% екрана скролу: за цей час відкривається перший кейс (Hero.jsx), далі йде наступна секція. */
 @media (min-width: 48rem) {
@@ -218,6 +222,47 @@ body {
 }
 .how-body > div { min-height: 0; overflow: hidden; }
 .how-row[data-open] .how-body { grid-template-rows: 1fr; }
+
+/* «How we work»: крок із крапкою на лінії; лінія до наступного кроку малюється зверху вниз, коли крок пройдено. */
+.proc-item { position: relative; padding-left: 40px; }
+.proc-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 24px;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-tertiary);
+  background: var(--color-black);
+  transition: background-color 0.4s var(--ease-case), border-color 0.4s var(--ease-case);
+}
+.proc-item[data-reached]::before { background: var(--color-primary); border-color: var(--color-primary); }
+.proc-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 5.5px;
+  top: 30px;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(var(--color-primary), var(--color-primary)) 0 0 / 100% 0 no-repeat, var(--color-tertiary);
+  transition: background-size 0.6s var(--ease-case);
+}
+.proc-item[data-past]::after { background-size: 100% 100%; }
+/* Лінійка «How we work»: шість рівних етапів (великі поділки), по п'ять малих між ними. */
+.proc-ruler {
+  background:
+    repeating-linear-gradient(to right, var(--color-secondary) 0 1px, transparent 1px calc(100% / 6)) bottom / 100% 24px no-repeat,
+    repeating-linear-gradient(to right, var(--color-tertiary) 0 1px, transparent 1px calc(100% / 30)) bottom / 100% 12px no-repeat;
+}
+.proc-bar { position: relative; left: calc(var(--k) * 12%); width: 40%; background: var(--color-fill); border: 1px solid var(--color-tertiary); transition: background-color 0.5s var(--ease-case), border-color 0.5s var(--ease-case); }
+.proc-bar[data-on] { background: var(--color-primary); border-color: var(--color-primary); }
+.proc-bar[data-on] span { color: var(--color-black); }
+/* Плейхед: вертикальна лінія через смуги, стоїть по центру поточного етапу, підпис над лінійкою. */
+.proc-play { position: absolute; top: -24px; bottom: 0; left: calc((var(--a) + 0.5) / 6 * 100%); width: 1px; background: var(--color-primary); transition: left 0.6s var(--ease-case); pointer-events: none; }
+.proc-play-label { position: absolute; top: -56px; left: 50%; translate: -50% 0; padding: 4px 12px; border-radius: 9999px; background: var(--color-primary); color: var(--color-black); white-space: nowrap; }
+@keyframes proc-text { from { opacity: 0; translate: 0 16px; } }
+.proc-text { animation: proc-text 0.6s var(--ease-case) both; }
 
 /* Попап «Book a call»: затемнення проявляється, картка трохи піднімається знизу. */
 @keyframes modal-fade {
@@ -346,12 +391,13 @@ body {
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 0 calc(var(--spacing) * -10);
+  inset: 0;
   background: var(--color-fill);
   opacity: 0;
   transition: opacity 0.8s var(--ease-case);
 }
 @media (hover: hover) and (min-width: 64rem) {
+  .service-row::before { inset: 0 calc(var(--spacing) * -10); }
   .service-row[data-open]::before { opacity: 1; }
 }
 .service-row[data-open] .service-reveal { grid-template-rows: 1fr; }
@@ -404,6 +450,11 @@ body {
   .modal-fade,
   .modal-card { animation: none; }
   .marquee { animation: none; }
+  .proc-text { animation: none; }
+  .proc-play,
+  .proc-bar { transition: none; }
+  .proc-item::before,
+  .proc-item::after,
   .how-body,
   .service-reveal,
   .service-shot,
@@ -414,7 +465,8 @@ body {
   .hero-card,
   .hero-detail,
   .hero-arrow { transition: none; }
-  .hero-scene { animation: none; }
+  .svc-left, .svc-right { transition: none; }
+  .svc-fade { animation: none; }
   .reveal-up,
   .header-drop,
   .intro-line-x,
@@ -430,6 +482,6 @@ body {
 
 /* Services: на lg блок закріплений на ~4 екрани скролу; категорії перемикає скрол, панель завжди в екрані. */
 @media (min-width: 64rem) {
-  .services-track { height: calc(100dvh + 300vh); }
-  .services-stage { position: sticky; top: calc(var(--spacing) * 24); height: calc(100dvh - 120px); max-height: 760px; align-content: start; }
+  .pin-track { height: calc(100dvh + 300vh); }
+  .pin-stage { position: sticky; top: calc(var(--spacing) * 24); height: calc(100dvh - 120px); max-height: 760px; align-content: start; }
 }
