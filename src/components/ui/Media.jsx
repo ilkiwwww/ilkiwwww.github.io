@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-// Колодязь під зображення. Без `src` (або якщо файл не завантажився)
+// Колодязь під зображення (або відео). Без `src` (або якщо файл не завантажився)
 // показує плейсхолдер того ж розміру — макет не стрибає, а картинку можна
 // просто покласти в public/ під очікуваним ім'ям.
 // Заливка плейсхолдера: `raised` — видима плашка (картка), `none` — порожньо
@@ -21,6 +21,15 @@ const HOVERS = {
 export default function Media({ src, next, alt = "", label, fill = false, round = false, placeholder = "raised", hover = "none", className = "" }) {
   const [failed, setFailed] = useState(false);
   const shape = `${fill ? "absolute inset-0" : "relative"} overflow-hidden ${round ? "rounded-full" : ""} ${className}`;
+
+  // Відео (mp4/webm): без звуку, по колу, як гіф. Помилка завантаження — плейсхолдер.
+  if (src && !failed && /\.(mp4|webm)$/i.test(src)) {
+    return (
+      <div className={shape}>
+        <video src={src} aria-label={alt || undefined} aria-hidden={alt ? undefined : true} autoPlay muted loop playsInline onError={() => setFailed(true)} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
 
   if (src && !failed && next) {
     return (

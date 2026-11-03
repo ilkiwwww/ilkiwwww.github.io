@@ -15,7 +15,7 @@
 | `Text` | `quote` 28/36, `lead` 20/28, `body` 16/24, `dense` 12/16; `weight="medium"`, `uppercase`; тони `primary`/`secondary` |
 | `Eyebrow` | лейбл над заголовком: Inter Medium 16, uppercase, `secondary` |
 | `Section` | обгортка секції: фон `black`, gutters 24 → 40, ритм `default` / `top` |
-| `Media` | фото з плейсхолдером `fill`; `next` (друге фото на hover), `hover="zoom"`, `fill` |
+| `Media` | фото (або відео mp4/webm, без звуку, по колу) з плейсхолдером `fill`; `next` (друге фото на hover), `hover="zoom"`, `fill` |
 | `Motion` | `InView`, `Rise`, `Grow`, `Fade`, `ScrollFill`, `Roll` (поява при скролі, як на metalab.com), `Reveal` (інтро) |
 | `OrbitLink` | кругле посилання «All works» з текстом по колу |
 | `Cursor` | курсор-лого «ö»; над `Button light` очі радіють |
