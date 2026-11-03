@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Колодязь під зображення (або відео). Без `src` (або якщо файл не завантажився)
 // показує плейсхолдер того ж розміру — макет не стрибає, а картинку можна
@@ -20,13 +20,35 @@ const HOVERS = {
 
 export default function Media({ src, next, alt = "", label, fill = false, round = false, placeholder = "raised", hover = "none", className = "" }) {
   const [failed, setFailed] = useState(false);
+  const video = useRef(null);
+  const isVideo = !!src && /\.(mp4|webm)$/i.test(src);
+
+  // Відео стартує саме: React не завжди ставить `muted` до автоплею (Safari), тож вмикаємо звук-off і play()
+  // вручну, повторюємо, коли файл готовий, а якщо браузер заблокував — на перший жест користувача.
+  useEffect(() => {
+    const v = video.current;
+    if (!isVideo || !v) return;
+    v.muted = true;
+    const play = () => v.play().catch(() => {});
+    const gesture = () => {
+      play();
+      ["pointerdown", "keydown", "touchstart"].forEach((e) => window.removeEventListener(e, gesture));
+    };
+    play();
+    v.addEventListener("canplay", play);
+    ["pointerdown", "keydown", "touchstart"].forEach((e) => window.addEventListener(e, gesture, { once: true, passive: true }));
+    return () => {
+      v.removeEventListener("canplay", play);
+      ["pointerdown", "keydown", "touchstart"].forEach((e) => window.removeEventListener(e, gesture));
+    };
+  }, [isVideo, src]);
   const shape = `${fill ? "absolute inset-0" : "relative"} overflow-hidden ${round ? "rounded-full" : ""} ${className}`;
 
   // Відео (mp4/webm): без звуку, по колу, як гіф. Помилка завантаження — плейсхолдер.
-  if (src && !failed && /\.(mp4|webm)$/i.test(src)) {
+  if (src && !failed && isVideo) {
     return (
       <div className={shape}>
-        <video src={src} aria-label={alt || undefined} aria-hidden={alt ? undefined : true} autoPlay muted loop playsInline onError={() => setFailed(true)} className="h-full w-full object-cover" />
+        <video ref={video} src={src} preload="auto" aria-label={alt || undefined} aria-hidden={alt ? undefined : true} autoPlay muted loop playsInline onError={() => setFailed(true)} className="h-full w-full object-cover" />
       </div>
     );
   }
