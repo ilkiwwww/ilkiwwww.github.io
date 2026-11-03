@@ -177,12 +177,14 @@ function Chapter({ chapter, head, skipMedia = false }) {
         </div>
       )}
       <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-3">
-          <Block block={chapter} label={label} skipMedia={skipMedia} text={inColumn ? text : undefined} />
-          {more.map((block, i) => (
-            <Block key={i} block={block} label={label} />
-          ))}
-        </div>
+        {!(skipMedia && layout === "wide" && more.length === 0) && (
+          <div className="flex flex-col gap-3">
+            <Block block={chapter} label={label} skipMedia={skipMedia} text={inColumn ? text : undefined} />
+            {more.map((block, i) => (
+              <Block key={i} block={block} label={label} />
+            ))}
+          </div>
+        )}
         {text && !inColumn && (
           <Rise delay={0.1} className={textAt === "start" ? "md:w-1/2" : "grid md:grid-cols-2"}>
             <Text tone="secondary" className={textAt === "start" ? undefined : "md:col-start-2"}>
@@ -212,7 +214,7 @@ function useIntroScroll(enabled, layoutRef, blockRef, storyOpen) {
       frame = 0;
       const r = block.getBoundingClientRect();
       const vh = window.innerHeight;
-      const run = r.height - vh;
+      const run = r.height - block.firstElementChild.offsetHeight;
       const set = (k, v) => layout.style.setProperty(k, v);
       set("--cx", `${r.left}px`);
       set("--lw", `${layout.clientWidth}px`);

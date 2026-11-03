@@ -367,8 +367,9 @@ body {
 
 /* Вступ кейсу зі скролом (WorkDetailPage, від lg). Блок 260vh, сцена липне; відео (.intro-video) росте з ширини
    сітки на весь екран (--f), потім стискається в колонку першого розділу (--s), панель історії проявляється. */
-.intro-block { height: 260vh; margin-bottom: calc(min(0px, var(--h2, 0px) - 100vh) - 88px); }
-.intro-stage { position: sticky; top: 0; height: 100vh; }
+/* Сцена не нижча за відео в колонці (--h2): на низькому вікні відео не вилазить за блок і не лізе на абзац. */
+.intro-block { --sh: max(100vh, var(--h2, 0px)); height: calc(var(--sh) + 160vh); margin-bottom: calc(min(0px, var(--h2, 0px) - var(--sh)) - 88px); }
+.intro-stage { position: sticky; top: 0; height: var(--sh); }
 .intro-video {
   position: absolute;
   top: 0;
