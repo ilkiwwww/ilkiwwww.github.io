@@ -110,54 +110,87 @@ function StoryAccordion({ story, onClose }) {
   );
 }
 
-// `head` — підпис розділу (eyebrow із лінією); перший розділ іде без нього (як у макеті).
-// `skipMedia` — перше медіа вже показує вступ зі скролом (CaseIntro), тут лишається лише абзац.
-function Chapter({ chapter, head, skipMedia = false }) {
-  const { label, layout = "wide", text } = chapter;
-  const shot = (i, className) => <Media src={chapter.media?.[i]?.src} label={chapter.media?.[i]?.label ?? `${label} ${i + 1}`} className={className} />;
-  return (
-    <InView className="flex flex-col gap-10">
-      {head && <SectionLabel>{label}</SectionLabel>}
-      {layout === "wide" && (
-        <div className="grid gap-3 md:grid-cols-2">
-          {!skipMedia && <Rise className="md:col-span-2">{shot(0, "aspect-4/3 w-full")}</Rise>}
-          {text && (
-            <Rise delay={0.1} className="md:col-start-2">
-              <Text tone="secondary">{text}</Text>
-            </Rise>
-          )}
-        </div>
-      )}
-      {layout === "pair" && (
-        <div className="grid grid-cols-2 items-start gap-3">
-          <div className="flex flex-col gap-6">
-            <Rise>{shot(0, "aspect-4/5 w-full")}</Rise>
-            {text && (
-              <Rise delay={0.1}>
-                <Text tone="secondary">{text}</Text>
-              </Rise>
-            )}
-          </div>
-          <Rise delay={0.1} className="pt-10 md:pt-20">
-            {shot(1, "aspect-4/5 w-full")}
-          </Rise>
-        </div>
-      )}
-      {layout === "offset" && (
+// Один блок медіа в розділі: `wide` — 4:3 на всю ширину колонки; `pair` — два 4:5, правий нижче на 80;
+// `offset` — вузьке 7:9 (280) і широке 5:4, `reverse` міняє їх місцями. `media` — [{ src, label }].
+function Block({ block, label, skipMedia = false, text }) {
+  const { layout = "wide", reverse = false } = block;
+  const shot = (i, className) => <Media src={block.media?.[i]?.src} label={block.media?.[i]?.label ?? `${label ?? "Image"} ${i + 1}`} className={className} />;
+  if (layout === "wide") return skipMedia ? null : <Rise>{shot(0, "aspect-4/3 w-full")}</Rise>;
+  if (layout === "pair") {
+    return (
+      <div className="grid grid-cols-2 items-start gap-3">
         <div className="flex flex-col gap-6">
-          <div className="grid grid-cols-3 items-start gap-3">
-            <Rise className="col-span-1">{shot(0, "aspect-3/4 w-full")}</Rise>
-            <Rise delay={0.1} className="col-span-2">
-              {shot(1, "aspect-5/4 w-full")}
-            </Rise>
-          </div>
+          <Rise>{shot(0, "aspect-4/5 w-full")}</Rise>
           {text && (
             <Rise delay={0.1}>
               <Text tone="secondary">{text}</Text>
             </Rise>
           )}
         </div>
+        <Rise delay={0.1} className="pt-10 md:pt-20">
+          {shot(1, "aspect-4/5 w-full")}
+        </Rise>
+      </div>
+    );
+  }
+  return (
+    <div className={`flex items-start gap-3 ${reverse ? "flex-row-reverse" : ""}`}>
+      <Rise className="w-1/3 shrink-0 md:w-70">{shot(0, "aspect-7/9 w-full")}</Rise>
+      <Rise delay={0.1} className="min-w-0 flex-1">
+        {shot(1, "aspect-5/4 w-full")}
+      </Rise>
+    </div>
+  );
+}
+
+// Розділ історії: підпис (eyebrow; із лінією, а з `title` — над заголовком statement), блоки медіа
+// (перший + `more` через 12) і абзац внизу (`textAt="start"` — під лівою половиною, інакше під правою).
+// `layout: "statement"` — лише рядок `pull` без медіа. Перший розділ іде без підпису (як у макеті);
+// `skipMedia` — перше медіа вже показує вступ зі скролом (useIntroScroll), лишається абзац.
+function Chapter({ chapter, head, skipMedia = false }) {
+  const { label, title, layout = "wide", text, textAt, more = [] } = chapter;
+  if (layout === "statement") {
+    return (
+      <InView className="md:px-28">
+        <Rise bleed>
+          <Heading level="pull" as="p">
+            {text}
+          </Heading>
+        </Rise>
+      </InView>
+    );
+  }
+  const inColumn = layout === "pair" && more.length === 0;
+  return (
+    <InView className={`flex flex-col ${title ? "gap-16" : "gap-10"}`}>
+      {head && label && !title && <SectionLabel>{label}</SectionLabel>}
+      {head && title && (
+        <div className="flex flex-col gap-6">
+          <Rise>
+            <Eyebrow>{label}</Eyebrow>
+          </Rise>
+          <Rise delay={0.1} bleed>
+            <Heading level="statement" as="h2">
+              {title}
+            </Heading>
+          </Rise>
+        </div>
       )}
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-3">
+          <Block block={chapter} label={label} skipMedia={skipMedia} text={inColumn ? text : undefined} />
+          {more.map((block, i) => (
+            <Block key={i} block={block} label={label} />
+          ))}
+        </div>
+        {text && !inColumn && (
+          <Rise delay={0.1} className={textAt === "start" ? "md:w-1/2" : "grid md:grid-cols-2"}>
+            <Text tone="secondary" className={textAt === "start" ? undefined : "md:col-start-2"}>
+              {text}
+            </Text>
+          </Rise>
+        )}
+      </div>
     </InView>
   );
 }
@@ -304,8 +337,8 @@ export default function WorkDetailPage({ slug }) {
           </aside>
         </div>
 
-        <InView className="mt-30 grid gap-12 lg:grid-cols-5">
-            <div className="flex flex-col gap-10 lg:col-span-3">
+        <InView className="mt-30 flex flex-col gap-12 lg:flex-row lg:gap-20">
+            <div className="flex min-w-0 flex-1 flex-col gap-10">
               <div className="flex flex-col gap-10">
                 <SectionLabel>Results</SectionLabel>
                 <ScrollHeading lines={["Shipping work", "that moves numbers."]} />
@@ -325,8 +358,8 @@ export default function WorkDetailPage({ slug }) {
                 ))}
               </div>
             </div>
-            <Rise delay={0.1} className="lg:col-span-2">
-              <Media src={work.statsImage} label="Results" className="aspect-4/5 w-full" />
+            <Rise delay={0.1} className="lg:w-140 lg:shrink-0">
+              <Media src={work.statsImage} label="Results" className="aspect-7/9 w-full" />
             </Rise>
           </InView>
 
