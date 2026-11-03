@@ -10,6 +10,8 @@ export const INDUSTRIES = ["Fintech", "Healthcare", "Logistics", "E-commerce", "
 // label, text, layout wide|pair|offset, media [{ src, label }]), `stats` ([{ value, label }]) із `statsImage`,
 // `quote`, `quoteBy` (автор цитати), `story`. Без них сторінка показує заглушки. Розділи Qure — чернетка з макета.
 export const WORKS = [
+  // Moodies — чернетка: галузь і опис — заглушки, картинка тимчасова (work-5), замінити реальними.
+  { slug: "moodies", name: "Moodies", industry: "SaaS", services: ["Branding"], description: "A brand identity for Moodies.", image: "work/work-5.png", next: "work/work-5-hover.webp" },
   { slug: "gifted", name: "Gifted", industry: "SaaS", services: ["UI/UX Design", "Web Development"], description: "A website for an all-in-one gifting platform that automates employee and client appreciation.",
     story: { challenge: "Gifted is an all-in-one gifting platform that simplifies employee and client appreciation through automated campaigns. The goal was a professional, intuitive interface that balances robust functionality with a delightful user experience, while highlighting key use cases like birthdays, work anniversaries and spot bonuses.",
       approach: "Every section of the homepage is structured around a use case, with scalable layouts, clean navigation, consistent iconography and clear CTAs. The design gives high visibility to real-time reporting, global gift catalogs and HR integrations.",
