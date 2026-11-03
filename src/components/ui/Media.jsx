@@ -56,9 +56,10 @@ export default function Media({ src, next, alt = "", label, fill = false, round 
   if (src && !failed && next) {
     return (
       <div className={shape}>
-        <img src={src} alt={alt} onError={() => setFailed(true)} className={`h-full w-full object-cover ${HOVERS[hover]}`} />
+        <img src={src} alt={alt} decoding="async" onError={() => setFailed(true)} className={`h-full w-full object-cover ${HOVERS[hover]}`} />
         <img
           src={next}
+          decoding="async"
           alt=""
           aria-hidden="true"
           className={`absolute inset-0 h-full w-full object-cover opacity-0 transition-[opacity,scale] duration-800 ease-case group-hover:opacity-100 ${hover === "zoom" ? "group-hover:scale-105" : ""} motion-reduce:transition-none`}
@@ -70,7 +71,7 @@ export default function Media({ src, next, alt = "", label, fill = false, round 
   if (src && !failed) {
     return (
       <div className={shape}>
-        <img src={src} alt={alt} onError={() => setFailed(true)} className={`h-full w-full object-cover ${HOVERS[hover]}`} />
+        <img src={src} alt={alt} decoding="async" onError={() => setFailed(true)} className={`h-full w-full object-cover ${HOVERS[hover]}`} />
       </div>
     );
   }
