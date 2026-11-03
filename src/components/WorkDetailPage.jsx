@@ -119,7 +119,7 @@ function Chapter({ chapter, head }) {
       {head && <SectionLabel>{label}</SectionLabel>}
       {layout === "wide" && (
         <div className="grid gap-3 md:grid-cols-2">
-          <Rise className="md:col-span-2">{shot(0, "aspect-3/2 w-full")}</Rise>
+          <Rise className="md:col-span-2">{shot(0, "aspect-4/3 w-full")}</Rise>
           {text && (
             <Rise delay={0.1} className="md:col-start-2">
               <Text tone="secondary">{text}</Text>
