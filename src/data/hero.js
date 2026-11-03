@@ -4,10 +4,10 @@ export const HERO_QUOTE =
   "“EMOTE turned a messy MVP into a product our users actually enjoy. Activation went up in the first month after launch.”";
 
 // Кейси Hero: назва внизу, а при наведенні — картка з обкладинкою, назвою й описом (Figma, node 40002480:184).
-// Назви, обкладинки й опис перших трьох (Moodies, VetLoop, Corebit) — з Figma (кадри 40002480:184, 40002484:1922, 40002484:10926); текст опису там поки спільний заглушка. Решта — заглушки. `slug` — сторінка кейсу (`/work/<slug>`, `data/works.js`); поки це заглушки з перших шести робіт, замінити відповідними.
+// Назви, обкладинки й опис перших трьох (Moodies, VetLoop, Corebit) — з Figma (кадри 40002480:184, 40002484:1922, 40002484:10926); текст опису там поки спільний заглушка. Решта — заглушки. `bg` — необов'язковий фон екрана під чорним 80% (Figma: Moodies — полуниці, VetLoop — темний кадр; Corebit без фону). `slug` — сторінка кейсу (`/work/<slug>`, `data/works.js`); поки це заглушки з перших шести робіт, замінити відповідними.
 export const HERO_CASES = [
-  { name: "Moodies", slug: "moodies", image: "hero/moodies.png", text: "Moodies is a bold and playful brand identity for functional gummies designed to match different moods and moments throughout the day." },
-  { name: "VetLoop", slug: "serpent", image: "hero/vetloop.png", text: "Axentix is an AI agent builder that lets teams design, test and launch their own agents without writing code." },
+  { name: "Moodies", slug: "moodies", image: "hero/moodies.png", bg: "hero/moodies-bg.jpg", text: "Moodies is a bold and playful brand identity for functional gummies designed to match different moods and moments throughout the day." },
+  { name: "VetLoop", slug: "serpent", image: "hero/vetloop.png", bg: "hero/vetloop-bg.jpg", text: "Axentix is an AI agent builder that lets teams design, test and launch their own agents without writing code." },
   { name: "Corebit", slug: "qure", image: "hero/corebit.png", text: "Axentix is an AI agent builder that lets teams design, test and launch their own agents without writing code." },
   { name: "Momentum", slug: "northline", image: "work/work-4.png", text: "Momentum is a habit tracker that turns small daily wins into a streak you actually want to keep." },
   { name: "Apex", slug: "ledger-loop", image: "work/work-5.png", text: "Apex is a trading dashboard that makes a busy market readable at a single glance." },

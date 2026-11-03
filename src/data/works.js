@@ -10,9 +10,18 @@ export const INDUSTRIES = ["Fintech", "Healthcare", "Logistics", "E-commerce", "
 // label, text, layout wide|pair|offset, media [{ src, label }]), `stats` ([{ value, label }]) із `statsImage`,
 // `quote`, `quoteBy` (автор цитати), `story`. Без них сторінка показує заглушки. Розділи Qure — чернетка з макета.
 export const WORKS = [
-  // Moodies — чернетка: галузь і опис — заглушки, картинка тимчасова (work-5), замінити реальними.
-  { slug: "moodies", name: "Moodies", industry: "SaaS", services: ["Branding"], description: "A brand identity for Moodies.", image: "work/work-5.png", next: "work/work-5-hover.webp",
-    chapters: [{ label: "The vision", layout: "wide", media: [{ src: "cases/moodies/branding.mp4", label: "Branding" }] }] },
+  // Moodies — тексти з Dribbble (dribbble.com/shots/27729558-Ecommerce-Branding), картинки з Figma (кадр 40002556:34415). Цитата клієнта — заглушка.
+  { slug: "moodies", name: "Moodies", industry: "E-commerce", services: ["Branding", "Illustration", "Motion", "UI/UX Design"], description: "A bold and playful brand identity for functional gummies designed to match different moods and moments throughout the day.", image: "work/work-5.png", next: "work/work-5-hover.webp",
+    story: { challenge: "Moodies is a bold and playful brand identity for functional gummies designed to match different moods and moments throughout the day.",
+      approach: "The visual system combines vibrant colors, expressive typography, playful graphics, and character-driven packaging to give each flavor its own personality. From Blueberry Dream and Apple Momentum to Happy Strawberry and Orange Spark, every product is built around a distinct mood while still feeling part of one cohesive brand.",
+      results: ["A fresh, energetic brand that makes functional wellness feel fun, approachable, and easy to understand", "Five flavors. Five moods. One delicious way to feel good."] },
+    chapters: [
+      { label: "The vision", layout: "wide", text: "The project explores the full identity across packaging, art direction, social media, digital touchpoints, and campaign visuals.", media: [{ src: "cases/moodies/branding.mp4", label: "Branding" }] },
+      { label: "Sweating the details", layout: "pair", media: [{ src: "cases/moodies/candy.jpg", label: "Packaging" }, { src: "cases/moodies/woman.jpg", label: "Campaign" }] },
+      { label: "Old meets new", layout: "offset", media: [{ src: "cases/moodies/strawberry.jpg", label: "Art direction" }, { src: "cases/moodies/bag.jpg", label: "Packaging" }] },
+    ],
+    stats: [{ value: "5", label: "flavors, each with its own personality" }, { value: "5", label: "moods, from morning to night" }, { value: "1", label: "cohesive brand across every touchpoint" }],
+    statsImage: "cases/moodies/laptop.jpg" },
   { slug: "gifted", name: "Gifted", industry: "SaaS", services: ["UI/UX Design", "Web Development"], description: "A website for an all-in-one gifting platform that automates employee and client appreciation.",
     story: { challenge: "Gifted is an all-in-one gifting platform that simplifies employee and client appreciation through automated campaigns. The goal was a professional, intuitive interface that balances robust functionality with a delightful user experience, while highlighting key use cases like birthdays, work anniversaries and spot bonuses.",
       approach: "Every section of the homepage is structured around a use case, with scalable layouts, clean navigation, consistent iconography and clear CTAs. The design gives high visibility to real-time reporting, global gift catalogs and HR integrations.",

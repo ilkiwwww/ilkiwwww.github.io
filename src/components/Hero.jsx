@@ -95,6 +95,17 @@ export default function Hero() {
   return (
     <div ref={track} className="hero-scroll">
     <section data-open={open || undefined} className="hero-stage h-svh min-h-160 overflow-hidden bg-black">
+      {/* Фон кейсу (Figma: фото під чорним 80%) — лише у другому стані, змінюється разом із кейсом. */}
+      <div className="hero-bg pointer-events-none absolute inset-0 hidden md:block" aria-hidden="true">
+        {HERO_CASES.map((item, i) =>
+          item.bg ? (
+            <div key={item.name} data-active={i === active || undefined} className="case-part absolute inset-0">
+              <Media src={item.bg} fill placeholder="none" />
+              <div className="absolute inset-0 bg-black opacity-80" />
+            </div>
+          ) : null,
+        )}
+      </div>
       {/* Лінії — як у Figma: діагональ під 30° через центр, горизонталь на 150 нижче центру. */}
       <svg className="pointer-events-none absolute inset-0 size-full text-tertiary" aria-hidden="true">
         <svg x="50%" y="50%" overflow="visible">
@@ -169,7 +180,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="hero-detail absolute bottom-12 left-10 max-w-110">
+        <div className="hero-detail absolute bottom-12 left-10 max-w-110 xl:max-w-158">
           <div className="relative">
             {HERO_CASES.map((item, i) => (
               <div key={item.name} data-active={i === active || undefined} className={`case-part from-bottom ${i === 0 ? "" : "absolute inset-x-0 top-0"}`}>
