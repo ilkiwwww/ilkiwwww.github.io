@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { WORKS } from "../data/works.js";
 import { openBookCall } from "./BookCall.jsx";
 import Button from "./ui/Button.jsx";
@@ -111,7 +111,8 @@ function StoryAccordion({ story, onClose }) {
 }
 
 // `head` — підпис розділу (eyebrow із лінією); перший розділ іде без нього (як у макеті).
-function Chapter({ chapter, head }) {
+// `skipMedia` — перше медіа вже показує вступ зі скролом (CaseIntro), тут лишається лише абзац.
+function Chapter({ chapter, head, skipMedia = false }) {
   const { label, layout = "wide", text } = chapter;
   const shot = (i, className) => <Media src={chapter.media?.[i]?.src} label={chapter.media?.[i]?.label ?? `${label} ${i + 1}`} className={className} />;
   return (
@@ -119,7 +120,7 @@ function Chapter({ chapter, head }) {
       {head && <SectionLabel>{label}</SectionLabel>}
       {layout === "wide" && (
         <div className="grid gap-3 md:grid-cols-2">
-          <Rise className="md:col-span-2">{shot(0, "aspect-4/3 w-full")}</Rise>
+          {!skipMedia && <Rise className="md:col-span-2">{shot(0, "aspect-4/3 w-full")}</Rise>}
           {text && (
             <Rise delay={0.1} className="md:col-start-2">
               <Text tone="secondary">{text}</Text>
@@ -161,11 +162,70 @@ function Chapter({ chapter, head }) {
   );
 }
 
+// Вступ зі скролом (від lg, без reduced motion): відео кейсу спершу на всю ширину під назвою, при скролі
+// росте на весь екран, а далі стискається в колонку першого розділу, і справа виїжджає панель історії.
+// Прогрес пишемо в CSS-змінні на `.story-layout` (--f: ріст на екран, --s: стиснення в колонку), стилі — `.intro-*`.
+function useIntroScroll(enabled, layoutRef, blockRef, storyOpen) {
+  useLayoutEffect(() => {
+    if (!enabled) return;
+    const layout = layoutRef.current;
+    const block = blockRef.current;
+    if (!layout || !block) return;
+    let frame = 0;
+    let timer = 0;
+    const clamp = (v) => Math.min(1, Math.max(0, v));
+    const ease = (v) => v * v * (3 - 2 * v);
+    const update = () => {
+      frame = 0;
+      const r = block.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const run = r.height - vh;
+      const set = (k, v) => layout.style.setProperty(k, v);
+      set("--cx", `${r.left}px`);
+      set("--lw", `${layout.clientWidth}px`);
+      set("--vw", `${document.documentElement.clientWidth}px`);
+      set("--h2", `${block.clientWidth * 0.75}px`);
+      const f = ease(clamp((vh * 0.6 - r.top) / (vh * 0.6)));
+      const s = ease(clamp((-r.top - 0.2 * run) / (0.6 * run)));
+      set("--f", f);
+      set("--s", s);
+      layout.toggleAttribute("data-intro-done", s > 0.6);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    // Колонка змінює ширину разом із панеллю (0.8s) — перемірюємо після переходу.
+    timer = window.setTimeout(update, 900);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [enabled, storyOpen, layoutRef, blockRef]);
+}
+
 export default function WorkDetailPage({ slug }) {
   // «The story» можна закрити (×) — галерея займає всю ширину, а відкрити знову — кнопкою на фото.
   const [storyOpen, setStoryOpen] = useState(true);
+  const [wide, setWide] = useState(false);
+  const layoutRef = useRef(null);
+  const blockRef = useRef(null);
+  useEffect(() => {
+    const q = window.matchMedia("(min-width: 64rem) and (prefers-reduced-motion: no-preference)");
+    const sync = () => setWide(q.matches);
+    sync();
+    q.addEventListener("change", sync);
+    return () => q.removeEventListener("change", sync);
+  }, []);
   const index = WORKS.findIndex((w) => w.slug === slug);
   const work = WORKS[index];
+  const introMedia = work?.chapters?.[0]?.layout === "wide" ? work.chapters[0].media?.[0] : undefined;
+  const intro = wide && !!introMedia?.src;
+  useIntroScroll(intro, layoutRef, blockRef, storyOpen);
 
   if (!work) {
     return (
@@ -201,19 +261,29 @@ export default function WorkDetailPage({ slug }) {
           </Rise>
         </InView>
 
-        <div className="story-layout mt-16" data-closed={!storyOpen || undefined}>
+        <div ref={layoutRef} className="story-layout mt-16" data-closed={!storyOpen || undefined} data-intro={intro || undefined}>
           <div className="relative flex min-w-0 flex-col gap-30">
+            {/* Вступ зі скролом: відео кейсу на всю ширину → на весь екран → у колонку (див. useIntroScroll). */}
+            {intro && (
+              <div ref={blockRef} className="intro-block">
+                <div className="intro-stage">
+                  <div className="intro-video">
+                    <Media src={introMedia.src} alt={work.name} fill />
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Закрита панель: кнопка «The story +» висить над розділами й їде за скролом (sticky). */}
             {!storyOpen && (
               <div className="pointer-events-none absolute inset-y-0 right-6 z-10">
-                <Button variant="light" size="sm" className="pointer-events-auto sticky top-28 mt-6" onClick={() => setStoryOpen(true)}>
+                <Button variant="light" size="sm" className="pointer-events-auto sticky top-28 z-20 mt-6" onClick={() => setStoryOpen(true)}>
                   The story
                   <PlusIcon className="h-4 w-4" />
                 </Button>
               </div>
             )}
             {chapters.map((chapter, i) => (
-              <Chapter key={chapter.label} chapter={chapter} head={i > 0} />
+              <Chapter key={chapter.label} chapter={chapter} head={i > 0} skipMedia={intro && i === 0} />
             ))}
           </div>
 

@@ -364,6 +364,24 @@ body {
   .story-layout[data-closed] { grid-template-columns: 1fr 0fr; }
 }
 
+/* Вступ кейсу зі скролом (WorkDetailPage, від lg). Блок 260vh, сцена липне; відео (.intro-video) росте з ширини
+   сітки на весь екран (--f), потім стискається в колонку першого розділу (--s), панель історії проявляється. */
+.intro-block { height: 260vh; margin-bottom: calc(min(0px, var(--h2, 0px) - 100vh) - 108px); }
+.intro-stage { position: sticky; top: 0; height: 100vh; }
+.intro-video {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  overflow: hidden;
+  --wf: calc(var(--lw, 100%) + (var(--vw, 100vw) - var(--lw, 100%)) * var(--f, 0));
+  --hf: calc(var(--h2, 75%) + (100vh - var(--h2, 75%)) * var(--f, 0));
+  left: calc(var(--cx, 0px) * -1 * var(--f, 0) * (1 - var(--s, 0)));
+  width: calc(var(--wf) + (100% - var(--wf)) * var(--s, 0));
+  height: calc(var(--hf) + (var(--h2, 75%) - var(--hf)) * var(--s, 0));
+}
+.story-layout[data-intro] .story-aside { opacity: var(--s, 0); translate: calc((1 - var(--s, 0)) * 48px) 0; }
+.story-layout[data-intro]:not([data-intro-done]) .story-aside { pointer-events: none; }
+
 /* ---- Картки робіт: наведення (Work.jsx, від lg) ---------------------------
    Наведена картка росте (flex-grow ×1.15 — у Work.jsx), сусіди звужуються;
    підписи сусідів стають `tertiary`. Крива й тривалість — як у зміни кейсу в Hero. */
