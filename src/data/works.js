@@ -19,7 +19,7 @@ export const WORKS = [
       { label: "Sweating the details", title: "Every interaction serves a purpose.", layout: "pair", media: [{ src: "cases/moodies/candy.jpg", label: "Packaging" }, { src: "cases/moodies/woman.jpg", label: "Campaign" }],
         more: [{ layout: "offset", media: [{ src: "cases/moodies/strawberry.jpg", label: "Art direction" }, { src: "cases/moodies/bag.jpg", label: "Packaging" }] }] },
       { layout: "statement", text: "Five flavors. Five moods. One delicious way to feel good." },
-      { layout: "wide", textAt: "start", text: "Every product is built around a distinct mood while still feeling part of one cohesive brand.", media: [{ src: "cases/moodies/kids.jpg", label: "Campaign" }],
+      { layout: "wide", textAt: "start", text: "Every product is built around a distinct mood while still feeling part of one cohesive brand.", media: [{ src: "cases/moodies/cycle.mp4", label: "Campaign" }],
         more: [{ layout: "offset", reverse: true, media: [{ src: "cases/moodies/orange.jpg", label: "Orange Spark" }, { src: "cases/moodies/gummy.jpg", label: "Product" }] }] },
     ],
     stats: [{ value: "5", label: "flavors, each with its own personality" }, { value: "5", label: "moods, from morning to night" }, { value: "1", label: "cohesive brand across every touchpoint" }],
