@@ -327,6 +327,12 @@ body {
   transition-delay: var(--delay, 0s);
 }
 
+/* Завіса для фото й відео кейсу (Curtain): рамка відкривається знизу, картинка всередині зменшується 1.15 → 1. */
+.curtain { overflow: hidden; clip-path: inset(100% 0 0 0); transition: clip-path 1.4s var(--ease-reveal) var(--delay, 0s); }
+.curtain > * { scale: 1.15; transition: scale 1.8s var(--ease-reveal) var(--delay, 0s); }
+[data-inview] .curtain { clip-path: inset(0 0 0 0); }
+[data-inview] .curtain > * { scale: 1; }
+
 [data-inview] .rise > * { translate: 0 0; }
 [data-inview] .line-grow { scale: 1 1; }
 [data-inview] .fade { opacity: 1; }
@@ -402,7 +408,7 @@ body {
   width: calc(var(--wf) + (100% - var(--wf)) * var(--s, 0));
   height: calc(var(--hf) + (var(--h2, 75%) - var(--hf)) * var(--s, 0));
 }
-.story-layout[data-intro] .story-aside { opacity: var(--s, 0); translate: calc((1 - var(--s, 0)) * 48px) 0; }
+.story-layout[data-intro] .story-aside { clip-path: inset(0 0 0 var(--cut, 100%)); } /* панель відкривається «шторкою» слідом за краєм відео, що відступає, і ніколи не лізе під нього */
 .story-layout[data-intro]:not([data-intro-done]) .story-aside { pointer-events: none; }
 
 /* ---- Картки робіт: наведення (Work.jsx, від lg) ---------------------------
@@ -522,6 +528,8 @@ body {
     .rise > *,
   .line-grow,
   .fade { transition: none; translate: none; scale: none; opacity: 1; }
+  .curtain { clip-path: none; transition: none; }
+  .curtain > * { scale: none; transition: none; }
   .case-part,
   .case-wipe { transition: none; translate: none; }
   .work-card,

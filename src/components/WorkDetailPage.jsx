@@ -7,7 +7,7 @@ import Heading from "./ui/Heading.jsx";
 import IconButton from "./ui/IconButton.jsx";
 import { ChevronDownIcon, CloseIcon, PlusIcon } from "./ui/icons.jsx";
 import Media from "./ui/Media.jsx";
-import { InView, Rise } from "./ui/Motion.jsx";
+import { Curtain, InView, Rise } from "./ui/Motion.jsx";
 import Section from "./ui/Section.jsx";
 import Text from "./ui/Text.jsx";
 import ScrollHeading from "./ui/ScrollHeading.jsx";
@@ -154,30 +154,30 @@ function StoryAccordion({ story, onClose, layoutRef }) {
 function Block({ block, label, skipMedia = false, text }) {
   const { layout = "wide", reverse = false } = block;
   const shot = (i, className) => <Media src={block.media?.[i]?.src} label={block.media?.[i]?.label ?? `${label ?? "Image"} ${i + 1}`} className={className} />;
-  if (layout === "wide") return skipMedia ? null : <Rise>{shot(0, "aspect-4/3 w-full")}</Rise>;
+  if (layout === "wide") return skipMedia ? null : <Curtain>{shot(0, "aspect-4/3 w-full")}</Curtain>;
   if (layout === "pair") {
     return (
       <div className="grid grid-cols-2 items-start gap-3">
         <div className="flex flex-col gap-6">
-          <Rise>{shot(0, "aspect-4/5 w-full")}</Rise>
+          <Curtain>{shot(0, "aspect-4/5 w-full")}</Curtain>
           {text && (
             <Rise delay={0.1}>
               <Text tone="secondary">{text}</Text>
             </Rise>
           )}
         </div>
-        <Rise delay={0.1} className="pt-10 md:pt-20">
-          {shot(1, "aspect-4/5 w-full")}
-        </Rise>
+        <div className="pt-10 md:pt-20">
+          <Curtain delay={0.15}>{shot(1, "aspect-4/5 w-full")}</Curtain>
+        </div>
       </div>
     );
   }
   return (
     <div className={`flex items-start gap-3 ${reverse ? "flex-row-reverse" : ""}`}>
-      <Rise className="w-5/16 shrink-0">{shot(0, "aspect-7/9 w-full")}</Rise>
-      <Rise delay={0.1} className="min-w-0 flex-1">
+      <Curtain className="w-5/16 shrink-0">{shot(0, "aspect-7/9 w-full")}</Curtain>
+      <Curtain delay={0.15} className="min-w-0 flex-1">
         {shot(1, "aspect-5/4 w-full")}
-      </Rise>
+      </Curtain>
     </div>
   );
 }
@@ -283,6 +283,13 @@ function useIntroScroll(enabled, layoutRef, blockRef, storyOpen) {
       const s = ease(clamp((-r.top - 0.2 * run) / (0.6 * run)));
       set("--f", f);
       set("--s", s);
+      // Панель видна лише правіше від краю відео (після зміни змінних геометрія вже оновлена).
+      const aside = layout.querySelector(".story-aside");
+      const video = block.querySelector(".intro-video");
+      if (aside && video) {
+        const a = aside.getBoundingClientRect();
+        set("--cut", `${Math.min(a.width, Math.max(0, video.getBoundingClientRect().right - a.left))}px`);
+      }
       layout.toggleAttribute("data-intro-done", s > 0.6);
     };
     const onScroll = () => {

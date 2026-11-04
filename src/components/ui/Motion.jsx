@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 //   <InView>  блок, що чекає на в'юпорт; усе всередині стартує разом
 //   <Rise>    виїзд знизу з рамки (текст, цифри); `bleed` — рамка з запасом
 //             для гліфів, що виходять за рядок (обрізаний statement); `fill` — на всю висоту батька
+//   <Curtain> фото й відео: завіса знизу + картинка зменшується
 //   <Grow>    лінія-розділювач, розтягується зліва направо
 //   <Fade>    проявлення — лише великий заголовок
 //
@@ -45,6 +46,16 @@ export function Rise({ delay = 0, bleed = false, fill = false, className = "", c
   return (
     <div className={`rise ${bleed ? "rise-bleed" : ""} ${fill ? "h-full" : ""} ${className}`}>
       <div className={fill ? "h-full" : undefined} style={delayVar(delay)}>{children}</div>
+    </div>
+  );
+}
+
+// Фото й відео кейсу: рамка відкривається знизу догори (clip-path), а картинка всередині плавно зменшується
+// з 1.15 до 1 — «завіса». Стартує разом з блоком (`InView`), один раз.
+export function Curtain({ delay = 0, className = "", children }) {
+  return (
+    <div className={`curtain ${className}`} style={delayVar(delay)}>
+      {children}
     </div>
   );
 }
