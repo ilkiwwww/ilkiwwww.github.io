@@ -7,7 +7,7 @@ export const HERO_QUOTE =
 // Назви, обкладинки й опис перших трьох (Moodies, VetLoop, Corebit) — з Figma (кадри 40002480:184, 40002484:1922, 40002484:10926); текст опису там поки спільний заглушка. Решта — заглушки. `bg` — необов'язковий фон екрана під чорним 80% (Figma: Moodies — полуниці, VetLoop — темний кадр; Corebit без фону). `slug` — сторінка кейсу (`/work/<slug>`, `data/works.js`); поки це заглушки з перших шести робіт, замінити відповідними.
 export const HERO_CASES = [
   { name: "Moodies", slug: "moodies", image: "hero/moodies.jpg", bg: "hero/moodies-bg.jpg", text: "Moodies is a bold and playful brand identity for functional gummies designed to match different moods and moments throughout the day." },
-  { name: "VetLoop", slug: "serpent", image: "hero/vetloop.jpg", bg: "hero/vetloop-bg.jpg", text: "Axentix is an AI agent builder that lets teams design, test and launch their own agents without writing code." },
+  { name: "VetLoop", slug: "vetloop", image: "hero/vetloop.jpg", bg: "hero/vetloop-bg.jpg", text: "Axentix is an AI agent builder that lets teams design, test and launch their own agents without writing code." },
   { name: "Corebit", slug: "qure", image: "hero/corebit.jpg", text: "Axentix is an AI agent builder that lets teams design, test and launch their own agents without writing code." },
   { name: "Momentum", slug: "northline", image: "work/work-4.png", text: "Momentum is a habit tracker that turns small daily wins into a streak you actually want to keep." },
   { name: "Apex", slug: "ledger-loop", image: "work/work-5.png", text: "Apex is a trading dashboard that makes a busy market readable at a single glance." },
