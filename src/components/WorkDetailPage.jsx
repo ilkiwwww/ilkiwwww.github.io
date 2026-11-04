@@ -122,22 +122,24 @@ function StoryAccordion({ story, onClose, layoutRef }) {
               <ChevronDownIcon weight={1} className={`h-6 w-6 shrink-0 transition-transform duration-500 ease-case motion-reduce:transition-none ${isOpen ? "rotate-180" : ""}`} />
             </button>
             <div className="acc-body" data-open={isOpen || undefined} inert={!isOpen}>
-              <div className="pb-6">
-                {Array.isArray(body) ? (
-                  <ul className="flex flex-col gap-2">
-                    {body.map((r) => (
-                      <li key={r}>
-                        <Text size="body" tone="secondary">
-                          {r}
-                        </Text>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <Text size="body" tone="secondary">
-                    {body}
-                  </Text>
-                )}
+              <div>
+                <div className="pb-6">
+                  {Array.isArray(body) ? (
+                    <ul className="flex flex-col gap-2">
+                      {body.map((r) => (
+                        <li key={r}>
+                          <Text size="body" tone="secondary">
+                            {r}
+                          </Text>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <Text size="body" tone="secondary">
+                      {body}
+                    </Text>
+                  )}
+                </div>
               </div>
             </div>
           </div>
