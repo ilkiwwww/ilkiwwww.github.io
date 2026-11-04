@@ -11,25 +11,6 @@
     <style>
       html { background: #0d0d0f; color-scheme: dark; }
     </style>
-    <!-- Сторінка кейсу зі вступним відео (WorkDetailPage, useIntroEntry): нас зустрічає кадр-постер на весь екран,
-         а не порожня сторінка. Клас `case-entry` ставимо до завантаження скриптів, знімає його React, коли відео
-         «сідає» на місце (або через 8s, якщо щось пішло не так). Постери: /work/<slug> → кадр (дублює data/works.js). -->
-    <style>
-      html.case-entry body::before { content: ""; position: fixed; inset: 0; z-index: 49; background: #000 var(--case-poster) center / cover no-repeat; }
-    </style>
-    <script>
-      (function () {
-        var posters = { moodies: "/cases/moodies/branding-poster.jpg" };
-        var m = location.pathname.match(/^\/work\/([^/]+)\/?$/);
-        if (m && posters[m[1]] && window.matchMedia("(min-width: 64rem) and (prefers-reduced-motion: no-preference)").matches) {
-          document.documentElement.classList.add("case-entry");
-          document.documentElement.style.setProperty("--case-poster", "url(" + posters[m[1]] + ")");
-          setTimeout(function () { document.documentElement.classList.remove("case-entry"); }, 8000);
-          var img = new Image();
-          img.src = posters[m[1]];
-        }
-      })();
-    </script>
     <title>EMOTE — UI/UX design agency</title>
   </head>
   <body>

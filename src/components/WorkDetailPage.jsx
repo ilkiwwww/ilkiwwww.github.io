@@ -312,8 +312,6 @@ function useIntroScroll(enabled, layoutRef, blockRef, storyOpen) {
 // Вхід на сторінку кейсу: відео спершу на весь екран (поверх шапки), потім плавно «сідає» на своє місце під назвою.
 // FLIP: міряємо справжнє місце, ставимо відео fixed на весь екран, за мить анімуємо до виміряного й знімаємо inline-стилі.
 // Перший скрол, дотик чи клавіша пропускає анімацію (відео одразу на місці).
-const uncover = () => document.documentElement.classList.remove("case-entry");
-
 function useIntroEntry(enabled, blockRef) {
   const done = useRef(false);
   useLayoutEffect(() => {
@@ -321,13 +319,9 @@ function useIntroEntry(enabled, blockRef) {
     done.current = true;
     const block = blockRef.current;
     const video = block?.querySelector(".intro-video");
-    if (!video || window.scrollY > 10) {
-      uncover();
-      return;
-    }
+    if (!video || window.scrollY > 10) return;
     const el = video.querySelector("video");
     const finish = () => {
-      uncover();
       clearTimeout(t1);
       clearTimeout(t2);
       video.style.cssText = "";
@@ -345,21 +339,20 @@ function useIntroEntry(enabled, blockRef) {
       const h = block.clientWidth * 0.75;
       video.style.cssText = `${fixed}transition:left 1.4s var(--ease-reveal),top 1.4s var(--ease-reveal),width 1.4s var(--ease-reveal),height 1.4s var(--ease-reveal);`;
       void video.offsetWidth;
-      uncover();
       video.style.left = `${sr.left}px`;
       video.style.top = `${sr.top}px`;
       video.style.width = `${w}px`;
       video.style.height = `${h}px`;
       t2 = setTimeout(finish, 1500);
     };
-    // Чекаємо, поки відео заграє (але не довше 2.5s), і тримаємо його на весь екран ще мить.
+    // Чекаємо, поки відео заграє (але не довше 1.2s), і тримаємо його на весь екран ще мить.
     let started = false;
     const start = () => {
       if (started) return;
       started = true;
-      t1 = setTimeout(go, 900);
+      t1 = setTimeout(go, 600);
     };
-    let t1 = setTimeout(start, 2500);
+    let t1 = setTimeout(start, 1200);
     if (el) {
       if (el.readyState >= 3) start();
       else el.addEventListener("canplay", start, { once: true });
@@ -379,7 +372,6 @@ export default function WorkDetailPage({ slug }) {
     const q = window.matchMedia("(min-width: 64rem) and (prefers-reduced-motion: no-preference)");
     const sync = () => setWide(q.matches);
     sync();
-    if (!q.matches) uncover();
     q.addEventListener("change", sync);
     return () => q.removeEventListener("change", sync);
   }, []);
