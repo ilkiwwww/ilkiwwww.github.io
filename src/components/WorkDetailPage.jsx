@@ -309,6 +309,59 @@ function useIntroScroll(enabled, layoutRef, blockRef, storyOpen) {
   }, [enabled, storyOpen, layoutRef, blockRef]);
 }
 
+// Вхід на сторінку кейсу: відео спершу на весь екран (поверх шапки), потім плавно «сідає» на своє місце під назвою.
+// FLIP: міряємо справжнє місце, ставимо відео fixed на весь екран, за мить анімуємо до виміряного й знімаємо inline-стилі.
+// Перший скрол, дотик чи клавіша пропускає анімацію (відео одразу на місці).
+function useIntroEntry(enabled, blockRef) {
+  const done = useRef(false);
+  useLayoutEffect(() => {
+    if (!enabled || done.current) return;
+    done.current = true;
+    const block = blockRef.current;
+    const video = block?.querySelector(".intro-video");
+    if (!video || window.scrollY > 10) return;
+    const el = video.querySelector("video");
+    const finish = () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      video.style.cssText = "";
+      ["wheel", "touchstart", "keydown"].forEach((e) => window.removeEventListener(e, finish));
+    };
+    const fixed = "position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:50;transition:none;";
+    video.style.cssText = fixed;
+    let t2 = 0;
+    const go = () => {
+      const stage = block.querySelector(".intro-stage");
+      // Місце, де відео стоїть за замовчуванням: верх сцени, ширина сітки, висота за 4:3 колонки.
+      const sr = stage.getBoundingClientRect();
+      const layout = block.closest(".story-layout");
+      const w = layout.clientWidth;
+      const h = block.clientWidth * 0.75;
+      video.style.cssText = `${fixed}transition:left 1.4s var(--ease-reveal),top 1.4s var(--ease-reveal),width 1.4s var(--ease-reveal),height 1.4s var(--ease-reveal);`;
+      void video.offsetWidth;
+      video.style.left = `${sr.left}px`;
+      video.style.top = `${sr.top}px`;
+      video.style.width = `${w}px`;
+      video.style.height = `${h}px`;
+      t2 = setTimeout(finish, 1500);
+    };
+    // Чекаємо, поки відео заграє (але не довше 1.2s), і тримаємо його на весь екран ще мить.
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      t1 = setTimeout(go, 600);
+    };
+    let t1 = setTimeout(start, 1200);
+    if (el) {
+      if (el.readyState >= 3) start();
+      else el.addEventListener("canplay", start, { once: true });
+    }
+    ["wheel", "touchstart", "keydown"].forEach((e) => window.addEventListener(e, finish, { passive: true, once: true }));
+    return () => finish();
+  }, [enabled, blockRef]);
+}
+
 export default function WorkDetailPage({ slug }) {
   // «The story» можна закрити (×) — галерея займає всю ширину, а відкрити знову — кнопкою на фото.
   const [storyOpen, setStoryOpen] = useState(true);
@@ -327,6 +380,7 @@ export default function WorkDetailPage({ slug }) {
   const introMedia = work?.chapters?.[0]?.layout === "wide" ? work.chapters[0].media?.[0] : undefined;
   const intro = wide && !!introMedia?.src;
   useIntroScroll(intro, layoutRef, blockRef, storyOpen);
+  useIntroEntry(intro, blockRef);
 
   if (!work) {
     return (
