@@ -45,7 +45,7 @@ export const WORKS = [
     ],
     stats: [{ value: "3", label: "directions explored: too cold, almost there, perfect" }, { value: "100%", label: "of the UI crafted by humans" }, { value: "1", label: "team, with shared vision and connected tools" }],
     statsImage: "cases/yousquared/results.mp4" },
-  // VetLoop — тексти, відео й кадри з Dribbble-шота (dribbble.com/shots/27828737-Mobile-App-Pet-Care-Veterinary); розкладка за Figma (кадр 40002594:15906), картинки від дизайнерки; слот поруч з Oliver — кадр відео (у Figma порожній). Цифри — чернетка.
+  // VetLoop — тексти, відео й кадри з Dribbble-шота (dribbble.com/shots/27828737-Mobile-App-Pet-Care-Veterinary); розкладка за Figma (кадр 40002594:15906), картинки від дизайнерки; слот поруч з Oliver — кадр «2» із Figma VetLoop (24969:9089). Цифри — чернетка.
   { slug: "vetloop", name: "VetLoop", industry: "Healthcare", services: ["UI/UX Design", "Branding", "Illustration", "Motion"], description: "A mobile pet care app designed to make veterinary care simpler, more accessible, and stress-free.", image: "cases/vetloop/poster.jpg",
     story: { challenge: "Managing pet health often means juggling appointments, medical records, and vaccination schedules across different channels. The challenge was to create an intuitive mobile experience that simplifies everyday pet care, improves communication with veterinarians, and helps owners stay on top of their pets' health.",
       approach: "A playful visual identity with a vibrant orange and blue palette, expressive shapes, and friendly visuals. An intuitive dashboard with quick access to pets, upcoming appointments, and reminders. Built-in messaging with veterinarians, and clear vaccination and care reminders that help owners stay organized and proactive.",
@@ -59,7 +59,7 @@ export const WORKS = [
           { layout: "offset", media: [{ src: "cases/vetloop/health.jpg", label: "Health" }, { src: "cases/vetloop/logo.jpg", label: "Logo" }] }] },
       { layout: "statement", text: "Built-in messaging allows pet owners to connect with veterinarians, share updates, and manage follow-ups." },
       { layout: "wide", textAt: "start", text: "Clear vaccination and care reminders help owners stay organized and proactive.", media: [{ src: "cases/vetloop/flow.jpg", label: "Booking" }],
-        more: [{ layout: "offset", reverse: true, media: [{ src: "cases/vetloop/oliver.jpg", label: "Pet profile" }, { src: "cases/vetloop/chat-pets.jpg", label: "Chat" }] }] },
+        more: [{ layout: "offset", reverse: true, media: [{ src: "cases/vetloop/oliver.jpg", label: "Pet profile" }, { src: "cases/vetloop/reminders.jpg", label: "Reminders" }] }] },
     ],
     stats: [{ value: "3", label: "steps to book a visit: pet, clinic, time" }, { value: "1", label: "app for appointments, vaccinations and vet chat" }, { value: "4", label: "design highlights: identity, dashboard, vet chat, reminders" }],
     statsImage: "cases/vetloop/tilted.jpg" },
