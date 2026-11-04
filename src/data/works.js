@@ -40,7 +40,7 @@ export const WORKS = [
         more: [{ layout: "pair", media: [{ src: "cases/yousquared/phone-hand.jpg", label: "App" }, { src: "cases/yousquared/calls.jpg", label: "Never miss calls" }] },
           { layout: "offset", media: [{ src: "cases/yousquared/secretary.jpg", label: "Never miss calls" }, { src: "cases/yousquared/logo.jpg", label: "Logo" }] }] },
       { layout: "statement", text: "Same DNA. Different contexts." },
-      { layout: "wide", textAt: "start", text: "Your team leads. We stay close: one team, shared vision, connected tools.", media: [{ src: "cases/yousquared/collab.mp4", label: "Workshop" }],
+      { layout: "wide", textAt: "start", text: "Your team leads. We stay close: one team, shared vision, connected tools.", media: [{ src: "cases/yousquared/collab.jpg", label: "Workshop" }],
         more: [{ layout: "offset", reverse: true, media: [{ src: "cases/yousquared/tote.jpg", label: "Merch" }, { src: "cases/yousquared/insta.jpg", label: "Social" }] }] },
     ],
     stats: [{ value: "3", label: "directions explored: too cold, almost there, perfect" }, { value: "100%", label: "of the UI crafted by humans" }, { value: "1", label: "team, with shared vision and connected tools" }],
