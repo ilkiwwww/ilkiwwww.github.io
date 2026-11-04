@@ -111,7 +111,7 @@ function StoryAccordion({ story, onClose }) {
 }
 
 // Один блок медіа в розділі: `wide` — 4:3 на всю ширину колонки; `pair` — два 4:5, правий нижче на 80;
-// `offset` — вузьке 7:9 (280) і широке 5:4, `reverse` міняє їх місцями. `media` — [{ src, label }].
+// `offset` — вузьке 7:9 (5/16 ширини) і широке 5:4 (разом ростуть пропорційно, коли панель закрита), `reverse` міняє їх місцями. `media` — [{ src, label }].
 function Block({ block, label, skipMedia = false, text }) {
   const { layout = "wide", reverse = false } = block;
   const shot = (i, className) => <Media src={block.media?.[i]?.src} label={block.media?.[i]?.label ?? `${label ?? "Image"} ${i + 1}`} className={className} />;
@@ -135,7 +135,7 @@ function Block({ block, label, skipMedia = false, text }) {
   }
   return (
     <div className={`flex items-start gap-3 ${reverse ? "flex-row-reverse" : ""}`}>
-      <Rise className="w-1/3 shrink-0 md:w-70">{shot(0, "aspect-7/9 w-full")}</Rise>
+      <Rise className="w-5/16 shrink-0">{shot(0, "aspect-7/9 w-full")}</Rise>
       <Rise delay={0.1} className="min-w-0 flex-1">
         {shot(1, "aspect-5/4 w-full")}
       </Rise>
