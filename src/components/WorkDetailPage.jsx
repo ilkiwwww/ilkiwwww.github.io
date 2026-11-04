@@ -326,8 +326,22 @@ function useIntroEntry(enabled, blockRef) {
       return;
     }
     const el = video.querySelector("video");
+    // Поки нас закриває постер, відео стоїть на паузі на нульовому кадрі, щоб почати з самого початку саме тоді,
+    // коли його видно (`data-hold` не пускає автозапуск у Media).
+    if (el) {
+      el.autoplay = false;
+      el.pause();
+      el.dataset.hold = "1";
+    }
+    const release = () => {
+      if (!el || !el.dataset.hold) return;
+      delete el.dataset.hold;
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    };
     const finish = () => {
       uncover();
+      release();
       clearTimeout(t1);
       clearTimeout(t2);
       video.style.cssText = "";
@@ -343,20 +357,21 @@ function useIntroEntry(enabled, blockRef) {
       const layout = block.closest(".story-layout");
       const w = layout.clientWidth;
       const h = block.clientWidth * 0.75;
-      video.style.cssText = `${fixed}transition:left 1.4s var(--ease-reveal),top 1.4s var(--ease-reveal),width 1.4s var(--ease-reveal),height 1.4s var(--ease-reveal);`;
+      video.style.cssText = `${fixed}transition:left 1.6s var(--ease-reveal),top 1.6s var(--ease-reveal),width 1.6s var(--ease-reveal),height 1.6s var(--ease-reveal);`;
       void video.offsetWidth;
-      uncover();
       video.style.left = `${sr.left}px`;
       video.style.top = `${sr.top}px`;
       video.style.width = `${w}px`;
       video.style.height = `${h}px`;
-      t2 = setTimeout(finish, 1500);
+      t2 = setTimeout(finish, 1700);
     };
     // Чекаємо, поки відео заграє (але не довше 2.5s), і тримаємо його на весь екран ще мить.
     let started = false;
     const start = () => {
       if (started) return;
       started = true;
+      uncover();
+      release();
       t1 = setTimeout(go, 900);
     };
     let t1 = setTimeout(start, 2500);
