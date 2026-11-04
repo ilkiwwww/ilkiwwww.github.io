@@ -18,7 +18,7 @@ const HOVERS = {
   zoom: "transition-transform duration-1200 ease-reveal group-hover:scale-105 motion-reduce:transition-none",
 };
 
-export default function Media({ src, next, alt = "", label, fill = false, round = false, placeholder = "raised", hover = "none", className = "" }) {
+export default function Media({ src, poster, next, alt = "", label, fill = false, round = false, placeholder = "raised", hover = "none", className = "" }) {
   const [failed, setFailed] = useState(false);
   const video = useRef(null);
   const isVideo = !!src && /\.(mp4|webm)$/i.test(src);
@@ -74,7 +74,7 @@ export default function Media({ src, next, alt = "", label, fill = false, round 
   if (src && !failed && isVideo) {
     return (
       <div className={shape}>
-        <video ref={video} src={src} preload="auto" aria-label={alt || undefined} aria-hidden={alt ? undefined : true} autoPlay muted loop playsInline onError={() => setFailed(true)} className="h-full w-full object-cover" />
+        <video ref={video} src={src} poster={poster} preload="auto" aria-label={alt || undefined} aria-hidden={alt ? undefined : true} autoPlay muted loop playsInline onError={() => setFailed(true)} className="h-full w-full object-cover" />
       </div>
     );
   }

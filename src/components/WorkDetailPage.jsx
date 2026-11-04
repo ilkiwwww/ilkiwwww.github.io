@@ -153,7 +153,7 @@ function StoryAccordion({ story, onClose, layoutRef }) {
 // `offset` — вузьке 7:9 (5/16 ширини) і широке 5:4 (разом ростуть пропорційно, коли панель закрита), `reverse` міняє їх місцями. `media` — [{ src, label }].
 function Block({ block, label, skipMedia = false, text }) {
   const { layout = "wide", reverse = false } = block;
-  const shot = (i, className) => <Media src={block.media?.[i]?.src} label={block.media?.[i]?.label ?? `${label ?? "Image"} ${i + 1}`} className={className} />;
+  const shot = (i, className) => <Media src={block.media?.[i]?.src} poster={block.media?.[i]?.poster} label={block.media?.[i]?.label ?? `${label ?? "Image"} ${i + 1}`} className={className} />;
   if (layout === "wide") return skipMedia ? null : <Curtain>{shot(0, "aspect-4/3 w-full")}</Curtain>;
   if (layout === "pair") {
     return (
@@ -423,7 +423,7 @@ export default function WorkDetailPage({ slug }) {
               <div ref={blockRef} className="intro-block" data-text={chapters[0].text ? "" : undefined}>
                 <div className="intro-stage">
                   <div className="intro-video">
-                    <Media src={introMedia.src} alt={work.name} fill />
+                    <Media src={introMedia.src} poster={introMedia.poster} alt={work.name} fill />
                   </div>
                 </div>
               </div>

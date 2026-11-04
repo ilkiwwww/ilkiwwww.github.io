@@ -6,7 +6,7 @@
 export const SERVICES = ["UI/UX Design", "Branding", "Web Development", "Illustration", "Motion"];
 export const INDUSTRIES = ["Fintech", "Healthcare", "Logistics", "E-commerce", "SaaS", "Crypto", "Real Estate", "Fashion", "Travel"];
 
-// Необов'язкові поля сторінки кейсу: `chapters` (розділи історії; перший без підпису: label, title, text, textAt, layout wide|pair|offset|statement|head, joined (ближче до попереднього на 64), media [{ src, label }], more [{ layout, reverse, media }]), `stats` ([{ value, label }]) із `statsImage`,
+// Необов'язкові поля сторінки кейсу: `chapters` (розділи історії; перший без підпису: label, title, text, textAt, layout wide|pair|offset|statement|head, joined (ближче до попереднього на 64), media [{ src, poster (для відео), label }], more [{ layout, reverse, media }]), `stats` ([{ value, label }]) із `statsImage`,
 // `quote`, `quoteBy` (автор цитати), `story`. Без них сторінка показує заглушки. Розділи Qure — чернетка з макета.
 export const WORKS = [
   // Moodies — розкладка за Figma (кадр 40002561:36135), тексти з Dribbble (dribbble.com/shots/27729558-Ecommerce-Branding), картинки з Figma (кадр 40002556:34415). Цитата клієнта — заглушка.
@@ -15,7 +15,7 @@ export const WORKS = [
       approach: "The visual system combines vibrant colors, expressive typography, playful graphics, and character-driven packaging to give each flavor its own personality. From Blueberry Dream and Apple Momentum to Happy Strawberry and Orange Spark, every product is built around a distinct mood while still feeling part of one cohesive brand.",
       results: ["A fresh, energetic brand that makes functional wellness feel fun, approachable, and easy to understand"] },
     chapters: [
-      { layout: "wide", media: [{ src: "cases/moodies/branding.mp4", label: "Branding" }] },
+      { layout: "wide", media: [{ src: "cases/moodies/branding.mp4", poster: "cases/moodies/branding-poster.jpg", label: "Branding" }] },
       { label: "Sweating the details", title: "Every interaction\nserves a purpose.", layout: "head" },
       { layout: "wide", media: [{ src: "cases/moodies/moods.jpg", label: "Flavors" }] },
       { layout: "statement", joined: true, text: "Every product is built around a distinct mood while still feeling part of one cohesive brand.",
