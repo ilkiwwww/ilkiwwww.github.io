@@ -23,25 +23,51 @@ export default function Media({ src, next, alt = "", label, fill = false, round 
   const video = useRef(null);
   const isVideo = !!src && /\.(mp4|webm)$/i.test(src);
 
-  // Відео стартує саме: React не завжди ставить `muted` до автоплею (Safari), тож вмикаємо звук-off і play()
-  // вручну, повторюємо, коли файл готовий, а якщо браузер заблокував — на перший жест користувача.
+  // Відео стартує саме й завжди: React не ставить `muted` до автоплею (Safari), тож вимикаємо звук і граємо вручну —
+  // одразу, коли файл готовий, коли відео з'являється в екрані (IntersectionObserver), коли вкладка знову видима,
+  // і якщо браузер його поставив на паузу, поки воно на екрані. Якщо автоплей заблоковано (економія заряду) —
+  // стартуємо на перший жест користувача.
   useEffect(() => {
     const v = video.current;
     if (!isVideo || !v) return;
     v.muted = true;
-    const play = () => v.play().catch(() => {});
+    v.defaultMuted = true;
+    v.playsInline = true;
+    let visible = false;
+    const play = () => {
+      if (v.paused && !v.ended) v.play().catch(() => {});
+    };
+    const onPause = () => {
+      if (visible && document.visibilityState === "visible") setTimeout(play, 150);
+    };
+    const onVisibility = () => document.visibilityState === "visible" && play();
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) play();
+      },
+      { threshold: 0.05 },
+    );
+    io.observe(v);
+    const gestures = ["pointerdown", "keydown", "touchstart", "click"];
     const gesture = () => {
       play();
-      ["pointerdown", "keydown", "touchstart"].forEach((e) => window.removeEventListener(e, gesture));
+      gestures.forEach((e) => window.removeEventListener(e, gesture));
     };
+    gestures.forEach((e) => window.addEventListener(e, gesture, { passive: true }));
+    const media = ["loadeddata", "canplay", "suspend", "stalled"];
+    media.forEach((e) => v.addEventListener(e, play));
+    v.addEventListener("pause", onPause);
+    document.addEventListener("visibilitychange", onVisibility);
     play();
-    v.addEventListener("canplay", play);
-    ["pointerdown", "keydown", "touchstart"].forEach((e) => window.addEventListener(e, gesture, { once: true, passive: true }));
     return () => {
-      v.removeEventListener("canplay", play);
-      ["pointerdown", "keydown", "touchstart"].forEach((e) => window.removeEventListener(e, gesture));
+      io.disconnect();
+      media.forEach((e) => v.removeEventListener(e, play));
+      v.removeEventListener("pause", onPause);
+      document.removeEventListener("visibilitychange", onVisibility);
+      gestures.forEach((e) => window.removeEventListener(e, gesture));
     };
-  }, [isVideo, src]);
+  }, [isVideo, src, failed]);
   const shape = `${fill ? "absolute inset-0" : "relative"} overflow-hidden ${round ? "rounded-full" : ""} ${className}`;
 
   // Відео (mp4/webm): без звуку, по колу, як гіф. Помилка завантаження — плейсхолдер.
