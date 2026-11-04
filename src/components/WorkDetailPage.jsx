@@ -406,12 +406,15 @@ export default function WorkDetailPage({ slug }) {
         </div>
 
         <InView className="mt-30 flex flex-col gap-12 lg:flex-row lg:gap-20">
-            <div className="flex min-w-0 flex-1 flex-col gap-10">
-              <div className="flex flex-col gap-10">
-                <SectionLabel>Results</SectionLabel>
+            {/* Figma (Results): підпис без лінії, до заголовка 16, далі через 48 заголовок і кожен рядок із лінією окремо. */}
+            <div className="flex min-w-0 flex-1 flex-col gap-12">
+              <div className="flex flex-col gap-4">
+                <Rise>
+                  <Eyebrow>Results</Eyebrow>
+                </Rise>
                 <ScrollHeading lines={["Shipping work", "that moves numbers."]} />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-12">
                 {(work.stats ?? FALLBACK_STATS).map((stat, i) => (
                   <Rise key={stat.label} delay={i * 0.1}>
                     <div className="flex items-center justify-between gap-6 border-t border-tertiary py-6">
