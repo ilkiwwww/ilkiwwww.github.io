@@ -4,7 +4,6 @@ import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import "./index.css";
 import App from "./App.jsx";
-import { WORKS } from "./data/works.js";
 
 // Головна показує екран завантаження (Loader.jsx), коли сайт відкрито «з нуля»: адреса в рядку,
 // закладка, посилання ззовні чи перезавантаження. Перехід з іншої сторінки сайту на головну
@@ -30,16 +29,3 @@ createRoot(document.getElementById("root")).render(
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   new Lenis({ autoRaf: true });
 }
-
-// Поки користувач на головній, у фоні підтягуємо перше відео першого кейсу (кеш браузера):
-// відкриття кейсу не чекає на завантаження файлу.
-const warmCaseVideo = () => {
-  const src = WORKS[0]?.chapters?.[0]?.media?.[0]?.src;
-  if (!src || window.location.pathname.startsWith("/work/")) return;
-  const link = document.createElement("link");
-  link.rel = "prefetch";
-  link.as = "video";
-  link.href = src;
-  document.head.appendChild(link);
-};
-(window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(warmCaseVideo);
