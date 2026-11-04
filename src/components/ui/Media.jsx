@@ -35,7 +35,6 @@ export default function Media({ src, poster, next, alt = "", label, fill = false
     v.playsInline = true;
     let visible = false;
     const play = () => {
-      if (v.dataset.hold) return;
       if (v.paused && !v.ended) v.play().catch(() => {});
     };
     const onPause = () => {

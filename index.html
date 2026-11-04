@@ -15,9 +15,6 @@
          а не порожня сторінка. Клас `case-entry` ставимо до завантаження скриптів, знімає його React, коли відео
          «сідає» на місце (або через 8s, якщо щось пішло не так). Постери: /work/<slug> → кадр (дублює data/works.js). -->
     <style>
-      /* Плавний перехід між сторінками сайту (кожна — повне завантаження): стара сторінка розчиняється в нову. */
-      @view-transition { navigation: auto; }
-      ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.7s; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
       html.case-entry body::before { content: ""; position: fixed; inset: 0; z-index: 49; background: #000 var(--case-poster) center / cover no-repeat; }
     </style>
     <script>
