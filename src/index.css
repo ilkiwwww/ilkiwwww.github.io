@@ -56,6 +56,7 @@
   --color-secondary: #999999; /* вторинний колір: другорядний текст (білий 60% на чорному) */
   --color-fill: #141414; /* заливка: таби, картки, плейсхолдери, hover рядка — одна на весь сайт */
   --color-plate: rgb(0 0 0 / 0.7); /* підкладка шапки при скролі: чорний 70% (рішення дизайнерки, виняток із «суцільних кольорів», як затемнення попапа) */
+  --color-edge: rgb(255 255 255 / 0.1); /* обводка табів шапки: білий 10% (рішення дизайнерки, Figma; виняток із «суцільних кольорів») */
   --color-tertiary: #242424; /* третинний колір: усі лінії й контури */
 
   /* ---- Скруглення ------------------------------------------------------ */
@@ -298,6 +299,7 @@ body {
   transition: max-width 0.8s var(--ease-case), padding 0.8s var(--ease-case), background-color 0.5s var(--ease-case);
 }
 .site-bar[data-scrolled] { max-width: calc(var(--spacing) * 262); padding: calc(var(--spacing) * 2); background-color: var(--color-plate); }
+.site-bar nav a:not([aria-current]) { border-color: var(--color-edge); }
 .site-logo { transition: margin 0.8s var(--ease-case); }
 .site-logo img { width: auto; height: calc(var(--spacing) * 12); transition: height 0.8s var(--ease-case); }
 .site-bar[data-scrolled] .site-logo { margin-left: calc(var(--spacing) * 3); }
