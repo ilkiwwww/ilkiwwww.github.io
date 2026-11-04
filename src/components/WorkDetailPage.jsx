@@ -5,7 +5,7 @@ import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 import Heading from "./ui/Heading.jsx";
 import IconButton from "./ui/IconButton.jsx";
-import { CloseIcon, PlusIcon } from "./ui/icons.jsx";
+import { ChevronDownIcon, CloseIcon, PlusIcon } from "./ui/icons.jsx";
 import Media from "./ui/Media.jsx";
 import { InView, Rise } from "./ui/Motion.jsx";
 import Section from "./ui/Section.jsx";
@@ -119,7 +119,7 @@ function StoryAccordion({ story, onClose, layoutRef }) {
               <Text size="lead" weight="medium" as="span">
                 {label}
               </Text>
-              {isOpen ? <CloseIcon /> : <PlusIcon />}
+              <ChevronDownIcon weight={1} className={`h-6 w-6 shrink-0 transition-transform duration-500 ease-case motion-reduce:transition-none ${isOpen ? "rotate-180" : ""}`} />
             </button>
             <div className="acc-body" data-open={isOpen || undefined} inert={!isOpen}>
               <div className="pb-6">
