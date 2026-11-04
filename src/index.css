@@ -55,6 +55,7 @@
   --color-canvas: #0d0d0f;     /* фон сторінки (темна тема) */
   --color-secondary: #999999; /* вторинний колір: другорядний текст (білий 60% на чорному) */
   --color-fill: #141414; /* заливка: таби, картки, плейсхолдери, hover рядка — одна на весь сайт */
+  --color-plate: #333333; /* підкладка шапки при скролі (Figma: білий 20% на чорному) */
   --color-tertiary: #242424; /* третинний колір: усі лінії й контури */
 
   /* ---- Скруглення ------------------------------------------------------ */
@@ -287,6 +288,21 @@ body {
 .header-drop { animation: header-drop 1s var(--ease-reveal) 1.1s both; }
 .header-drop-now { animation-delay: 0.15s; }
 
+/* Шапка при скролі (TopBar.jsx): смуга на всю ширину збирається в плашку по центру на суцільній підкладці
+   `plate` (Figma: 1048 завширшки, відступи 8), лого плавно зменшується (48 → 32). Усе однією кривою. */
+.site-bar {
+  max-width: calc(var(--spacing) * 340);
+  padding: 0;
+  border-radius: var(--radius-control);
+  background-color: transparent;
+  transition: max-width 0.8s var(--ease-case), padding 0.8s var(--ease-case), background-color 0.5s var(--ease-case);
+}
+.site-bar[data-scrolled] { max-width: calc(var(--spacing) * 262); padding: calc(var(--spacing) * 2); background-color: var(--color-plate); }
+.site-logo { transition: margin 0.8s var(--ease-case); }
+.site-logo img { width: auto; height: calc(var(--spacing) * 12); transition: height 0.8s var(--ease-case); }
+.site-bar[data-scrolled] .site-logo { margin-left: calc(var(--spacing) * 3); }
+.site-bar[data-scrolled] .site-logo img { height: calc(var(--spacing) * 8); }
+
 /* ---- Поява при скролі (ui/Motion.jsx) ------------------------------------
    Як на metalab.com: блок чекає, поки зайде у в'южпорт ([data-inview]), і
    його частини з'являються по черзі (--delay):
@@ -368,7 +384,8 @@ body {
 /* Вступ кейсу зі скролом (WorkDetailPage, від lg). Блок 260vh, сцена липне; відео (.intro-video) росте з ширини
    сітки на весь екран (--f), потім стискається в колонку першого розділу (--s), панель історії проявляється. */
 /* Сцена не нижча за відео в колонці (--h2): на низькому вікні відео не вилазить за блок і не лізе на абзац. */
-.intro-block { --sh: max(100vh, var(--h2, 0px)); height: calc(var(--sh) + 160vh); margin-bottom: calc(min(0px, var(--h2, 0px) - var(--sh)) - 88px); }
+.intro-block { --sh: max(100vh, var(--h2, 0px)); height: calc(var(--sh) + 160vh); margin-bottom: min(0px, calc(var(--h2, 0px) - var(--sh))); }
+.intro-block[data-text] { margin-bottom: calc(min(0px, var(--h2, 0px) - var(--sh)) - 88px); }
 .intro-stage { position: sticky; top: 0; height: var(--sh); }
 .intro-video {
   position: absolute;
@@ -487,6 +504,9 @@ body {
   .hero-card,
   .hero-detail,
   .hero-bg,
+  .site-bar,
+  .site-logo,
+  .site-logo img,
   .hero-arrow { transition: none; }
   .svc-left, .svc-right { transition: none; }
   .svc-fade { animation: none; }

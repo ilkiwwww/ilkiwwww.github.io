@@ -149,34 +149,53 @@ function Block({ block, label, skipMedia = false, text }) {
 // `layout: "statement"` — лише рядок `pull` без медіа. Перший розділ іде без підпису (як у макеті);
 // `skipMedia` — перше медіа вже показує вступ зі скролом (useIntroScroll), лишається абзац.
 function Chapter({ chapter, head, skipMedia = false }) {
-  const { label, title, layout = "wide", text, textAt, more = [] } = chapter;
+  const { label, title, layout = "wide", text, textAt, more = [], joined = false } = chapter;
+  const joinedClass = joined ? "-mt-14" : "";
+  const titleLines = title ? title.split("\n") : [];
+  const heading = title && (
+    <div className="flex flex-col gap-6">
+      <Rise>
+        <Eyebrow>{label}</Eyebrow>
+      </Rise>
+      <Rise delay={0.1} bleed className="max-w-226">
+        <Heading level="statement" as="h2">
+          {titleLines.map((line, i) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </Heading>
+      </Rise>
+    </div>
+  );
+  if (layout === "head") return <InView>{heading}</InView>;
   if (layout === "statement") {
     return (
-      <InView className="md:pl-28">
-        <Rise bleed className="max-w-171">
-          <Heading level="pull" as="p">
-            {text}
-          </Heading>
-        </Rise>
+      <InView className={`flex flex-col gap-16 ${joinedClass}`}>
+        {text && (
+          <div className="md:pl-28">
+            <Rise bleed className="max-w-171">
+              <Heading level="pull" as="p">
+                {text}
+              </Heading>
+            </Rise>
+          </div>
+        )}
+        {more.length > 0 && (
+          <div className="flex flex-col gap-3">
+            {more.map((block, i) => (
+              <Block key={i} block={block} label={label} />
+            ))}
+          </div>
+        )}
       </InView>
     );
   }
   const inColumn = layout === "pair" && more.length === 0;
   return (
-    <InView className={`flex flex-col ${title ? "gap-16" : "gap-10"}`}>
+    <InView className={`flex flex-col ${title ? "gap-16" : "gap-10"} ${joinedClass}`}>
       {head && label && !title && <SectionLabel>{label}</SectionLabel>}
-      {head && title && (
-        <div className="flex flex-col gap-6">
-          <Rise>
-            <Eyebrow>{label}</Eyebrow>
-          </Rise>
-          <Rise delay={0.1} bleed className="max-w-226">
-            <Heading level="statement" as="h2">
-              {title}
-            </Heading>
-          </Rise>
-        </div>
-      )}
+      {head && heading}
       <div className="flex flex-col gap-8">
         {!(skipMedia && layout === "wide" && more.length === 0) && (
           <div className="flex flex-col gap-3">
@@ -301,7 +320,7 @@ export default function WorkDetailPage({ slug }) {
           <div className="relative flex min-w-0 flex-col gap-30">
             {/* Вступ зі скролом: відео кейсу на всю ширину → на весь екран → у колонку (див. useIntroScroll). */}
             {intro && (
-              <div ref={blockRef} className="intro-block">
+              <div ref={blockRef} className="intro-block" data-text={chapters[0].text ? "" : undefined}>
                 <div className="intro-stage">
                   <div className="intro-video">
                     <Media src={introMedia.src} alt={work.name} fill />
@@ -318,7 +337,7 @@ export default function WorkDetailPage({ slug }) {
                 </Button>
               </div>
             )}
-            {chapters.map((chapter, i) => (
+            {chapters.map((chapter, i) => intro && i === 0 && !chapter.text ? null : (
               <Chapter key={chapter.label} chapter={chapter} head={i > 0} skipMedia={intro && i === 0} />
             ))}
           </div>
