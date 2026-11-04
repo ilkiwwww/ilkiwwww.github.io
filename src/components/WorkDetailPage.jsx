@@ -49,7 +49,7 @@ const STORY_STEPS = [
   { id: "results", label: "Results" },
 ];
 
-function StoryAccordion({ story, onClose }) {
+function StoryAccordion({ story, onClose, layoutRef }) {
   // Кожен пункт відкривається й закривається сам по собі (можна відкрити всі три).
   const [open, setOpen] = useState(() => new Set(["challenge"]));
   const toggle = (id) =>
@@ -58,6 +58,43 @@ function StoryAccordion({ story, onClose }) {
       if (!next.delete(id)) next.add(id);
       return next;
     });
+
+  // Від lg пункти відкриваються самі, поки скролимо розділи кейсу: спершу The challenge, у середині розділів
+  // The approach (попередній закривається), наприкінці Results. Прогрес рахуємо від кінця вступу зі скролом до низу колонки.
+  // Клік по пункту працює як раніше, але наступна зміна кроку знову відкриває лише поточний.
+  const step = useRef(0);
+  useEffect(() => {
+    const layout = layoutRef?.current;
+    if (!layout) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (window.innerWidth < 1024) return;
+      const col = layout.firstElementChild;
+      const intro = col.querySelector(".intro-block");
+      const colRect = col.getBoundingClientRect();
+      const introH = intro ? intro.offsetHeight : 0;
+      const start = colRect.top + window.scrollY + introH * 0.85;
+      const end = colRect.bottom + window.scrollY - window.innerHeight;
+      const p = Math.min(1, Math.max(0, (window.scrollY - start) / Math.max(1, end - start)));
+      const next = p < 1 / 3 ? 0 : p < 2 / 3 ? 1 : 2;
+      if (next !== step.current) {
+        step.current = next;
+        setOpen(new Set([STORY_STEPS[next].id]));
+      }
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [layoutRef]);
   return (
     <div className="border-t border-tertiary">
       <div className="flex items-center justify-between py-3">
@@ -84,7 +121,7 @@ function StoryAccordion({ story, onClose }) {
               </Text>
               {isOpen ? <CloseIcon /> : <PlusIcon />}
             </button>
-            {isOpen && (
+            <div className="acc-body" data-open={isOpen || undefined} inert={!isOpen}>
               <div className="pb-6">
                 {Array.isArray(body) ? (
                   <ul className="flex flex-col gap-2">
@@ -102,7 +139,7 @@ function StoryAccordion({ story, onClose }) {
                   </Text>
                 )}
               </div>
-            )}
+            </div>
           </div>
         );
       })}
@@ -347,7 +384,7 @@ export default function WorkDetailPage({ slug }) {
             <div className="story-aside-inner lg:pl-16">
               <InView className="flex flex-col gap-8">
                 <Rise>
-                  <StoryAccordion story={story} onClose={() => setStoryOpen(false)} />
+                  <StoryAccordion story={story} layoutRef={layoutRef} onClose={() => setStoryOpen(false)} />
                 </Rise>
                 <Rise delay={0.1} bleed>
                   <Button variant="light" size="md" className="w-full" onClick={openBookCall}>

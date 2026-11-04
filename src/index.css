@@ -367,6 +367,10 @@ body {
    вміст панелі встигає згаснути. Нижче lg — одна колонка, закрита панель зникає. */
 .story-layout { display: grid; gap: calc(var(--spacing) * 16); }
 .story-aside { min-width: 0; overflow: hidden; }
+/* Тіло пункту акордеону «The story» розкривається по висоті (як .service-reveal); пункти відкриваються самі за скролом. */
+.acc-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.6s var(--ease-case); }
+.acc-body[data-open] { grid-template-rows: 1fr; }
+.acc-body > div { min-height: 0; overflow: hidden; }
 .story-aside-inner { transition: opacity 0.3s var(--ease-case); }
 [data-closed] > .story-aside > .story-aside-inner { opacity: 0; }
 @media (max-width: 63.99rem) {
@@ -505,6 +509,7 @@ body {
   .hero-detail,
   .hero-bg,
   .site-bar,
+  .acc-body,
   .site-logo,
   .site-logo img,
   .hero-arrow { transition: none; }
