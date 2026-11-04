@@ -44,7 +44,7 @@ export const WORKS = [
         more: [{ layout: "offset", reverse: true, media: [{ src: "cases/yousquared/tote.jpg", label: "Merch" }, { src: "cases/yousquared/insta.jpg", label: "Social" }] }] },
     ],
     stats: [{ value: "3", label: "directions explored: too cold, almost there, perfect" }, { value: "100%", label: "of the UI crafted by humans" }, { value: "1", label: "team, with shared vision and connected tools" }],
-    statsImage: "cases/yousquared/results.jpg" },
+    statsImage: "cases/yousquared/results.mp4" },
   { slug: "gifted", name: "Gifted", industry: "SaaS", services: ["UI/UX Design", "Web Development"], description: "A website for an all-in-one gifting platform that automates employee and client appreciation.",
     story: { challenge: "Gifted is an all-in-one gifting platform that simplifies employee and client appreciation through automated campaigns. The goal was a professional, intuitive interface that balances robust functionality with a delightful user experience, while highlighting key use cases like birthdays, work anniversaries and spot bonuses.",
       approach: "Every section of the homepage is structured around a use case, with scalable layouts, clean navigation, consistent iconography and clear CTAs. The design gives high visibility to real-time reporting, global gift catalogs and HR integrations.",
