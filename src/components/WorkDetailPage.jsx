@@ -144,15 +144,16 @@ function Block({ block, label, skipMedia = false, text }) {
 }
 
 // Розділ історії: підпис (eyebrow; із лінією, а з `title` — над заголовком statement), блоки медіа
-// (перший + `more` через 12) і абзац внизу (`textAt="start"` — під лівою половиною, інакше під правою).
+// (перший + `more` через 12) і абзац внизу (`textAt="start"` — під лівою половиною, інакше під правою). Тексти мають
+// фіксовану ширину (абзац 452, рядок `pull` 684, заголовок 904), тож при закритій панелі не розтягуються й лишаються в тих самих рядках.
 // `layout: "statement"` — лише рядок `pull` без медіа. Перший розділ іде без підпису (як у макеті);
 // `skipMedia` — перше медіа вже показує вступ зі скролом (useIntroScroll), лишається абзац.
 function Chapter({ chapter, head, skipMedia = false }) {
   const { label, title, layout = "wide", text, textAt, more = [] } = chapter;
   if (layout === "statement") {
     return (
-      <InView className="md:px-28">
-        <Rise bleed>
+      <InView className="md:pl-28">
+        <Rise bleed className="max-w-171">
           <Heading level="pull" as="p">
             {text}
           </Heading>
@@ -169,7 +170,7 @@ function Chapter({ chapter, head, skipMedia = false }) {
           <Rise>
             <Eyebrow>{label}</Eyebrow>
           </Rise>
-          <Rise delay={0.1} bleed>
+          <Rise delay={0.1} bleed className="max-w-226">
             <Heading level="statement" as="h2">
               {title}
             </Heading>
@@ -186,8 +187,8 @@ function Chapter({ chapter, head, skipMedia = false }) {
           </div>
         )}
         {text && !inColumn && (
-          <Rise delay={0.1} className={textAt === "start" ? "md:w-1/2" : "grid md:grid-cols-2"}>
-            <Text tone="secondary" className={textAt === "start" ? undefined : "md:col-start-2"}>
+          <Rise delay={0.1} className={textAt === "start" ? "max-w-113" : "grid md:grid-cols-2"}>
+            <Text tone="secondary" className={textAt === "start" ? undefined : "max-w-113 md:col-start-2"}>
               {text}
             </Text>
           </Rise>
