@@ -311,6 +311,9 @@ body {
 @media (max-width: 47.99rem) { /* мобільний: лого менше (32, при скролі 24) */
   .site-logo img { height: calc(var(--spacing) * 8); }
   .site-bar[data-scrolled] .site-logo img { height: calc(var(--spacing) * 6); }
+  /* плашка при скролі вужча: лише лого й кнопка меню, відступи 4 */
+  .site-bar[data-scrolled] { max-width: calc(var(--spacing) * 56); padding: calc(var(--spacing) * 1); }
+  .site-bar[data-scrolled] .site-logo { margin-left: calc(var(--spacing) * 3); }
 }
 
 /* ---- Поява при скролі (ui/Motion.jsx) ------------------------------------

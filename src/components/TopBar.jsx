@@ -103,7 +103,7 @@ export default function TopBar() {
   }, [menuOpen]);
   return (
     // Уся шапка з'їжджає зверху одним рухом (.header-drop в index.css), без окремої анімації елементів.
-    <header className={`${isHome ? "header-drop" : "header-drop header-drop-now"} fixed inset-x-0 top-6 z-40 px-6 md:top-5 md:px-10`}>
+    <header className={`${isHome ? "header-drop" : "header-drop header-drop-now"} fixed inset-x-0 top-3 z-40 px-6 md:top-5 md:px-10`}>
       <div className="site-bar relative mx-auto flex items-center justify-between" data-scrolled={scrolled || undefined}>
         <Logo className="site-logo" />
         <SiteNav />

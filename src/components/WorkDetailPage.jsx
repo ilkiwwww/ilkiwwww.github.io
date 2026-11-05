@@ -213,7 +213,7 @@ function Chapter({ chapter, head, skipMedia = false }) {
   if (layout === "head") return <InView>{heading}</InView>;
   if (layout === "statement") {
     return (
-      <InView className={`flex flex-col gap-16 ${joinedClass}`}>
+      <InView className={`flex flex-col gap-10 md:gap-16 ${joinedClass}`}>
         {text && (
           <div className="md:pl-28">
             <Rise bleed className="max-w-171">
@@ -235,7 +235,7 @@ function Chapter({ chapter, head, skipMedia = false }) {
   }
   const inColumn = layout === "pair" && more.length === 0;
   return (
-    <InView className={`flex flex-col ${title ? "gap-16" : "gap-10"} ${joinedClass}`}>
+    <InView className={`flex flex-col ${title ? "gap-10 md:gap-16" : "gap-8 md:gap-10"} ${joinedClass}`}>
       {head && label && !title && <SectionLabel>{label}</SectionLabel>}
       {head && heading}
       <div className="flex flex-col gap-8">
@@ -392,7 +392,7 @@ export default function WorkDetailPage({ slug }) {
   return (
     <Page>
       <Section rhythm="top" aria-labelledby="case-title">
-        <InView className="flex flex-col items-start gap-8">
+        <InView className="flex flex-col items-start gap-4 md:gap-8">
           <Rise bleed>
             <Heading id="case-title" level="display" as="h1">
               {work.name}
@@ -403,8 +403,8 @@ export default function WorkDetailPage({ slug }) {
           </Rise>
         </InView>
 
-        <div ref={layoutRef} className="story-layout mt-16" data-closed={!storyOpen || undefined} data-intro={intro || undefined}>
-          <div className="relative flex min-w-0 flex-col gap-30">
+        <div ref={layoutRef} className="story-layout mt-10 md:mt-16" data-closed={!storyOpen || undefined} data-intro={intro || undefined}>
+          <div className="relative flex min-w-0 flex-col gap-16 md:gap-30">
             {/* Вступ зі скролом: відео кейсу на всю ширину → на весь екран → у колонку (див. useIntroScroll). */}
             {intro && (
               <div ref={blockRef} className="intro-block" data-text={chapters[0].text ? "" : undefined}>
@@ -454,7 +454,7 @@ export default function WorkDetailPage({ slug }) {
           </aside>
         </div>
 
-        <InView className="mt-30 flex flex-col gap-12 lg:flex-row lg:gap-20">
+        <InView className="mt-16 md:mt-30 flex flex-col gap-12 lg:flex-row lg:gap-20">
             {/* Figma (Results): підпис без лінії, до заголовка 16, далі через 48 заголовок і кожен рядок із лінією окремо. */}
             <div className="flex min-w-0 flex-1 flex-col gap-12">
               <div className="flex flex-col gap-4">
@@ -483,7 +483,7 @@ export default function WorkDetailPage({ slug }) {
             </Rise>
           </InView>
 
-        <InView className="mt-30 flex flex-col gap-8">
+        <InView className="mt-16 md:mt-30 flex flex-col gap-8">
           <Rise>
             <Heading level="statement" as="blockquote" className="max-w-240">
               “{work.quote ?? FALLBACK_QUOTE}”
@@ -496,7 +496,7 @@ export default function WorkDetailPage({ slug }) {
           </Rise>
         </InView>
 
-        <InView className="mt-20 grid gap-16 border-t border-tertiary pt-16 md:grid-cols-2 md:gap-3">
+        <InView className="mt-16 grid gap-10 border-t border-tertiary pt-10 md:mt-20 md:grid-cols-2 md:gap-3 md:pt-16">
           <Rise className="hidden md:block">
             <WorkCard work={prev} badge="← Previous" shape="aspect-16/10 w-full" />
           </Rise>
