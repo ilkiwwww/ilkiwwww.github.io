@@ -21,7 +21,7 @@ export default function WorkCard({ work, shape, badge }) {
         {badge && (
           <span
             aria-hidden="true"
-            className={`${controlClasses("light", "sm")} pointer-events-none absolute top-1/2 left-1/2 -translate-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+            className={`${controlClasses("light", "sm")} pointer-events-none absolute top-1/2 left-1/2 -translate-1/2 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100`}
           >
             {badge}
           </span>

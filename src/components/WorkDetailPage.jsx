@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { WORKS } from "../data/works.js";
 import { openBookCall } from "./BookCall.jsx";
 import Button from "./ui/Button.jsx";
@@ -157,7 +158,7 @@ function Block({ block, label, skipMedia = false, text }) {
   if (layout === "wide") return skipMedia ? null : <Curtain>{shot(0, "aspect-4/3 w-full")}</Curtain>;
   if (layout === "pair") {
     return (
-      <div className="grid grid-cols-2 items-start gap-3">
+      <div className="grid items-start gap-3 md:grid-cols-2">
         <div className="flex flex-col gap-6">
           <Curtain>{shot(0, "aspect-4/5 w-full")}</Curtain>
           {text && (
@@ -166,16 +167,16 @@ function Block({ block, label, skipMedia = false, text }) {
             </Rise>
           )}
         </div>
-        <div className="pt-10 md:pt-20">
+        <div className="md:pt-20">
           <Curtain delay={0.15}>{shot(1, "aspect-4/5 w-full")}</Curtain>
         </div>
       </div>
     );
   }
   return (
-    <div className={`flex items-start gap-3 ${reverse ? "flex-row-reverse" : ""}`}>
-      <Curtain className="w-5/16 shrink-0">{shot(0, "aspect-7/9 w-full")}</Curtain>
-      <Curtain delay={0.15} className="min-w-0 flex-1">
+    <div className={`flex flex-col items-start gap-3 md:flex-row ${reverse ? "md:flex-row-reverse" : ""}`}>
+      <Curtain className="w-full shrink-0 md:w-5/16">{shot(0, "aspect-7/9 w-full")}</Curtain>
+      <Curtain delay={0.15} className="w-full min-w-0 md:flex-1">
         {shot(1, "aspect-5/4 w-full")}
       </Curtain>
     </div>
@@ -309,10 +310,48 @@ function useIntroScroll(enabled, layoutRef, blockRef, storyOpen) {
   }, [enabled, storyOpen, layoutRef, blockRef]);
 }
 
+// Нижче lg панель «The story» не липне збоку: внизу екрана завжди стоїть смуга з «The story» (відкриває шторку
+// з тим самим акордеоном) і «Book a call».
+function StorySheet({ story, layoutRef, onClose }) {
+  useEffect(() => {
+    document.documentElement.classList.add("menu-open");
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.documentElement.classList.remove("menu-open");
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClose]);
+  return createPortal(
+    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="The story">
+      <div className="modal-fade absolute inset-0 bg-black/70" onClick={onClose} aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 top-32 bottom-0 flex flex-col justify-end">
+        <div data-lenis-prevent className="pointer-events-auto max-h-full overflow-y-auto bg-black px-6 pb-8">
+          <StoryAccordion story={story} layoutRef={layoutRef} onClose={onClose} />
+          <Button variant="light" size="md" className="mt-8 w-full" onClick={openBookCall}>
+            Start a project
+          </Button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 export default function WorkDetailPage({ slug }) {
   // «The story» можна закрити (×) — галерея займає всю ширину, а відкрити знову — кнопкою на фото.
   const [storyOpen, setStoryOpen] = useState(true);
   const [wide, setWide] = useState(false);
+  const [sheet, setSheet] = useState(false);
+  // Смуга внизу ховається, коли на екрані фінальна сцена CTA з футером (щоб не закривати його).
+  const [barHidden, setBarHidden] = useState(false);
+  useEffect(() => {
+    const cta = document.getElementById("contact");
+    if (!cta) return;
+    const io = new IntersectionObserver(([entry]) => setBarHidden(entry.isIntersecting), { threshold: 0.3 });
+    io.observe(cta);
+    return () => io.disconnect();
+  }, []);
   const layoutRef = useRef(null);
   const blockRef = useRef(null);
   useEffect(() => {
@@ -389,7 +428,7 @@ export default function WorkDetailPage({ slug }) {
           </div>
 
           {/* Панель завжди в DOM: при закритті колонка плавно стискається (.story-layout), а вміст згасає. */}
-          <aside className="story-aside lg:sticky lg:top-28 lg:self-start" inert={!storyOpen}>
+          <aside className="story-aside hidden lg:sticky lg:top-28 lg:block lg:self-start" inert={!storyOpen}>
             <div className="story-aside-inner lg:pl-16">
               <InView className="flex flex-col gap-8">
                 <Rise>
@@ -448,7 +487,7 @@ export default function WorkDetailPage({ slug }) {
         </InView>
 
         <InView className="mt-20 grid gap-16 border-t border-tertiary pt-16 md:grid-cols-2 md:gap-3">
-          <Rise>
+          <Rise className="hidden md:block">
             <WorkCard work={prev} badge="← Previous" shape="aspect-16/10 w-full" />
           </Rise>
           <Rise delay={0.1}>
@@ -457,6 +496,15 @@ export default function WorkDetailPage({ slug }) {
         </InView>
       </Section>
 
+      <div className={`fixed inset-x-0 bottom-0 z-40 flex gap-3 border-t border-tertiary bg-black px-6 py-3 transition-transform duration-500 ease-case lg:hidden ${barHidden ? "translate-y-full" : ""}`}>
+        <Button variant="outline" size="md" className="flex-1" onClick={() => setSheet(true)}>
+          The story
+        </Button>
+        <Button variant="light" size="md" className="flex-1" onClick={openBookCall}>
+          Book a call
+        </Button>
+      </div>
+      {sheet && <StorySheet story={story} layoutRef={layoutRef} onClose={() => setSheet(false)} />}
     </Page>
   );
 }

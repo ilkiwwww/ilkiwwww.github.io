@@ -55,9 +55,11 @@ export default function Cta({ footerOnly = false }) {
 
         <div className="pointer-events-none flex flex-1 flex-col items-center justify-center gap-10 px-6 text-center md:absolute md:inset-0 md:flex-none">
           <ScrollHeading id="cta-title" level="display" lines={["Let’s make", "it work."]} breakAlways end={0.6} />
-          <Button variant="light" size="md" className="pointer-events-auto" onClick={openBookCall}>
-            Book a call
-          </Button>
+          <div className="hidden md:block">
+            <Button variant="light" size="md" className="pointer-events-auto" onClick={openBookCall}>
+              Book a call
+            </Button>
+          </div>
         </div>
 
         <Footer className="px-6 md:absolute md:inset-x-10 md:bottom-8 md:px-0" />
