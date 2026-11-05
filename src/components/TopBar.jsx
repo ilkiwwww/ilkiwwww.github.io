@@ -78,8 +78,6 @@ function MobileMenu({ onClose }) {
 export default function TopBar() {
   // На Home шапка чекає інтро Hero (1.1s); на решті сторінок інтро немає, тож з'їжджає майже одразу.
   const isHome = window.location.pathname === "/";
-  // На сторінці кейсу нижче lg «Book a call» стоїть у липкій смузі внизу, у шапці його немає.
-  const isCase = window.location.pathname.startsWith("/work/");
   // Коли сторінку прокручено, шапка збирається в плашку по центру (лого, таби, «Book a call» на суцільній
   // підкладці), щоб таби й лого було видно на будь-якому фоні. Стилі й плавність — `.site-bar` в index.css.
   const [scrolled, setScrolled] = useState(false);
@@ -111,7 +109,8 @@ export default function TopBar() {
         <Logo className="site-logo" />
         <SiteNav />
         <div className="flex items-center gap-2">
-          <div className={isCase ? "hidden lg:block" : undefined}>
+          {/* Нижче lg «Book a call» у шапці немає: на Hero й кейсі він стоїть у самому вмісті (кейс — липка смуга внизу). */}
+          <div className="hidden lg:block">
             <Button variant="light" size="md" onClick={openBookCall}>
               Book a call
             </Button>
