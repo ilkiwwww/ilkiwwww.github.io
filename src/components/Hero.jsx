@@ -135,7 +135,7 @@ export default function Hero() {
         <ul className="no-scrollbar flex gap-6 overflow-x-auto px-6" aria-label="Cases">
           {HERO_CASES.map((item, i) => (
             <li key={item.name} className="shrink-0">
-              <Text as="a" href={`/work/${item.slug}`} tone={i === 0 ? "primary" : "secondary"}>
+              <Text as="a" href={`/work/${item.slug}`} size="hero" tone={i === 0 ? "primary" : "secondary"}>
                 {item.name}
               </Text>
             </li>
