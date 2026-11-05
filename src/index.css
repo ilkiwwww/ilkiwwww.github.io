@@ -308,6 +308,10 @@ body {
 .site-logo img { width: auto; height: calc(var(--spacing) * 12); transition: height 0.8s var(--ease-case); }
 .site-bar[data-scrolled] .site-logo { margin-left: calc(var(--spacing) * 3); }
 .site-bar[data-scrolled] .site-logo img { height: calc(var(--spacing) * 8); }
+@media (max-width: 47.99rem) { /* мобільний: лого менше (32, при скролі 24) */
+  .site-logo img { height: calc(var(--spacing) * 8); }
+  .site-bar[data-scrolled] .site-logo img { height: calc(var(--spacing) * 6); }
+}
 
 /* ---- Поява при скролі (ui/Motion.jsx) ------------------------------------
    Як на metalab.com: блок чекає, поки зайде у в'южпорт ([data-inview]), і
