@@ -24,7 +24,7 @@ const FACTS = [
 // `delay` — зсув колонки в рядку: друга стартує трохи пізніше за першу.
 export function Fact({ value, label, delay }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3 md:gap-4">
       <Rise bleed delay={delay}>
         <Heading level="statement" tone="primary" as="p">
           {value}
@@ -40,26 +40,32 @@ export function Fact({ value, label, delay }) {
 export default function Facts() {
   return (
     <Section id="about" aria-labelledby="facts-title">
-      <div className="flex flex-col gap-10 lg:flex-row lg:gap-0">
-        {/* Колонка eyebrow: 40 + 520 = 560 — звідси починається контент (Figma). */}
-        <InView className="shrink-0 lg:w-130">
+      <div className="flex flex-col gap-4 lg:flex-row lg:gap-0">
+        {/* Колонка eyebrow: від xl 40 + 520 = 560 — звідси починається контент (Figma); на lg вужча, щоб цифри вміщались. */}
+        <InView className="shrink-0 lg:w-60 xl:w-130">
           <Rise>
             <Eyebrow>We do it</Eyebrow>
           </Rise>
         </InView>
 
-        <div className="flex flex-1 flex-col gap-20 lg:pr-10">
+        <div className="flex min-w-0 flex-1 flex-col gap-12 md:gap-20 lg:pr-10">
           {/* Заголовок заповнюється білим за скролом, слово за словом. */}
-          <ScrollHeading id="facts-title" lines={["A product problem", "is usually a business problem"]} />
+          <ScrollHeading id="facts-title" lines={["A product issue", "often reflects a business challenge."]} />
 
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-5 md:gap-10">
             {FACTS.map((row, i) => (
-              <InView key={i} className="flex flex-col gap-10">
-                <Grow />
+              <InView key={i} className="flex flex-col gap-5 md:gap-10">
+                {/* Від md одна лінія на пару, на мобільному — лінія над кожним показником (Figma 40002524:11683). */}
+                <div className="hidden md:block">
+                  <Grow />
+                </div>
                 <div className="grid gap-6 sm:grid-cols-2 md:flex md:gap-0">
                   {row.map((fact, j) => (
                     // Друга колонка стоїть на 348 від лінії (Figma).
-                    <div key={fact.value} className={j === 0 ? "md:w-87 md:shrink-0" : ""}>
+                    <div key={fact.value} className={`flex flex-col gap-5 md:block ${j === 0 ? "md:w-87 md:shrink-0" : ""}`}>
+                      <div className="md:hidden">
+                        <Grow />
+                      </div>
                       <Fact {...fact} delay={0.15 + j * 0.12} />
                     </div>
                   ))}

@@ -113,17 +113,17 @@ export default function Hero() {
           <line className="intro-line-diag" x1="0" y1="0" x2="2000" y2="1150" pathLength="1" stroke="currentColor" />
         </svg>
       </svg>
-      <div className="intro-line-x pointer-events-none absolute inset-x-0 top-1/2 mt-38 h-px bg-tertiary" aria-hidden="true" />
+      <div className="intro-line-x pointer-events-none absolute inset-x-0 bottom-46 h-px bg-tertiary md:top-1/2 md:bottom-auto md:mt-38" aria-hidden="true" />
 
       {/* Заголовок і цитата стоять від центру: рамка 1240. У другому стані йдуть (.hero-lead). */}
-      <div className="hero-lead pointer-events-none absolute inset-0 flex items-center justify-center px-6 pt-20 md:px-10">
-        <div className="flex w-full max-w-310 flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="hero-lead pointer-events-none absolute inset-0 flex justify-center px-6 pt-52 pb-28 md:items-center md:px-10 md:pt-20 md:pb-28 lg:pb-0">
+        <div className="flex w-full max-w-310 flex-col justify-between gap-10 md:justify-start lg:flex-row lg:items-center lg:justify-between">
           <Heading level="hero" tone="primary">
             <Typewriter lines={["We build", "best websites", "for your business"]} delay={1.0} />
           </Heading>
-          <Reveal delay={2.2} className="mt-10 max-w-86 shrink-0 lg:mr-7">
-            <Text weight="medium">{HERO_QUOTE}</Text>
-            <Button variant="light" size="md" className="pointer-events-auto mt-8" onClick={openBookCall}>
+          <Reveal delay={2.2} className="shrink-0 md:mt-10 md:max-w-86 lg:mr-7">
+            <Text size="hero" weight="medium">{HERO_QUOTE}</Text>
+            <Button variant="light" size="md" className="pointer-events-auto mt-12 md:mt-8" onClick={openBookCall}>
               Book a call
             </Button>
           </Reveal>
@@ -131,10 +131,10 @@ export default function Hero() {
       </div>
 
       {/* Мобільний: другого стану немає, внизу лише назви кейсів посиланнями (від md їх замінює зона нижче). */}
-      <Reveal delay={2.5} className="absolute inset-x-0 bottom-12 px-6 md:hidden">
-        <ul className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Cases">
+      <Reveal delay={2.5} className="absolute inset-x-0 bottom-6 md:hidden">
+        <ul className="no-scrollbar flex gap-6 overflow-x-auto px-6" aria-label="Cases">
           {HERO_CASES.map((item, i) => (
-            <li key={item.name}>
+            <li key={item.name} className="shrink-0">
               <Text as="a" href={`/work/${item.slug}`} tone={i === 0 ? "primary" : "secondary"}>
                 {item.name}
               </Text>

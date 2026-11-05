@@ -19,7 +19,7 @@ const SOCIALS = [
 // Футер: legal ліворуч, соцмережі праворуч. У сцені CTA лежить внизу (absolute), без CTA — звичайним рядком.
 function Footer({ className = "" }) {
   return (
-    <footer className={`flex items-end justify-between gap-6 ${className}`}>
+    <footer className={`flex flex-col-reverse items-center gap-8 text-center md:flex-row md:items-end md:justify-between md:gap-6 md:text-left ${className}`}>
       <Text size="dense" weight="medium" tone="secondary" uppercase>
         © 2019-2026 THE
         <br />
@@ -51,16 +51,16 @@ export default function Cta({ footerOnly = false }) {
   return (
     <Section id="contact" rhythm="none" aria-labelledby="cta-title">
       {/* Сцена на всю ширину секції (за межі gutters) */}
-      <div className="relative -mx-6 h-140 overflow-hidden md:-mx-10 md:h-177">
+      <div className="relative -mx-6 flex min-h-svh flex-col overflow-hidden pb-8 md:-mx-10 md:block md:h-177 md:min-h-0 md:pb-0">
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-10 px-6 text-center">
+        <div className="pointer-events-none flex flex-1 flex-col items-center justify-center gap-10 px-6 text-center md:absolute md:inset-0 md:flex-none">
           <ScrollHeading id="cta-title" level="display" lines={["Let’s make", "it work."]} breakAlways end={0.6} />
           <Button variant="light" size="md" className="pointer-events-auto" onClick={openBookCall}>
             Book a call
           </Button>
         </div>
 
-        <Footer className="absolute inset-x-6 bottom-6 md:inset-x-10 md:bottom-8" />
+        <Footer className="px-6 md:absolute md:inset-x-10 md:bottom-8 md:px-0" />
       </div>
     </Section>
   );

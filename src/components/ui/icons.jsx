@@ -25,6 +25,15 @@ export function PlusIcon({ className = "h-6 w-6" }) {
   );
 }
 
+// Меню шапки до lg: два рядки, 24px, та сама тонка лінія.
+export function MenuIcon({ className = "h-6 w-6" }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} strokeLinecap="round" className={className} aria-hidden="true">
+      <path d="M4 9h16M4 15h16" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ className = "h-6 w-6" }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} strokeLinecap="round" className={className} aria-hidden="true">

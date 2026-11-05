@@ -14,7 +14,7 @@ import Text from "./ui/Text.jsx";
 // підпослуга не виділена. Наведення чи фокус на підпослузі робить її білою
 // й міняє картинку — нова відкривається шторкою знизу поверх старої
 // (.service-* в index.css); поруч із картинкою стоїть короткий опис підпослуги
-// (.service-text) під підпослугами (вони в один рядок), він змінюється разом із нею. Курсор пішов зі списку — рядок згортається. Нижче lg картинок немає, лише список.
+// (.service-text) під підпослугами (вони в один рядок), він змінюється разом із нею. Курсор пішов зі списку — рядок згортається. Нижче lg картинок немає, лише список. Назва рядка й підпослуги — посилання на /services#<категорія>.
 // Поява — як у Facts: заголовок і рядки виїжджають знизу, лінії розтягуються.
 function ServiceRow({ service, open, active, onOpen, onPick, delay }) {
   return (
@@ -25,7 +25,9 @@ function ServiceRow({ service, open, active, onOpen, onPick, delay }) {
               на одній вертикалі (Figma: 359 від лівого краю контенту). */}
           <div className="lg:w-55 lg:shrink-0 xl:w-85">
             <Text size="lead" weight="medium" as="h3">
-              {service.name}
+              <a href={`/services#${service.category}`} className="transition-colors hover:text-secondary">
+                {service.name}
+              </a>
             </Text>
           </div>
 
@@ -45,8 +47,8 @@ function ServiceRow({ service, open, active, onOpen, onPick, delay }) {
           <div className="lg:ml-auto lg:flex lg:flex-col lg:items-end">
             <ul className="flex flex-wrap gap-x-6 gap-y-1 lg:justify-end xl:flex-nowrap">
               {service.items.map((item, j) => (
-                <li key={item.slug} tabIndex={0} onMouseEnter={() => onPick(j)} onFocus={() => onPick(j)} className="outline-offset-4">
-                  <Text as="span" tone={open && active === j ? "primary" : "secondary"} className="whitespace-nowrap transition-colors duration-300">
+                <li key={item.slug} onMouseEnter={() => onPick(j)}>
+                  <Text as="a" href={`/services#${service.category}`} onFocus={() => onPick(j)} tone={open && active === j ? "primary" : "secondary"} className="whitespace-nowrap outline-offset-4 transition-colors duration-300">
                     {item.name}
                   </Text>
                 </li>

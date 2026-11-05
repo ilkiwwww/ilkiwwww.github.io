@@ -6,7 +6,8 @@ import WorkCard from "./WorkCard.jsx";
 // картки ділять ряд пропорційно ширинам з макету (390·260·606 і 340·370·254) —
 // це їхні flex-grow, на hover картка росте, сусіди тьмяніють (.work-* в
 // index.css). Висота йде з пропорцій фото. Нижче lg — звичайна сітка.
-// `orbit` — кільце «All works» праворуч від другого ряду (головна).
+// `orbit` — кільце «All works» праворуч від другого ряду (головна). На мобільному (< md) показано 4 кейси,
+// далі те саме кільце з підписом «View more».
 const PATTERNS = [
   [
     { grow: "lg:grow-390 lg:hover:grow-449", shape: "lg:aspect-39/50" },
@@ -30,7 +31,7 @@ export default function WorkMosaic({ works, orbit = false, className = "" }) {
           {row.map((work, j) => {
             const look = PATTERNS[i % 2][j];
             return (
-              <Rise key={work.slug} delay={0.1 + j * 0.1} className={`work-card w-full lg:w-auto lg:basis-0 ${look.grow}`}>
+              <Rise key={work.slug} delay={0.1 + j * 0.1} className={`work-card w-full lg:w-auto lg:basis-0 ${look.grow} ${orbit && i === 1 && j > 0 ? "max-md:hidden" : ""}`}>
                 <WorkCard work={work} shape={`h-100 w-full lg:h-auto ${look.shape}`} />
               </Rise>
             );
@@ -38,6 +39,11 @@ export default function WorkMosaic({ works, orbit = false, className = "" }) {
           {orbit && i === 1 && (
             <div className="ml-8 hidden shrink-0 lg:block">
               <OrbitLink href="/work" label="All works" />
+            </div>
+          )}
+          {orbit && i === 1 && (
+            <div className="flex justify-center md:hidden">
+              <OrbitLink href="/work" label="View more" />
             </div>
           )}
         </InView>

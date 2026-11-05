@@ -62,8 +62,22 @@ function CategoriesSection() {
   const { active, track, select } = usePinnedStep(CATEGORIES.length);
   const cat = CATEGORIES[active];
 
+  // Перехід із головної (/services#design): гортаємо до блоку й відкриваємо категорію з адреси.
+  useEffect(() => {
+    const i = CATEGORIES.findIndex((c) => c.slug === window.location.hash.slice(1));
+    if (i < 0) return;
+    const id = setTimeout(() => {
+      if (window.matchMedia("(min-width: 64rem)").matches) select(i);
+      else {
+        select(i);
+        track.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 400);
+    return () => clearTimeout(id);
+  }, []);
+
   return (
-    <div ref={track} className="pin-track">
+    <div ref={track} className="pin-track scroll-mt-28">
       <div className="pin-stage grid gap-16 lg:grid-cols-2">
       <div className="flex flex-col" role="tablist" aria-label="Service categories">
         {CATEGORIES.map((c, i) => (

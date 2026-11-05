@@ -10,9 +10,11 @@ const item = ([name, text]) => {
 
 // `text` — короткий опис підпослуги (два рядки): показується поруч із картинкою
 // при наведенні й змінюється разом із нею. Тексти — заглушки, замінити на свої.
+// `category` — slug категорії на /services (data/servicePages.js): клік по назві чи підпослузі веде на /services#<slug>.
 export const SERVICES = [
   {
     name: "UI/UX Design",
+    category: "design",
     items: [
       ["Design System", "One library of components and tokens that keeps every screen consistent as the product grows."],
       ["UX Audit", "We find where users get lost and turn it into a clear, prioritised list of fixes."],
@@ -21,6 +23,7 @@ export const SERVICES = [
   },
   {
     name: "Illustration",
+    category: "illustration",
     items: [
       ["Icon Set", "A cohesive family of icons drawn to your grid, ready for web and mobile."],
       ["Character Illustration", "Friendly characters that give your product a face and a voice."],
@@ -29,6 +32,7 @@ export const SERVICES = [
   },
   {
     name: "Motion",
+    category: "motion",
     items: [
       ["Micro-interactions", "Small, purposeful animations that make an interface feel alive and clear."],
       ["Product Animation", "Show how your product works in seconds, with smooth and precise motion."],
@@ -37,6 +41,7 @@ export const SERVICES = [
   },
   {
     name: "Branding",
+    category: "branding",
     items: [
       ["Brand Identity", "Positioning, name, voice and visual language that make you recognisable."],
       ["Logo Design", "A mark that is simple, memorable and works from favicon to billboard."],
@@ -45,6 +50,7 @@ export const SERVICES = [
   },
   {
     name: "Development",
+    category: "development",
     items: [
       ["Front-End Build", "Clean, fast code that matches the design down to the last pixel."],
       ["Design Handoff", "Specs, tokens and components organised so developers can start straight away."],

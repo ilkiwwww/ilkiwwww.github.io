@@ -30,6 +30,8 @@
   --text-28--line-height: 36px;
   --text-40: 40px;
   --text-40--line-height: 48px;
+  --text-14: 14px;
+  --text-14--line-height: 24px;
   --text-56: 56px;
   --text-56--line-height: 56px;
   --text-64: 64px;
@@ -186,6 +188,8 @@ body {
 }
 
 /* Назви кейсів унизу Hero: сірі, при наведенні — білі. */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 .hero-case { cursor: pointer; transition: color 0.3s var(--ease-case); }
 .hero-case[data-active] { color: var(--color-primary); }
 .hero-case:hover { color: var(--color-primary); }
@@ -543,3 +547,6 @@ body {
   .pin-track { height: calc(100dvh + 300vh); }
   .pin-stage { position: sticky; top: calc(var(--spacing) * 24); height: calc(100dvh - 120px); max-height: 760px; align-content: start; }
 }
+
+/* Меню шапки відкрите: сторінка під ним не скролиться. */
+html.menu-open { overflow: hidden; }
