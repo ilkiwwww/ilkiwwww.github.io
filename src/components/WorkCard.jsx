@@ -33,12 +33,12 @@ export default function WorkCard({ work, shape, badge }) {
         </Text>
         <Roll
           hover={
-            <Text size="lead" as="span">
+            <Text size="card" as="span">
               See detail →
             </Text>
           }
         >
-          <Text size="lead">{name}</Text>
+          <Text size="card">{name}</Text>
         </Roll>
       </div>
     </a>
