@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { WORKS } from "../data/works.js";
 import { openBookCall } from "./BookCall.jsx";
@@ -50,9 +50,9 @@ const STORY_STEPS = [
   { id: "results", label: "Results" },
 ];
 
-function StoryAccordion({ story, onClose, layoutRef }) {
+function StoryAccordion({ story, onClose, layoutRef, initialOpen = ["challenge"] }) {
   // Кожен пункт відкривається й закривається сам по собі (можна відкрити всі три).
-  const [open, setOpen] = useState(() => new Set(["challenge"]));
+  const [open, setOpen] = useState(() => new Set(initialOpen));
   const toggle = (id) =>
     setOpen((prev) => {
       const next = new Set(prev);
@@ -101,9 +101,11 @@ function StoryAccordion({ story, onClose, layoutRef }) {
       <div className="flex items-center justify-between py-3">
         <Eyebrow>The story</Eyebrow>
         {/* -mr-3: кнопка 48 ширша за іконку 24, тож зсув ставить × на ту саму вертикаль, що й «+/×» пунктів. */}
-        <IconButton label="Close the story" className="-mr-3" onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
+        {onClose && (
+          <IconButton label="Close the story" className="-mr-3" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        )}
       </div>
       {STORY_STEPS.map(({ id, label }) => {
         const isOpen = open.has(id);
@@ -422,8 +424,16 @@ export default function WorkDetailPage({ slug }) {
                 </Button>
               </div>
             )}
-            {chapters.map((chapter, i) => intro && i === 0 && !chapter.text ? null : (
-              <Chapter key={chapter.label} chapter={chapter} head={i > 0} skipMedia={intro && i === 0} />
+            {chapters.map((chapter, i) => (
+              <Fragment key={chapter.label}>
+                {intro && i === 0 && !chapter.text ? null : <Chapter chapter={chapter} head={i > 0} skipMedia={intro && i === 0} />}
+                {/* Нижче lg після головного відео — історія кейсу, усі пункти закриті (панелі збоку немає). */}
+                {i === 0 && (
+                  <div className="lg:hidden">
+                    <StoryAccordion story={story} initialOpen={[]} />
+                  </div>
+                )}
+              </Fragment>
             ))}
           </div>
 
