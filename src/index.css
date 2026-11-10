@@ -304,6 +304,7 @@ body {
 }
 .site-bar[data-scrolled] { max-width: calc(var(--spacing) * 262); padding: calc(var(--spacing) * 2); background-color: var(--color-plate); }
 .site-bar nav a:not([aria-current]) { border-color: var(--color-edge); }
+.site-bar nav a:not([aria-current]):hover { border-color: var(--color-primary); }
 .site-logo { transition: margin 0.8s var(--ease-case); }
 .site-logo img { width: auto; height: calc(var(--spacing) * 12); transition: height 0.8s var(--ease-case); }
 .site-bar[data-scrolled] .site-logo { margin-left: calc(var(--spacing) * 3); }
