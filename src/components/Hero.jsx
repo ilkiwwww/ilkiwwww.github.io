@@ -140,12 +140,17 @@ export default function Hero() {
               </Text>
             </li>
           ))}
+          <li className="shrink-0">
+            <Text as="a" href="/work" size="hero" tone="secondary">
+              All Cases
+            </Text>
+          </li>
         </ul>
       </Reveal>
 
       {/* Нижня зона: у другому стані ловить курсор (вихід — повернення), у першому пропускає. */}
       <div ref={zone} className="hero-zone absolute inset-x-0 top-38 bottom-0 hidden md:block">
-        <div className="hero-cards absolute inset-x-0 top-0 mx-auto max-w-280">
+        <div className="hero-cards absolute inset-x-0 top-0 mx-auto max-w-260">
           <div className="hero-track relative h-full">
             {CARDS_AHEAD.map((off) => {
               const v = Math.round(pos) + off;
@@ -217,6 +222,11 @@ export default function Hero() {
                   </Text>
                 </li>
               ))}
+              <li className="pointer-events-auto">
+                <Text as="a" href="/work" tone="secondary" className="hero-case">
+                  All Cases
+                </Text>
+              </li>
             </ul>
           </Reveal>
         </div>
