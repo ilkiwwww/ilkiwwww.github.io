@@ -4,3 +4,6 @@ dist
 *.local
 .env
 .env.*
+
+# збірки старих Hero (design/hero-history.html)
+design/hero-history/v*/

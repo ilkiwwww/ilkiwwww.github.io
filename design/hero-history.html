@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hero — усі версії</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #0d0d0f; color: #fff; font: 14px/20px system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+  header { display: flex; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 1px solid #242424; flex-wrap: wrap; }
+  button { background: none; color: #fff; border: 1px solid #333; border-radius: 9999px; height: 36px; padding: 0 16px; font: inherit; cursor: pointer; }
+  button[aria-pressed="true"] { background: #fff; color: #000; }
+  .note { color: #999; margin-left: auto; max-width: 560px; }
+  main { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; overflow: auto; padding: 16px; }
+  .frame { transform-origin: top center; border: 1px solid #242424; background: #000; flex: none; }
+  iframe { width: 100%; height: 100%; border: 0; display: block; }
+</style>
+</head>
+<body>
+<header id="tabs"></header>
+<main><div class="frame" id="frame"><iframe id="view" title="Hero"></iframe></div></main>
+<script>
+  // Збірки старих комітів лежать у design/hero-history/vN (git-історія Hero.jsx).
+  const VERSIONS = [
+    { id: "v1", label: "1 · Карусель (початок)", w: 1440, h: 900, note: "a85e55b — повноекранна карусель кейсів з 3D-нахиленими картками." },
+    { id: "v2", label: "2 · Скляне «ö» (Figma 40002452:3)", w: 1440, h: 900, note: "5b29cab, 26.10 — чорний фон, 3D-лого, заголовок по центру." },
+    { id: "v3", label: "3 · Реальний 3D", w: 1440, h: 900, note: "a885465, 26.10 — справжня скляна сцена позаду заголовка." },
+    { id: "v4", label: "4 · Лінії + карусель + 3D", w: 1440, h: 900, note: "e9843ca, 27.10 — макет Figma 40002454:47, лінії, карусель при наведенні, 3D ще позаду." },
+    { id: "v5", label: "5 · Поточний (без 3D)", w: 1440, h: 900, note: "Поточний Hero." },
+    { id: "v5", label: "6 · Поточний, мобільний", w: 375, h: 812, note: "Поточний Hero на 375×812.", key: "m" },
+  ];
+  const tabs = document.getElementById("tabs"), frame = document.getElementById("frame"), view = document.getElementById("view");
+  function fit(v) {
+    frame.style.width = v.w + "px"; frame.style.height = v.h + "px";
+    const main = frame.parentElement;
+    const k = Math.min(1, (main.clientWidth - 32) / v.w, (main.clientHeight - 32) / v.h);
+    frame.style.transform = `scale(${k})`;
+    frame.style.marginBottom = -(v.h * (1 - k)) + "px";
+    frame.style.marginRight = -(v.w * (1 - k)) / 2 + "px"; frame.style.marginLeft = -(v.w * (1 - k)) / 2 + "px";
+  }
+  let cur = 0;
+  function show(i) {
+    cur = i; const v = VERSIONS[i];
+    view.src = `http://localhost:${4180 + Number(v.id.slice(1))}/`;
+    fit(v);
+    [...tabs.querySelectorAll("button")].forEach((b, j) => b.setAttribute("aria-pressed", j === i));
+    note.textContent = v.note;
+    location.hash = i + 1;
+  }
+  VERSIONS.forEach((v, i) => { const b = document.createElement("button"); b.textContent = v.label; b.onclick = () => show(i); tabs.append(b); });
+  const note = document.createElement("div"); note.className = "note"; tabs.append(note);
+  addEventListener("resize", () => fit(VERSIONS[cur]));
+  addEventListener("keydown", e => { if (e.key === "ArrowRight") show(Math.min(cur + 1, VERSIONS.length - 1)); if (e.key === "ArrowLeft") show(Math.max(cur - 1, 0)); });
+  show(Math.max(0, (parseInt(location.hash.slice(1)) || 1) - 1));
+</script>
+</body>
+</html>
