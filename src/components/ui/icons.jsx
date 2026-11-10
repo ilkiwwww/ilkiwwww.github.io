@@ -47,7 +47,7 @@ export function CheckIcon({ className = "h-6 w-6" }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
       <circle cx="12" cy="12" r="12" fill="currentColor" />
-      <path d="M7 12.5l3.2 3.2L17 9" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 12.5l3.2 3.2L17 9" className="stroke-black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

@@ -40,7 +40,7 @@ export default function ContactPage() {
   async function submit(e) {
     e.preventDefault();
     const next = {};
-    if (!form.name.trim()) next.name = "Please enter your name.";
+    if (!form.name.trim()) next.name = "Please enter your company name.";
     if (!EMAIL.test(form.email.trim())) next.email = "Please enter a valid email.";
     setErrors(next);
     if (Object.keys(next).length) return;
@@ -68,7 +68,7 @@ export default function ContactPage() {
             <Rise delay={0.1} fill>
               {done ? (
                 <div className="flex h-full flex-col gap-6 bg-fill p-6 md:p-8">
-                  <Text size="quote">Thank you, {form.name.trim().split(" ")[0]}.</Text>
+                  <Text size="quote">Thank you.</Text>
                   <Text size="lead" tone="secondary">
                     We got your message and will reply to {form.email.trim()} within 12 hours.
                   </Text>
@@ -89,7 +89,7 @@ export default function ContactPage() {
                     <Chips options={BUDGET_OPTIONS} selected={budget ? [budget] : []} onToggle={(b) => setBudget(budget === b ? null : b)} />
                   </div>
                   <div className="grid gap-8 md:grid-cols-2 md:gap-6">
-                    <TextField label="Company name" value={form.name} onChange={set("name")} invalid={!!errors.name} hint={errors.name} autoComplete="name" />
+                    <TextField label="Company name" value={form.name} onChange={set("name")} invalid={!!errors.name} hint={errors.name} autoComplete="organization" />
                     <TextField label="Email" type="email" value={form.email} onChange={set("email")} invalid={!!errors.email} hint={errors.email} autoComplete="email" />
                   </div>
                   <TextField label="Project details (optional)" multiline value={form.about} onChange={set("about")} />

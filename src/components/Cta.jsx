@@ -42,7 +42,7 @@ function Footer({ className = "" }) {
 export default function Cta({ footerOnly = false }) {
   if (footerOnly) {
     return (
-      <Section rhythm="none" className="py-8">
+      <Section rhythm="footer">
         <Footer />
       </Section>
     );

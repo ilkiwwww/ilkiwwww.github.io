@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 //             для гліфів, що виходять за рядок (обрізаний statement); `fill` — на всю висоту батька
 //   <Curtain> фото й відео: завіса зверху + картинка зменшується
 //   <Grow>    лінія-розділювач, розтягується зліва направо
-//   <Fade>    проявлення — лише великий заголовок
 //
 // `delay` у секундах, відносно моменту, коли блок зайшов у в'юпорт.
 
@@ -148,14 +147,6 @@ export function Roll({ hover, className = "", children }) {
       <div aria-hidden="true" className={`absolute inset-x-0 top-full ${line}`}>
         {hover}
       </div>
-    </div>
-  );
-}
-
-export function Fade({ delay = 0, className = "", children }) {
-  return (
-    <div className={`fade ${className}`} style={delayVar(delay)}>
-      {children}
     </div>
   );
 }

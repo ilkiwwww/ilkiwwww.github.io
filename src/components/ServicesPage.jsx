@@ -11,7 +11,7 @@ import Section from "./ui/Section.jsx";
 import Text from "./ui/Text.jsx";
 import Page from "./Page.jsx";
 
-// Сторінка «Services» (/services, Figma макет поки не готів). UX за Metalab паттерном —
+// Сторінка «Services» (/services, Figma node 40002496:11310). UX за Metalab паттерном —
 // Split (D): назви категорій великим текстом ліворуч, праворуч липка панель `fill` з описом і
 // послугами; скрол міняє категорію (блок закріплений), клік по назві гортає до неї. Дані — data/servicePages.js.
 const n = (i) => String(i + 1).padStart(2, "0");
@@ -107,7 +107,7 @@ function CategoriesSection() {
   );
 }
 
-// Панель категорії фіксованого розміру (Figma 40002496:11639 / 11603, 672×661): заголовок з описом, список підпослуг,
+// Панель категорії фіксованого розміру (Figma 40002496:11639 / 11603, 672×661; висота до сітки 4 — 660): заголовок з описом, список підпослуг,
 // кнопка. Наведення на підпослугу ділить область на дві колонки: ліворуч лишається весь список (тому видно, що є ще
 // пункти, і по них можна водити далі) з кнопкою внизу, праворуч — опис наведеного пункту й два фото. Курсор пішов зі
 // списку — колонка праворуч ховається, список знову на всю ширину (`.svc-*` в index.css).
@@ -115,7 +115,7 @@ function CategoryPanel({ cat }) {
   const [hover, setHover] = useState(null);
   const item = hover === null ? null : cat.items[hover];
   return (
-    <aside className="flex flex-col gap-8 self-start bg-fill p-8 lg:h-165.25 lg:self-stretch" aria-live="polite">
+    <aside className="flex flex-col gap-8 self-start bg-fill p-8 lg:h-165 lg:self-stretch" aria-live="polite">
       <div className="flex flex-col gap-4 lg:h-34">
         <Text as="h3" size="quote">
           {cat.title}

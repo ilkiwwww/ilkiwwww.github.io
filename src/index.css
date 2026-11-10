@@ -320,8 +320,7 @@ body {
    Як на metalab.com: блок чекає, поки зайде у в'южпорт ([data-inview]), і
    його частини з'являються по черзі (--delay):
    .rise  — виїзд знизу з рамки з різкими краями (текст, цифри);
-   .line-grow — лінія розтягується зліва направо;
-   .fade  — проявлення (тільки великий заголовок).
+   .line-grow — лінія розтягується зліва направо.
    Один раз; далі стан не змінюється. */
 .rise { overflow: hidden; }
 .rise > * { translate: 0 100%; }
@@ -329,12 +328,10 @@ body {
 .rise-bleed { margin: -12px -8px; padding: 12px 8px; }
 .rise-bleed > * { translate: 0 calc(100% + 12px); }
 .line-grow { scale: 0 1; transform-origin: left; }
-.fade { opacity: 0; }
 
 .rise > *,
-.line-grow,
-.fade {
-  transition-property: translate, scale, opacity;
+.line-grow {
+  transition-property: translate, scale;
   transition-duration: 1.2s;
   transition-timing-function: var(--ease-reveal);
   transition-delay: var(--delay, 0s);
@@ -348,7 +345,6 @@ body {
 
 [data-inview] .rise > * { translate: 0 0; }
 [data-inview] .line-grow { scale: 1 1; }
-[data-inview] .fade { opacity: 1; }
 
 /* ---- Зміна кейсу в Hero — як на metalab.com ------------------------------
    Усі кейси лежать один на одному; активний має [data-active].
@@ -538,8 +534,7 @@ body {
   .intro-line-x,
   .intro-line-diag,
   .rise > *,
-  .line-grow,
-  .fade { transition: none; translate: none; scale: none; opacity: 1; }
+  .line-grow { transition: none; translate: none; scale: none; opacity: 1; }
   .curtain { clip-path: none; transition: none; }
   .curtain > * { scale: none; transition: none; }
   .case-part,

@@ -14,9 +14,9 @@
 | `Heading` | `hero` (40 → 64 → 74/72 від lg, h1 першого екрана), `display` (56 → 140, h1 Work і кейсу, фінальний CTA), `statement` (40 → 64, теза секції, цифри, назва кейсу в Hero), `cell` (40 → 64 → 92/72 від xl, заголовок «Meet our team» у клітинці сітки команди; Figma 92 / 80%), `pull` (40/48 на всіх екранах, рядок-теза між розділами кейсу; Figma 40002561:36135); Instrument Sans Medium; тони `primary`/`secondary` (+ `tertiary` для неактивних назв на `/services`) |
 | `Text` | `quote` 20/28 → 28/36, `hero` 14/24 → 16/24 (цитата Hero), `card` 20/28 на всіх екранах (назва кейсу в `WorkCard`; `lead` на мобільному 16), `lead` 16/24 → 20/28, `body` 16/24, `dense` 12/16; `weight="medium"`, `uppercase`; тони `primary`/`secondary` |
 | `Eyebrow` | лейбл над заголовком: Inter Medium 14/24 → 16/24 від md, uppercase, `secondary` |
-| `Section` | обгортка секції: фон `black`, gutters 24 → 40, ритм `default` / `top` / `compact` (Contact) / `none` (CTA) |
+| `Section` | обгортка секції: фон `black`, gutters 24 → 40, ритм `default` / `top` / `compact` (Contact) / `none` (CTA) / `footer` (лише футер) |
 | `Media` | фото (або відео mp4/webm, без звуку, по колу) з плейсхолдером `fill`; `next` (друге фото на hover), `hover="zoom"`, `fill` |
-| `Motion` | `InView`, `Rise`, `Grow`, `Fade`, `ScrollFill`, `Roll` (поява при скролі, як на metalab.com), `Reveal` (інтро) |
+| `Motion` | `InView`, `Rise`, `Curtain`, `Grow`, `ScrollFill`, `Roll` (поява при скролі, як на metalab.com), `Reveal` (інтро) |
 | `OrbitLink` | кругле посилання «All works» з текстом по колу |
 | `Cursor` | курсор-лого «ö»; над `Button light` очі радіють |
 | `Logo`, `icons` | логотип; `ArrowIcon`, `ChevronDownIcon` |

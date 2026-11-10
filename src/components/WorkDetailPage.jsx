@@ -201,7 +201,7 @@ function Chapter({ chapter, head, skipMedia = false }) {
       </Rise>
       <Rise delay={0.1} bleed className="max-w-226">
         <Heading level="statement" as="h2">
-          {titleLines.map((line, i) => (
+          {titleLines.map((line) => (
             <span key={line} className="block">
               {line}
             </span>
@@ -425,7 +425,7 @@ export default function WorkDetailPage({ slug }) {
               </div>
             )}
             {chapters.map((chapter, i) => (
-              <Fragment key={chapter.label}>
+              <Fragment key={i}>
                 {intro && i === 0 && !chapter.text ? null : <Chapter chapter={chapter} head={i > 0} skipMedia={intro && i === 0} />}
                 {/* Нижче lg після головного відео — історія кейсу, усі пункти закриті (панелі збоку немає). */}
                 {i === 0 && (
