@@ -7,7 +7,7 @@ export const HERO_QUOTE =
 // Кожен кейс має власну обкладинку (`image`) і власний фон екрана (`bg`, під чорним 80%). `slug` — сторінка кейсу (`/work/<slug>`), `text` — опис із `data/works.js` (у Figma там спільна заглушка).
 export const HERO_CASES = [
   { name: "Moodies", slug: "moodies", image: "hero/moodies.jpg", bg: "hero/moodies-bg.jpg", text: "Moodies is a bold and playful brand identity for functional gummies designed to match different moods and moments throughout the day." },
-  { name: "VetLoop", slug: "vetloop", image: "hero/vetloop.jpg", bg: "hero/vetloop-bg.jpg", text: "A mobile pet care app designed to make veterinary care simpler, more accessible, and stress-free." },
+  { name: "VetLoop", slug: "vetloop", image: "hero/vetloop-cover.jpg", bg: "hero/vetloop-cover-bg.jpg", text: "A mobile pet care app designed to make veterinary care simpler, more accessible, and stress-free." },
   { name: "YouSquared", slug: "yousquared", image: "hero/yousquared.jpg", bg: "hero/yousquared-bg.jpg", text: "Human-crafted design for an AI-backed product: app UI, brand identity and website for an AI call secretary." },
   { name: "Threadly", slug: "threadly", image: "hero/threadly.jpg", bg: "hero/threadly-bg.jpg", text: "A modern fashion marketplace app that brings independent designers and local clothing brands together in one curated shopping experience." },
 ];

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { openBookCall } from "./BookCall.jsx";
 import Button from "./ui/Button.jsx";
 import IconButton from "./ui/IconButton.jsx";
 import { CloseIcon, MenuIcon } from "./ui/icons.jsx";
@@ -108,6 +109,12 @@ export default function TopBar() {
         <Logo className="site-logo" />
         <SiteNav />
         <div className="flex items-center gap-2">
+          {/* Нижче lg «Book a call» у шапці немає: на Hero й кейсі він стоїть у самому вмісті (кейс — липка смуга внизу). */}
+          <div className="hidden lg:block">
+            <Button variant="light" size="md" onClick={openBookCall}>
+              Book a call
+            </Button>
+          </div>
           <IconButton
             label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
