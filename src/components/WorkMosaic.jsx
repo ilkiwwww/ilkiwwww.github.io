@@ -21,6 +21,9 @@ const PATTERNS = [
   ],
 ];
 
+// Неповний останній ряд із кільцем: воно займає місце відсутніх карток (сума їхніх flex-grow), картки лишаються тієї ж ширини.
+const FILL = { 1: "lg:grow-624", 2: "lg:grow-254" };
+
 const chunk = (list, n) => Array.from({ length: Math.ceil(list.length / n) }, (_, i) => list.slice(i * n, i * n + n));
 
 export default function WorkMosaic({ works, orbit = false, className = "" }) {
@@ -37,7 +40,7 @@ export default function WorkMosaic({ works, orbit = false, className = "" }) {
             );
           })}
           {orbit && i === 1 && (
-            <div className="ml-8 hidden shrink-0 lg:block">
+            <div className={row.length < 3 ? `hidden basis-0 items-center justify-center lg:flex ${FILL[row.length]}` : "ml-8 hidden shrink-0 lg:block"}>
               <OrbitLink href="/work" label="All works" />
             </div>
           )}
