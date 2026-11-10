@@ -9,7 +9,12 @@ import WorkMosaic from "./WorkMosaic.jsx";
 // у другому ряду після картки — кільце «All works».
 // Поява — як у Facts: eyebrow виїжджає, лінія розтягується, картки ряду
 // виїжджають по черзі.
-const LATEST = HERO_CASES.map((c) => ({ ...WORKS.find((w) => w.slug === c.slug), image: c.image, next: undefined }));
+// Порядок тут свій (рішення дизайнерки): YouSquared · VetLoop · Moodies · Threadly; обкладинки ті самі, що в Hero.
+const ORDER = ["yousquared", "vetloop", "moodies", "threadly"];
+const LATEST = ORDER.map((slug) => {
+  const c = HERO_CASES.find((h) => h.slug === slug);
+  return { ...WORKS.find((w) => w.slug === slug), image: c.image, next: undefined };
+});
 
 export default function Work() {
   return (
