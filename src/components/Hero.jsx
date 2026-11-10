@@ -95,13 +95,13 @@ export default function Hero() {
   return (
     <div ref={track} className="hero-scroll">
     <section data-open={open || undefined} className="hero-stage h-svh min-h-160 overflow-hidden bg-black">
-      {/* Фон кейсу (Figma: фото під чорним 80%) — лише у другому стані, змінюється разом із кейсом. */}
+      {/* Фон кейсу (Figma: фото під чорним 85%) — лише у другому стані, змінюється разом із кейсом. */}
       <div className="hero-bg pointer-events-none absolute inset-0 hidden md:block" aria-hidden="true">
         {HERO_CASES.map((item, i) =>
           item.bg ? (
             <div key={item.name} data-active={i === active || undefined} className="case-part absolute inset-0">
               <Media src={item.bg} fill placeholder="none" />
-              <div className="absolute inset-0 bg-black opacity-80" />
+              <div className="absolute inset-0 bg-black opacity-85" />
             </div>
           ) : null,
         )}
