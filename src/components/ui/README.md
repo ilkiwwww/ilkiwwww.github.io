@@ -11,10 +11,10 @@
 | `TextField` | поле форми (Figma, Contact): підпис — сам плейсхолдер `lead` (білий), під ним лише нижня лінія `tertiary` (у фокусі білий), без рамки й скруглення; висота 56, `multiline` росте з текстом; `label` → `placeholder` + `aria-label` |
 | `IconButton` | один розмір 48, без заливки, hover `fill` |
 | `Select` | випадайка у вигляді табу `outline` (36) |
-| `Heading` | `hero` (40 → 64 → 74/72 від lg, h1 першого екрана), `display` (56 → 140, h1 Work і кейсу, фінальний CTA), `statement` (40 → 64, теза секції, цифри, назва кейсу в Hero), `cell` (40 → 64 → 92/72 від xl, заголовок «Meet our team» у клітинці сітки команди; Figma 92 / 80%), `pull` (40/48 на всіх екранах, рядок-теза між розділами кейсу; Figma 40002561:36135); Instrument Sans Medium; тони `primary`/`secondary` |
-| `Text` | `quote` 28/36, `card` 20/28 на всіх екранах (назва кейсу в `WorkCard`; `lead` на мобільному 16), `lead` 20/28, `body` 16/24, `dense` 12/16; `weight="medium"`, `uppercase`; тони `primary`/`secondary` |
-| `Eyebrow` | лейбл над заголовком: Inter Medium 16, uppercase, `secondary` |
-| `Section` | обгортка секції: фон `black`, gutters 24 → 40, ритм `default` / `top` |
+| `Heading` | `hero` (40 → 64 → 74/72 від lg, h1 першого екрана), `display` (56 → 140, h1 Work і кейсу, фінальний CTA), `statement` (40 → 64, теза секції, цифри, назва кейсу в Hero), `cell` (40 → 64 → 92/72 від xl, заголовок «Meet our team» у клітинці сітки команди; Figma 92 / 80%), `pull` (40/48 на всіх екранах, рядок-теза між розділами кейсу; Figma 40002561:36135); Instrument Sans Medium; тони `primary`/`secondary` (+ `tertiary` для неактивних назв на `/services`) |
+| `Text` | `quote` 20/28 → 28/36, `hero` 14/24 → 16/24 (цитата Hero), `card` 20/28 на всіх екранах (назва кейсу в `WorkCard`; `lead` на мобільному 16), `lead` 16/24 → 20/28, `body` 16/24, `dense` 12/16; `weight="medium"`, `uppercase`; тони `primary`/`secondary` |
+| `Eyebrow` | лейбл над заголовком: Inter Medium 14/24 → 16/24 від md, uppercase, `secondary` |
+| `Section` | обгортка секції: фон `black`, gutters 24 → 40, ритм `default` / `top` / `compact` (Contact) / `none` (CTA) |
 | `Media` | фото (або відео mp4/webm, без звуку, по колу) з плейсхолдером `fill`; `next` (друге фото на hover), `hover="zoom"`, `fill` |
 | `Motion` | `InView`, `Rise`, `Grow`, `Fade`, `ScrollFill`, `Roll` (поява при скролі, як на metalab.com), `Reveal` (інтро) |
 | `OrbitLink` | кругле посилання «All works» з текстом по колу |
@@ -25,8 +25,8 @@
 
 ## Токени (src/index.css)
 
-- **Кольори:** `primary` #FFFFFF, `secondary` #999999, `tertiary` #242424 (текст і лінії); фони `black` #000000, `canvas` #0D0D0F, `fill` #141414. Суцільні, без прозорості.
-- **Шрифти:** Instrument Sans (заголовки), Inter (решта). Розміри кратні 4: 12 · 16 · 20 · 28 · 40 · 56 · 64 · 74 · 96 · 128 · 140.
+- **Кольори:** `primary` #FFFFFF, `secondary` #999999, `tertiary` #242424 (текст і лінії); фони `black` #000000, `canvas` #0D0D0F, `fill` #141414. Суцільні; винятки з прозорістю — `plate` (чорний 70%, плашка шапки) і `edge` (білий 10%, обводка табів шапки).
+- **Шрифти:** Instrument Sans (заголовки), Inter (решта). Розміри: 12 · 14 · 16 · 20 · 28 · 40 · 56 · 64 · 74 · 92 · 96 · 128 · 140; line-height кратні 4. Ваги: Regular і Medium.
 - **Скруглення:** `radius-control` (кнопки, повне); картки, фото й попапи — гострі кути. Тіней немає.
 
 - **Відступи:** 4 · 8 · 12 · 16 · 24 · 32 · 40 · 64 · 80 · 120; заголовок секції → вміст = 40, великі блоки всередині = 64, картки в сітці = 12, секції = 80 → 120.

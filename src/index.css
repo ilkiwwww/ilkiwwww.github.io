@@ -241,7 +241,7 @@ body {
   top: 24px;
   width: 12px;
   height: 12px;
-  border-radius: 9999px;
+  border-radius: 50%;
   border: 1px solid var(--color-tertiary);
   background: var(--color-black);
   transition: background-color 0.4s var(--ease-case), border-color 0.4s var(--ease-case);
@@ -269,7 +269,7 @@ body {
 .proc-bar[data-on] span { color: var(--color-black); }
 /* Плейхед: вертикальна лінія через смуги, стоїть по центру поточного етапу, підпис над лінійкою. */
 .proc-play { position: absolute; top: -24px; bottom: 0; left: calc((var(--a) + 0.5) / 6 * 100%); width: 1px; background: var(--color-primary); transition: left 0.6s var(--ease-case); pointer-events: none; }
-.proc-play-label { position: absolute; top: -56px; left: 50%; translate: -50% 0; padding: 4px 12px; border-radius: 9999px; background: var(--color-primary); color: var(--color-black); white-space: nowrap; }
+.proc-play-label { position: absolute; top: -56px; left: 50%; translate: -50% 0; padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3); border-radius: var(--radius-control); background: var(--color-primary); color: var(--color-black); white-space: nowrap; }
 @keyframes proc-text { from { opacity: 0; translate: 0 16px; } }
 .proc-text { animation: proc-text 0.6s var(--ease-case) both; }
 
@@ -511,7 +511,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .modal-fade,
   .modal-card { animation: none; }
-  .marquee { animation: none; }
   .proc-text { animation: none; }
   .proc-play,
   .proc-bar { transition: none; }
@@ -538,7 +537,7 @@ body {
   .header-drop,
   .intro-line-x,
   .intro-line-diag,
-    .rise > *,
+  .rise > *,
   .line-grow,
   .fade { transition: none; translate: none; scale: none; opacity: 1; }
   .curtain { clip-path: none; transition: none; }

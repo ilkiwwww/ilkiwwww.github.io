@@ -70,7 +70,7 @@ function Modal({ onClose }) {
 
   const end = slot && new Date(slot.getTime() + DURATION_MIN * 60 * 1000);
 
-  const PANE = "bg-fill p-5 md:p-6";
+  const PANE = "bg-fill p-4 md:p-6";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6" role="dialog" aria-modal="true" aria-label="Book a call">
       <div className="modal-fade absolute inset-0 bg-black/70" onClick={onClose} aria-hidden="true" />

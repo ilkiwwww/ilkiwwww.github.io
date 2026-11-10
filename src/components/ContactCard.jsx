@@ -31,7 +31,7 @@ export default function ContactCard({ outlined = false, className = "" }) {
       <ul className="flex flex-col gap-4">
         {SALES.perks.map((p) => (
           <li key={p} className="flex items-start gap-3">
-            <CheckIcon className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
+            <CheckIcon className="h-6 w-6 shrink-0 text-primary" />
             <Text>{p}</Text>
           </li>
         ))}

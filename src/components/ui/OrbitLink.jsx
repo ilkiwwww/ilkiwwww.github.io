@@ -6,6 +6,7 @@ import { ArrowIcon } from "./icons.jsx";
 // плавно прискорюється, прибрав курсор — сповільнюється назад.
 // Місце під коло ≈250 — з макету; саме кільце менше (текст 20px на радіусі 82),
 // як у референсі дизайнерки. При prefers-reduced-motion кільце не крутиться.
+// `overflow-hidden`: кути квадратного SVG при обертанні вилазили за коло й давали горизонтальний скрол сторінки.
 const SPEED = 360 / 20; // град/с — повний оберт за 20s
 const HOVER_SPEED = SPEED * 4;
 const RADIUS = 82; // лінія тексту; літери стоять назовні від неї
@@ -62,7 +63,7 @@ export default function OrbitLink({ href, label, className = "" }) {
       onMouseLeave={() => (hover.current = false)}
       onFocus={() => (hover.current = true)}
       onBlur={() => (hover.current = false)}
-      className={`group relative flex size-63 shrink-0 items-center justify-center rounded-full text-primary outline-offset-4 focus-visible:outline-2 focus-visible:outline-primary ${className}`}
+      className={`group relative flex size-63 shrink-0 items-center justify-center overflow-hidden rounded-full text-primary outline-offset-4 focus-visible:outline-2 focus-visible:outline-primary ${className}`}
     >
       <svg
         ref={ring}

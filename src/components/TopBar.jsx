@@ -58,7 +58,7 @@ function MobileMenu({ onClose }) {
                   href={`/${n.id}`}
                   aria-current={active ? "page" : undefined}
                   onClick={onClose}
-                  className="block py-5 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary"
+                  className="block py-4 outline-offset-2 focus-visible:outline-2 focus-visible:outline-primary"
                 >
                   <Text as="span" size="quote" tone={active ? "primary" : "secondary"}>
                     {n.label}

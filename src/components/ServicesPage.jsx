@@ -224,11 +224,11 @@ function Process() {
               ))}
             </ol>
           </div>
-          <div className="mt-10 grid grid-cols-[200px_1fr] gap-8 border-t border-tertiary pt-8" aria-live="polite">
-            <Heading as="span" level="statement" tone="tertiary">
+          <div className="mt-10 flex gap-8 border-t border-tertiary pt-8" aria-live="polite">
+            <Heading as="span" level="statement" tone="tertiary" className="w-50 shrink-0">
               {n(active)}
             </Heading>
-            <div key={active} className="proc-text">
+            <div key={active} className="proc-text min-w-0 flex-1">
               <Text size="quote">{title}</Text>
               <Text tone="secondary" className="mt-3 max-w-136">
                 {text}

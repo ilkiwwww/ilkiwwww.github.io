@@ -20,12 +20,17 @@ const COLORS = [
 
 const HEADINGS = [
   ["display", "h1 Work і кейсу, фінальний CTA", "Instrument Sans Medium 56 → 140"],
+  ["hero", "h1 першого екрана головної", "Instrument Sans Medium 40 → 64 → 74"],
   ["statement", "Теза секції, цифри, назва кейсу в Hero", "Instrument Sans Medium 40 → 64"],
+  ["cell", "Заголовок у клітинці сітки команди", "Instrument Sans Medium 40 → 64 → 92"],
+  ["pull", "Рядок-теза між розділами кейсу", "Instrument Sans Medium 40 / 48"],
 ];
 
 const TEXTS = [
   ["quote", "Цитата у відгуку", "Inter 20 → 28"],
+  ["card", "Назва кейсу в картці", "Inter 20 / 28"],
   ["lead", "Вступне речення, назви рядків (Medium)", "Inter 16 → 20"],
+  ["hero", "Цитата на першому екрані", "Inter 14 → 16"],
   ["body", "Звичайний текст", "Inter 16 / 24"],
   ["dense", "Підписи, legal (Medium + uppercase)", "Inter 12 / 16"],
 ];

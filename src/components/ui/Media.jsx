@@ -104,7 +104,7 @@ export default function Media({ src, next, alt = "", label, fill = false, round 
 
   return (
     <div className={`${shape} flex items-center justify-center ${PLACEHOLDERS[placeholder]}`} aria-hidden="true">
-      {label && <span className="text-12 leading-4 font-semibold uppercase tracking-widest text-secondary">{label}</span>}
+      {label && <span className="text-12 leading-4 font-medium uppercase text-secondary">{label}</span>}
     </div>
   );
 }
