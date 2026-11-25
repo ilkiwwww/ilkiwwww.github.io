@@ -100,6 +100,9 @@ export default function ContactPage() {
                   <Button variant="light" size="md" className="w-full" type="submit" disabled={sending}>
                     {sending ? "Sending…" : "Send message"}
                   </Button>
+                  <Text size="dense" tone="secondary">
+                    By sending this message you agree that we store your details to reply to your request.
+                  </Text>
                   {errors.form && <Text tone="secondary">{errors.form}</Text>}
                 </form>
               )}
