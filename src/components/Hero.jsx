@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { HERO_CASES, HERO_QUOTE } from "../data/hero.js";
 import Heading from "./ui/Heading.jsx";
 import Button, { controlClasses } from "./ui/Button.jsx";
@@ -7,6 +7,12 @@ import Media from "./ui/Media.jsx";
 import Text from "./ui/Text.jsx";
 import { openBookCall } from "./BookCall.jsx";
 import { Reveal, Typewriter } from "./ui/Motion.jsx";
+import { hasWebGL } from "./glass/hasWebGL.js";
+
+// Темне скляне 3D-лого «ö» позаду (та сама сцена, що у фінальному CTA); вантажиться ліниво.
+// Знак у кадрі, як у Figma (1440×900): зсунутий праворуч і вниз, кільце виходить за нижній край.
+const CtaScene = lazy(() => import("./glass/CtaScene.jsx"));
+const MARK_VIEW = { scale: 1.1, x: 0.2, y: -0.22 };
 
 const N = HERO_CASES.length;
 const wrap = (i) => ((i % N) + N) % N;
@@ -32,6 +38,7 @@ export default function Hero() {
   // Скрол показує наведення: щойно Hero прокручено на чверть, відкривається перший кейс. Далі кейси лишаються
   // відкритими (і при скролі вгору, і коли курсор пішов) — повертає на дефолтний Hero лише клік по лого (Home).
   const track = useRef(null);
+  const stage = useRef(null);
   const past = useRef(false);
   useEffect(() => {
     const onScroll = () => {
@@ -95,6 +102,13 @@ export default function Hero() {
   return (
     <div ref={track} className="hero-scroll">
     <section data-open={open || undefined} className="hero-stage h-svh min-h-160 overflow-hidden bg-black">
+      <div ref={stage} className="hero-scene absolute inset-0" aria-hidden="true">
+        {hasWebGL && (
+          <Suspense fallback={null}>
+            <CtaScene containerRef={stage} view={MARK_VIEW} />
+          </Suspense>
+        )}
+      </div>
       {/* Фон кейсу (Figma: фото під чорним 85%) — лише у другому стані, змінюється разом із кейсом. */}
       <div className="hero-bg pointer-events-none absolute inset-0 hidden md:block" aria-hidden="true">
         {HERO_CASES.map((item, i) =>

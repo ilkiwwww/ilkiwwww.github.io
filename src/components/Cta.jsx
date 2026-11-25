@@ -1,8 +1,10 @@
+import { lazy, Suspense, useRef } from "react";
 import { openBookCall } from "./BookCall.jsx";
 import Button from "./ui/Button.jsx";
 import ScrollHeading from "./ui/ScrollHeading.jsx";
 import Section from "./ui/Section.jsx";
 import Text from "./ui/Text.jsx";
+import { hasWebGL } from "./glass/hasWebGL.js";
 
 // Футер (Figma, node 40002187:279): внизу сцени ліворуч legal, праворуч
 // соцмережі.
@@ -15,6 +17,8 @@ const SOCIALS = [
 // Фінальний CTA — за Figma (node 40002134:181, 1440×709).
 // Великий заголовок «Let's make it work.» (`display`) і «Book a call» на чорному.
 // Заголовок заповнюється з сірого в білий за скролом, як інші заголовки.
+
+const CtaScene = lazy(() => import("./glass/CtaScene.jsx"));
 
 // Футер: legal ліворуч, соцмережі праворуч. У сцені CTA лежить внизу (absolute), без CTA — звичайним рядком.
 function Footer({ className = "" }) {
@@ -40,6 +44,7 @@ function Footer({ className = "" }) {
 
 // `footerOnly` — сторінка без CTA (Contact): лише футер на чорному.
 export default function Cta({ footerOnly = false }) {
+  const stage = useRef(null);
   if (footerOnly) {
     return (
       <Section rhythm="footer">
@@ -51,7 +56,15 @@ export default function Cta({ footerOnly = false }) {
   return (
     <Section id="contact" rhythm="none" aria-labelledby="cta-title">
       {/* Сцена на всю ширину секції (за межі gutters) */}
-      <div className="relative -mx-6 flex min-h-svh flex-col overflow-hidden pb-8 md:-mx-10 md:block md:h-177 md:min-h-0 md:pb-0">
+      <div ref={stage} className="relative -mx-6 flex min-h-svh flex-col overflow-hidden pb-8 md:-mx-10 md:block md:h-177 md:min-h-0 md:pb-0">
+        {hasWebGL && (
+          <Suspense fallback={null}>
+            <div className="absolute inset-0" aria-hidden="true">
+              <CtaScene containerRef={stage} />
+            </div>
+          </Suspense>
+        )}
+        <div className="cta-fade pointer-events-none absolute inset-0" aria-hidden="true" />
 
         <div className="pointer-events-none flex flex-1 flex-col items-center justify-center gap-10 px-6 text-center md:absolute md:inset-0 md:flex-none">
           <ScrollHeading id="cta-title" level="display" lines={["Let’s make", "it work."]} breakAlways end={0.6} />

@@ -1,0 +1,146 @@
+diff --git a/src/components/BookCall.jsx b/src/components/BookCall.jsx
+index ab3bdad..1e0530a 100644
+--- a/src/components/BookCall.jsx
++++ b/src/components/BookCall.jsx
+@@ -1,6 +1,6 @@
+ import { useEffect, useMemo, useState } from "react";
+ import { createPortal } from "react-dom";
+-import { BUDGET_OPTIONS, DURATION_MIN, SERVICE_OPTIONS, formatTime, isBookable, slotsFor, submitBooking, timezoneLabel } from "../data/booking.js";
++import { BUDGET_OPTIONS, DURATION_MIN, LIVE, SERVICE_OPTIONS, formatTime, isBookable, loadSlots, slotsFor, submitBooking, timezoneLabel } from "../data/booking.js";
+ import ContactCard from "./ContactCard.jsx";
+ import Button from "./ui/Button.jsx";
+ import Calendar from "./ui/Calendar.jsx";
+@@ -33,6 +33,16 @@ function Modal({ onClose }) {
+   const [errors, setErrors] = useState({});
+   const [sending, setSending] = useState(false);
+   const tz = useMemo(timezoneLabel, []);
++  const [live, setLive] = useState(LIVE ? [] : null); // вільні слоти з Google Calendar на видимий місяць
++
++  useEffect(() => {
++    if (!LIVE) return;
++    let off = false;
++    loadSlots(view.y, view.m).then((list) => !off && setLive(list));
++    return () => {
++      off = true;
++    };
++  }, [view]);
+ 
+   useEffect(() => {
+     const onKey = (e) => e.key === "Escape" && onClose();
+@@ -45,7 +55,7 @@ function Modal({ onClose }) {
+     };
+   }, [onClose]);
+ 
+-  const slots = day ? slotsFor(day.y, day.m, day.d) : [];
++  const slots = day ? slotsFor(day.y, day.m, day.d, live) : [];
+   const canPrev = view.y > now.getFullYear() || view.m > now.getMonth();
+   const shift = (delta) => setView((v) => {
+     const d = new Date(v.y, v.m + delta, 1);
+@@ -63,8 +73,17 @@ function Modal({ onClose }) {
+     setErrors(next);
+     if (Object.keys(next).length) return;
+     setSending(true);
+-    await submitBooking({ start: slot.toISOString(), services, budget, ...form });
++    const result = await submitBooking({ start: slot.toISOString(), services, budget, ...form });
+     setSending(false);
++    if (result.ok === false) {
++      setErrors({ form: result.taken ? "This time was just taken. Please pick another." : "Something went wrong. Please try again." });
++      if (result.taken) {
++        setSlot(null);
++        setView((v) => ({ ...v }));
++        setStep("pick");
++      }
++      return;
++    }
+     setStep("done");
+   }
+ 
+@@ -87,7 +106,7 @@ function Modal({ onClose }) {
+                   year={view.y}
+                   month={view.m}
+                   selected={day}
+-                  isEnabled={isBookable}
++                  isEnabled={(y, m, d) => isBookable(y, m, d, live)}
+                   onSelect={(d) => {
+                     setDay(d);
+                     setSlot(null);
+@@ -187,6 +206,11 @@ function Modal({ onClose }) {
+                   <Text size="dense" tone="secondary">
+                     By submitting, you agree to our Privacy Policy.
+                   </Text>
++                  {errors.form && (
++                    <Text size="dense" role="alert">
++                      {errors.form}
++                    </Text>
++                  )}
+                   <Button variant="light" size="md" className="w-full" type="submit" disabled={sending}>
+                     {sending ? "Sending…" : "Confirm"}
+                   </Button>
+diff --git a/src/data/booking.js b/src/data/booking.js
+index e0a4947..2582738 100644
+--- a/src/data/booking.js
++++ b/src/data/booking.js
+@@ -1,7 +1,10 @@
+ // «Book a call» (BookCall.jsx): слоти, доступність і відправка заявки.
+ // Слоти задані за часом агенції (Київ) і показуються в часовому поясі відвідувача.
+-// ЗАГЛУШКА: `submitBooking()` нікуди не відправляє заявку. Щоб підключити, замінити тіло
+-// на запит до серверної функції (пошта / календар / Firestore) — інтерфейс не зміниться.
++// Якщо задано VITE_BOOKING_API (адреса Firebase Functions), слоти беруться з Google Calendar,
++// а `submitBooking()` створює подію з Google Meet (functions/index.js). Без нього — статичні
++// слоти, а `submitBooking()` нікуди не відправляє (заглушка).
++const API = import.meta.env.VITE_BOOKING_API;
++export const LIVE = Boolean(API);
+ export const AGENCY_TZ = "Europe/Kyiv";
+ export const SLOT_TIMES = ["11:00", "13:00", "13:30", "14:00"];
+ export const DURATION_MIN = 30;
+@@ -34,14 +37,28 @@ function agencyInstant(y, m, d, hh, mm) {
+ }
+ 
+ // Слоти дня: лише майбутні (з запасом у годину). Повертає Date[] (моменти початку).
+-export function slotsFor(y, m, d) {
++export function slotsFor(y, m, d, live = null) {
++  if (live) return live.filter((i) => i.getFullYear() === y && i.getMonth() === m && i.getDate() === d);
+   const dow = new Date(Date.UTC(y, m, d)).getUTCDay();
+   if (dow === 0 || dow === 6) return [];
+   const min = Date.now() + 60 * 60 * 1000;
+   return SLOT_TIMES.map((t) => agencyInstant(y, m, d, +t.slice(0, 2), +t.slice(3))).filter((i) => i.getTime() > min);
+ }
+ 
+-export const isBookable = (y, m, d) => slotsFor(y, m, d).length > 0;
++export const isBookable = (y, m, d, live = null) => slotsFor(y, m, d, live).length > 0;
++
++// Живі вільні слоти на місяць (Date[]); при помилці — [], щоб не показувати вигаданий час.
++export async function loadSlots(y, m) {
++  const start = new Date(y, m, 1);
++  const end = new Date(y, m + 1, 1);
++  try {
++    const res = await fetch(`${API}/bookingSlots?start=${start.toISOString()}&end=${end.toISOString()}`);
++    if (!res.ok) throw new Error(res.status);
++    return (await res.json()).slots.map((s) => new Date(s));
++  } catch {
++    return [];
++  }
++}
+ 
+ export function formatTime(date, hour12) {
+   return new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12 }).format(date);
+@@ -60,6 +77,18 @@ export function submitInquiry(inquiry) {
+   return new Promise((resolve) => setTimeout(() => resolve({ ok: true, inquiry }), 700));
+ }
+ 
+-export function submitBooking(booking) {
++export async function submitBooking(booking) {
++  if (LIVE) {
++    try {
++      const res = await fetch(`${API}/bookingCreate`, {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({ ...booking, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone }),
++      });
++      return { ok: res.ok, taken: res.status === 409 };
++    } catch {
++      return { ok: false };
++    }
++  }
+   return new Promise((resolve) => setTimeout(() => resolve({ ok: true, booking }), 700));
+ }

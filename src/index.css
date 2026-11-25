@@ -121,12 +121,17 @@ body {
 [data-intro="wait"] .reveal-up,
 [data-intro="wait"] .header-drop,
 [data-intro="wait"] .intro-line-x,
-[data-intro="wait"] .intro-line-diag { animation-play-state: paused; }
+[data-intro="wait"] .intro-line-diag,
+[data-intro="wait"] .hero-scene { animation-play-state: paused; }
 /* Другий стан Hero (Hero.jsx, [data-open] на секції): заголовок і цитата йдуть, з'являється карусель
    обкладинок, внизу ліворуч опис кейсу, назви кейсів переїжджають праворуч. Картки каруселі
    розкладає CSS за --d (відстань до активної): активна на всю ширину між двома вузькими. */
 .hero-zone { pointer-events: none; }
 [data-open] .hero-zone { pointer-events: auto; }
+
+.hero-scene { opacity: 0.4; transition: opacity 0.6s var(--ease-case), visibility 0s; animation: scene-in 1.6s var(--ease-intro) 3.2s backwards; } /* інтро: лого з'являється останнім */
+@keyframes scene-in { from { opacity: 0; } }
+[data-open] .hero-scene { opacity: 0; visibility: hidden; transition-delay: 0s, 0.6s; }
 
 .hero-lead { transition: opacity 0.6s var(--ease-case), translate 0.6s var(--ease-case), visibility 0s; }
 [data-open] .hero-lead { opacity: 0; translate: 0 -24px; visibility: hidden; transition-delay: 0s, 0s, 0.6s; }
@@ -152,6 +157,8 @@ body {
   width: calc(var(--s) + max(0, 1 - max(var(--d), -1 * var(--d))) * (var(--m) - var(--s)));
   transition: left 0.9s var(--ease-case), width 0.9s var(--ease-case);
 }
+
+.cta-fade { background: linear-gradient(to bottom, transparent 55%, var(--color-black)); }
 
 .hero-shade {
   background: var(--color-black);

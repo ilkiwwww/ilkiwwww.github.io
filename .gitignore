@@ -7,3 +7,6 @@ dist
 
 # збірки старих Hero (design/hero-history.html)
 design/hero-history/v*/
+
+# кеш Firebase CLI
+.firebase
