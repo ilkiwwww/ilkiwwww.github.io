@@ -11,7 +11,7 @@ import Page from "./Page.jsx";
 
 // Сторінка «Contact» (/contact, Figma node 40002379:273): без видимого заголовка; ліворуч контактна особа (та сама
 // `ContactCard`, що в попапі «Book a call»), праворуч форма запиту — послуги й бюджет чіпами, назва компанії, пошта, опис.
-// Заявка поки нікуди не йде (`submitInquiry()` у data/booking.js — заглушка). Без фінального CTA — лише футер (`Page cta={false}`).
+// Заявка йде в Firestore (`submitInquiry()` у data/booking.js). Без фінального CTA — лише футер (`Page cta={false}`).
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function Chips({ options, selected, onToggle }) {
@@ -45,9 +45,13 @@ export default function ContactPage() {
     setErrors(next);
     if (Object.keys(next).length) return;
     setSending(true);
-    await submitInquiry({ services, budget: budget ? [budget] : [], ...form });
+    try {
+      await submitInquiry({ services, budget: budget ? [budget] : [], ...form });
+      setDone(true);
+    } catch {
+      setErrors({ form: "Something went wrong. Please try again or email us." });
+    }
     setSending(false);
-    setDone(true);
   }
 
   return (
@@ -96,6 +100,7 @@ export default function ContactPage() {
                   <Button variant="light" size="md" className="w-full" type="submit" disabled={sending}>
                     {sending ? "Sending…" : "Send message"}
                   </Button>
+                  {errors.form && <Text tone="secondary">{errors.form}</Text>}
                 </form>
               )}
             </Rise>

@@ -15,7 +15,12 @@ export const SALES = {
 export const SERVICE_OPTIONS = ["Design", "Branding", "Illustration", "Motion", "Development"];
 export const BUDGET_OPTIONS = ["under 10K", "10K—50K", "over 50K"];
 
-// Форма на сторінці /contact (ContactPage.jsx). Також заглушка: нікуди не відправляє.
-export function submitInquiry(inquiry) {
-  return new Promise((resolve) => setTimeout(() => resolve({ ok: true, inquiry }), 700));
+// Форма на сторінці /contact (ContactPage.jsx): заявка пишеться в Firestore (колекція project_leads, див. firestore.rules).
+// Firebase підвантажується лише при відправці, щоб не обтяжувати решту сайту.
+export async function submitInquiry({ services, budget, name, email, about }) {
+  const { saveLead } = await import("../lib/leads.js");
+  const lead = { email: email.trim(), name: name.trim(), services, source: "contact" };
+  if (budget[0]) lead.budget = budget[0];
+  if (about.trim()) lead.message = about.trim();
+  await saveLead(lead);
 }
