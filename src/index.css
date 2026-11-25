@@ -299,6 +299,10 @@ body {
 }
 .header-drop { animation: header-drop 1s var(--ease-reveal) 1.1s both; }
 .header-drop-now { animation-delay: 0.15s; }
+/* Поки гортаємо, шапка йде вгору за екран (transform не конфліктує з анімацією `translate` вище); фокус усередині її не ховає. */
+header[data-moving] { transform: translateY(-200%); }
+header { transition: transform 0.5s var(--ease-case); }
+header:focus-within { transform: none; }
 
 /* Шапка при скролі (TopBar.jsx): смуга на всю ширину збирається в плашку по центру на суцільній підкладці
    `plate` (Figma: 1048 завширшки, відступи 8), лого плавно зменшується (48 → 32). Усе однією кривою. */
@@ -530,6 +534,7 @@ body {
   .hero-card,
   .hero-detail,
   .hero-bg,
+  header,
   .site-bar,
   .acc-body,
   .site-logo,

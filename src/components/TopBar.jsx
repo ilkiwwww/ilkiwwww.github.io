@@ -81,11 +81,23 @@ export default function TopBar() {
   // Коли сторінку прокручено, шапка збирається в плашку по центру (лого, таби, «Book a call» на суцільній
   // підкладці), щоб таби й лого було видно на будь-якому фоні. Стилі й плавність — `.site-bar` в index.css.
   const [scrolled, setScrolled] = useState(false);
+  // Поки сторінка гортається, шапка ховається вгору; коли скрол зупинився (250ms без руху), з'їжджає назад.
+  // Угорі сторінки не ховається.
+  const [moving, setMoving] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
+    let idle;
+    const onScroll = () => {
+      setScrolled(window.scrollY > 32);
+      if (window.scrollY > 120) setMoving(true);
+      clearTimeout(idle);
+      idle = setTimeout(() => setMoving(false), 250);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      clearTimeout(idle);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
   const [menuOpen, setMenuOpen] = useState(false);
   // Поки меню відкрите, сторінка під ним не скролиться; Esc закриває.
@@ -104,7 +116,7 @@ export default function TopBar() {
   }, [menuOpen]);
   return (
     // Уся шапка з'їжджає зверху одним рухом (.header-drop в index.css), без окремої анімації елементів.
-    <header className={`${isHome ? "header-drop" : "header-drop header-drop-now"} fixed inset-x-0 top-3 z-40 px-6 md:top-5 md:px-10`}>
+    <header className={`${isHome ? "header-drop" : "header-drop header-drop-now"} fixed inset-x-0 top-3 z-40 px-6 md:top-5 md:px-10`} data-moving={moving || undefined}>
       <div className="site-bar relative mx-auto flex items-center justify-between" data-scrolled={scrolled || undefined}>
         <Logo className="site-logo" />
         <SiteNav />
