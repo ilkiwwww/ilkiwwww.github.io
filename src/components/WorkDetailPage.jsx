@@ -418,7 +418,7 @@ export default function WorkDetailPage({ slug }) {
             {/* Закрита панель: кнопка «The story +» висить над розділами й їде за скролом (sticky). */}
             {!storyOpen && (
               <div className="pointer-events-none absolute inset-y-0 right-6 z-10">
-                <Button variant="light" size="sm" className="pointer-events-auto sticky top-28 z-20 mt-6" onClick={() => setStoryOpen(true)}>
+                <Button variant="light" size="sm" className="pointer-events-auto sticky top-6 z-20 mt-6" onClick={() => setStoryOpen(true)}>
                   The story
                   <PlusIcon className="h-4 w-4" />
                 </Button>
@@ -438,7 +438,7 @@ export default function WorkDetailPage({ slug }) {
           </div>
 
           {/* Панель завжди в DOM: при закритті колонка плавно стискається (.story-layout), а вміст згасає. */}
-          <aside className="story-aside hidden lg:sticky lg:top-28 lg:block lg:self-start" inert={!storyOpen}>
+          <aside className="story-aside hidden lg:sticky lg:top-0 lg:block lg:self-start" inert={!storyOpen}>
             <div className="story-aside-inner lg:pl-16">
               <InView className="flex flex-col gap-8">
                 <Rise>

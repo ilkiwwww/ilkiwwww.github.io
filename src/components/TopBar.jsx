@@ -82,15 +82,28 @@ export default function TopBar() {
   // підкладці), щоб таби й лого було видно на будь-якому фоні. Стилі й плавність — `.site-bar` в index.css.
   const [scrolled, setScrolled] = useState(false);
   // Поки сторінка гортається, шапка ховається вгору; коли скрол зупинився (250ms без руху), з'їжджає назад.
-  // Угорі сторінки не ховається.
+  // Угорі сторінки не ховається. На сторінці кейсу (/work/<slug>) інакше: шапка є лише на самому початку,
+  // далі зникає й повертається лише внизу сторінки, коли ми там зупинилися (праворуч липка панель «The story»
+  // стоїть на самому верху).
+  const isCase = window.location.pathname.startsWith("/work/");
   const [moving, setMoving] = useState(false);
   useEffect(() => {
     let idle;
+    let still = true;
+    const update = () => {
+      const y = window.scrollY;
+      const nearEnd = y + window.innerHeight >= document.documentElement.scrollHeight - 800;
+      setMoving(y > 120 && (isCase ? !(nearEnd && still) : !still));
+    };
     const onScroll = () => {
       setScrolled(window.scrollY > 32);
-      if (window.scrollY > 120) setMoving(true);
+      still = false;
+      update();
       clearTimeout(idle);
-      idle = setTimeout(() => setMoving(false), 250);
+      idle = setTimeout(() => {
+        still = true;
+        update();
+      }, 250);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -98,7 +111,7 @@ export default function TopBar() {
       clearTimeout(idle);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [isCase]);
   const [menuOpen, setMenuOpen] = useState(false);
   // Поки меню відкрите, сторінка під ним не скролиться; Esc закриває.
   useEffect(() => {
